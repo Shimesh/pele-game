@@ -1008,7 +1008,12 @@ scene.add(sun, sun.target);
 /* Preetham atmosphere + a twin in a private scene for the environment map */
 const sky = new Sky(); sky.scale.setScalar(2500); scene.add(sky);
 const skyU = sky.material.uniforms;
-skyU.turbidity.value=2.2; skyU.rayleigh.value=1.9; skyU.mieCoefficient.value=.003; skyU.mieDirectionalG.value=.82;
+skyU.turbidity.value=2; skyU.rayleigh.value=.9; skyU.mieCoefficient.value=.0022; skyU.mieDirectionalG.value=.8;
+/* grade the Preetham sky: it tends to render milky/over-bright near the horizon. Pull its level down and restore saturation */
+skyU.uGain={value:.52};
+sky.material.fragmentShader=sky.material.fragmentShader.replace('uniform vec3 up;','uniform vec3 up;\nuniform float uGain;')
+  .replace(/gl_FragColor = vec4\( retColor, 1\.0 \);/,'vec3 sc=retColor*uGain; float lum=dot(sc,vec3(.2126,.7152,.0722)); sc=max(mix(vec3(lum),sc,1.35),0.); sc=sc/(1.+sc*.35); gl_FragColor = vec4( sc, 1.0 );');
+sky.material.needsUpdate=true;
 const envScene = new THREE.Scene(); const envSky = new Sky(); envSky.material = sky.material; envSky.scale.setScalar(900); envScene.add(envSky);
 let pmrem=null, envRT=null, envTimer=0;
 function updateEnv(){
@@ -1045,13 +1050,13 @@ const clouds=(()=>{
     float fb(vec2 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*vn(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return s;}
     void main(){ vec3 d=normalize(vD); if(d.y<.015)discard;
       vec2 uv=d.xz/(d.y+.12)*1.15+vec2(uTime*.004,uTime*.0015);
-      float base=fb(uv*1.4), c=smoothstep(.48,.78,base);
+      float base=fb(uv*1.4), c=smoothstep(.52,.8,base);
       float shade=fb(uv*1.4+uSunDir.xz*.06);
       float lit=clamp(.55+(base-shade)*3.,0.,1.2);
       float sunAmt=pow(max(dot(d,uSunDir),0.),6.);
-      vec3 day=mix(vec3(.6,.64,.72),vec3(.92),lit)*mix(vec3(1.),uSunCol,.3)+uSunCol*sunAmt*.25;
+      vec3 day=mix(vec3(.58,.63,.72),vec3(1.),lit)*mix(vec3(1.),uSunCol,.3)+uSunCol*sunAmt*.25;
       vec3 col=mix(vec3(.08,.1,.16)+vec3(.05,.06,.1)*lit,day,uDay);
-      float a=c*smoothstep(.015,.2,d.y)*.9;
+      float a=c*smoothstep(.03,.3,d.y)*.88;
       gl_FragColor=vec4(col,a);
       #include <colorspace_fragment>
     }`});
@@ -1084,7 +1089,7 @@ function setupPost(){
     bloomFX=new PP.BloomEffect({mipmapBlur:true,luminanceThreshold:.96,luminanceSmoothing:.12,intensity:.4,radius:.65});
     const tone=new PP.ToneMappingEffect({mode:PP.ToneMappingMode.ACES_FILMIC});
     const vig=new PP.VignetteEffect({offset:.28,darkness:.42});
-    const grade=new PP.HueSaturationEffect({saturation:.06});
+    const grade=new PP.HueSaturationEffect({saturation:.1});
     const bc=new PP.BrightnessContrastEffect({contrast:.06});
     composer.addPass(new PP.EffectPass(camera,bloomFX,tone,grade,bc,vig));
     if(q!=='medium') composer.addPass(new PP.EffectPass(camera,new PP.SMAAEffect({preset:PP.SMAAPreset.HIGH})));
@@ -1903,18 +1908,40 @@ function buildingShell({x,z,ry,w,d,h,wallM,trimM,floorM,door=2.6,glassM,sill=.8,
   // roof slab + cornice
   const roof=add(G.box(w+.5,.3,d+.5),trimM,0,h+.15,0); B.roofs.push(roof);
   const par=add(G.box(w+.6,.4,.2),trimM,0,h+.45,d/2+.2); B.roofs.push(par);
+  // ceiling lamps (glowing panels) so interiors read as lit, day or night
+  { const nx=Math.max(1,Math.round(w/6)), nz=Math.max(1,Math.round(d/5.5));
+    for(let i=0;i<nx;i++)for(let j=0;j<nz;j++){ const lx=(i+.5)*w/nx-w/2, lz=(j+.5)*d/nz-d/2;
+      const lamp=add(G.box(Math.min(2,w/nx*.5),.06,.55),LAMP_M,lx,h-.08,lz); lamp.castShadow=false; lamp.receiveShadow=false;
+      add(G.box(Math.min(2.1,w/nx*.5+.1),.1,.65),trimM,lx,h-.02,lz).castShadow=false; } }
   B.bounds={x0:Math.min(toW(-w/2,-d/2).x,toW(w/2,d/2).x)+.2,x1:Math.max(toW(-w/2,-d/2).x,toW(w/2,d/2).x)-.2,z0:Math.min(toW(-w/2,-d/2).z,toW(w/2,d/2).z)+.2,z1:Math.max(toW(-w/2,-d/2).z,toW(w/2,d/2).z)-.2};
   TOWN.buildings.push(B); return B;
 }
+/* one shared warm interior light that follows Pele into whichever building he is in (cheap: a single light for all shops) */
+const LAMP_M=new THREE.MeshBasicMaterial({color:'#fff1d0',toneMapped:false});
+const INTERIOR={light:null,f:0,stamp:-9,B:null};
+function interiorLight(B,dt){
+  if(!INTERIOR.light){ const L=new THREE.PointLight('#ffe6c0',0,30,1); L.castShadow=false; scene.add(L); INTERIOR.light=L;
+    INTERIOR.fill=new THREE.PointLight('#ffe6c0',0,30,1); scene.add(INTERIOR.fill); }
+  INTERIOR.stamp=clock; if(B)INTERIOR.B=B;
+  INTERIOR.f=damp(INTERIOR.f,B?1:0,4,dt||.016); const I=INTERIOR.B, L=INTERIOR.light, F=INTERIOR.fill;
+  if(!I||INTERIOR.f<.01){ L.intensity=0; F.intensity=0; return; }
+  const big=Math.max(I.w,I.d), P=player.pos, k=INTERIOR.f*(1.2+nightF*2.2)*(big>20?1.6:1);
+  // key light near Pele (keeps him and nearby shelves lit), fill at the room center
+  L.position.set(P.x,I.y0+I.h-.5,P.z); L.distance=big>20?22:14; L.intensity=k*9;
+  F.position.set(I.x,I.y0+I.h-.4,I.z); F.distance=big*1.1; F.intensity=k*(big>20?16:7);
+}
 function finishBuilding(B){ for(const W of B.walls) mergeStatic(W.g); mergeStatic(B.g,new Set(B.roofs)); }
+let _bdt=.016;
 function updateBuildings(){
-  const P=player.pos, C=camera.position;
+  const P=player.pos, C=camera.position; let inside=null;
   for(const B of TOWN.buildings){
     const b=B.bounds, inB=P.x>b.x0&&P.x<b.x1&&P.z>b.z0&&P.z<b.z1&&P.y<B.y0+B.h;
     const camIn=C.x>b.x0-.3&&C.x<b.x1+.3&&C.z>b.z0-.3&&C.z<b.z1+.3;
     for(const r of B.roofs) r.visible=!(inB||camIn&&C.y<B.y0+B.h+1);
     for(const W of B.walls){ const side=(C.x-W.c.x)*W.nx+(C.z-W.c.z)*W.nz; W.g.visible=!(inB&&side>0.05); }
+    if(inB)inside=B;
   }
+  interiorLight(inside,_bdt);
 }
 
 /* ---------- interactables (E / action button) ---------- */
@@ -2244,7 +2271,7 @@ function updateTown(dt){
   { const sd=(P.pos.x+P.pos.z)*SQ; Sound.sea=beachMask(P.pos.x,P.pos.z)*smooth(330,420,sd); }
   { const da=Math.hypot(P.pos.x-LM.arcade.x,P.pos.z-LM.arcade.z)<60; for(const c of TOWN.cabinets)c.g.visible=da;
     const db=beachMask(P.pos.x,P.pos.z)>.05&&(P.pos.x+P.pos.z)*SQ>300; for(const g of TOWN.gulls)g.g.visible=db; }
-  updateRace(dt); updateCafeCats(dt); updateBuildings();
+  updateRace(dt); updateCafeCats(dt); _bdt=dt; updateBuildings();
 }
 /* playground physics hooks, called from updatePlayer */
 function townGround(dt){
@@ -2297,7 +2324,7 @@ function updateRace(dt){
   if(!R.go){ R.go=true; showBanner('רוצו!','עד הפנס בסוף המזח'); Sound.jump(); bark('oram','יאללה!',{speak:false,time:1.5}); }
   if(R.done){ R.after-=dt; if(n.racing){animateKid(n.rig,dt,{speed:0,onGround:true,t:clock});}
     if(R.after<=0){ n.racing=false; n.pos.copy(n.home); n.baseY=n.home.y; n.obj.position.copy(n.pos); TOWN.race=null; } return; }
-  const sp=Math.min(7.3,2.2+R.t*2.8), dx=R.end.x-n.pos.x, dz=R.end.z-n.pos.z, d=Math.hypot(dx,dz);
+  const sp=Math.min(6.9,2.2+R.t*2.6), dx=R.end.x-n.pos.x, dz=R.end.z-n.pos.z, d=Math.hypot(dx,dz);
   if(d>.3){ n.pos.x+=dx/d*sp*dt; n.pos.z+=dz/d*sp*dt; }
   n.pos.y=Math.max(groundAt(n.pos.x,n.pos.z,n.pos.y+1.2),WATER); n.baseY=n.pos.y; n.obj.position.copy(n.pos); n.obj.rotation.y=R.yaw;
   animateKid(n.rig,dt,{speed:sp,onGround:true,t:clock,run:true});
@@ -2342,7 +2369,7 @@ function buildArcade(){
   for(const lx of [-14,0,14]){ for(const lz of [-6,4]){ const l=add(G.box(3,.06,.3),neonMat('#fff4e0',1.4),lx,5.9,lz); l.castShadow=false; } }
 
   /* bowling: three lanes on the west side, pins at the far end */
-  const laneM=new THREE.MeshPhysicalMaterial({map:plankTex('#d8a868'),roughness:.25,clearcoat:.9}); laneM.map.repeat.set(1,6);
+  const laneM=new THREE.MeshPhysicalMaterial({map:plankTex('#d8a868'),roughness:.25,clearcoat:.6,clearcoatRoughness:.35}); laneM.map.repeat.set(1,6);
   const gutM=pbr('#2a2e3a',{roughness:.4,metalness:.3}), pinM=new THREE.MeshStandardMaterial({color:'#fbfaf6',roughness:.3}), stripeM=pbr('#d83a3a',{roughness:.4});
   const pg=pinGeo();
   [-16.5,-13.5,-10.5].forEach((lx,li)=>{
@@ -2527,7 +2554,7 @@ function tileTexFloor(){ const c=canvas2(256),x=c.getContext('2d'); for(let j=0;
 function miniHUD(title,hint){ $('mini').hidden=false; $('mini-t').textContent=title; $('mini-h').textContent=hint; $('mini-s').textContent='0'; $('mini-meter').hidden=true; }
 function miniSet(score,time,extra){ $('mini-s').textContent=score; $('mini-time').textContent=time!=null?`⏱ ${Math.max(0,Math.ceil(time))}`:(extra||''); }
 function miniMeter(v,band){ const m=$('mini-meter'); m.hidden=v==null; if(v==null)return; $('mini-mk').style.left=(v*100)+'%'; if(band){$('mini-band').style.left=(band[0]*100)+'%';$('mini-band').style.width=((band[1]-band[0])*100)+'%';} }
-function miniEnd(msg,coins){ const g=MINI.cur; if(!g)return; MINI.cur=null; $('mini').hidden=true; g.cleanup&&g.cleanup();
+function miniEnd(msg,coins){ const g=MINI.cur; if(!g)return; MINI.cur=null; miniCamRelease(); $('mini').hidden=true; g.cleanup&&g.cleanup();
   if(coins>0){ addCoins(coins); setTimeout(()=>toast(`${msg} · קיבלת ${coins} מטבעות!`,'gold'),200); } else toast(msg);
   player.model.root.visible=true; autosave(true); }
 function miniPress(){ const p=input.jumpPressed||input.interact||input.kick; input.jumpPressed=input.interact=input.kick=false; return p; }
@@ -2574,15 +2601,23 @@ function knockPin(p,vx,vz){ p.fall=.001; p.vx=vx; p.vz=vz; p.ax=Math.atan2(vx,vz
 function stepPins(L,dt){ for(const p of L.pins){ if(!(p.fall>0))continue; p.fall=Math.min(1,p.fall+dt*3); p.g.position.x+=p.vx*dt; p.g.position.z+=p.vz*dt; p.vx*=1-2*dt; p.vz*=1-2*dt;
     p.g.rotation.set(Math.cos(p.ax)*p.fall*1.5,0,-Math.sin(p.ax)*p.fall*1.5);
     for(const q of L.pins){ if(q===p||!q.up||q.fall)continue; const d=Math.hypot(q.g.position.x-p.g.position.x,q.g.position.z-p.g.position.z); if(d<.2&&Math.hypot(p.vx,p.vz)>.4&&Math.random()<.85) knockPin(q,p.vx*.7+(q.g.position.x-p.g.position.x)*3,p.vz*.7-.3); } } }
+/* stable mini-game camera: owns its own smoothed eye/look so it never fights the follow camera (that fight caused flicker) */
+const _mcE=new THREE.Vector3(), _mcL=new THREE.Vector3(); let _mcOn=false;
+function miniCam(ex,ey,ez,lx,ly,lz,dt,k=4){
+  if(!_mcOn){ _mcE.copy(camera.position); _mcL.copy(cam.look); _mcOn=true; }
+  const a=1-Math.exp(-k*Math.min(dt,.05)); _mcE.lerp(_v.set(ex,ey,ez),a); _mcL.lerp(_v.set(lx,ly,lz),a);
+  camera.position.copy(_mcE); camera.lookAt(_mcL);
+}
+function miniCamRelease(){ if(!_mcOn)return; _mcOn=false; cam.pos.copy(_mcE); cam.look.copy(_mcL); }
 function bowlCam(g,dt){ const B=CENTER.B, L=g.L, bz=g.phase==='roll'||g.phase==='count'?Math.max(L.ball.position.z,-8):5.6;
-  const eye=B.toW(L.lx,bz+3.4), look=B.toW(L.lx,bz-6); camera.position.lerp(_v.set(eye.x,B.y0+1.9,eye.z),1-Math.exp(-6*dt)); camera.lookAt(look.x,B.y0+.2,look.z); }
+  const eye=B.toW(L.lx,bz+3.4), look=B.toW(L.lx,bz-6); miniCam(eye.x,B.y0+1.9,eye.z,look.x,B.y0+.2,look.z,dt,3.5); }
 
 /* ---------- basketball ---------- */
 function startHoops(hi){
   if(MINI.cur||!payCoins(2))return; const H=CENTER.hoops[hi], B=CENTER.B;
   const g={type:'hoop',H,score:0,time:40,phase:'ready',t:0,streak:0};
   const w=B.toW(H.lx,H.lz+5.2); player.pos.set(w.x,B.y0+.2,w.z); player.vel.set(0,0,0); player.yaw=Math.PI;
-  g.update=(dt)=>hoopUpdate(g,dt); g.cam=(dt)=>{const e=B.toW(H.lx+.9,H.lz+8.2);camera.position.lerp(_v.set(e.x,B.y0+2.3,e.z),1-Math.exp(-6*dt));camera.lookAt(H.hoop.x,H.hoop.y-.3,H.hoop.z);};
+  g.update=(dt)=>hoopUpdate(g,dt); g.cam=(dt)=>{const e=B.toW(H.lx+.9,H.lz+8.2);miniCam(e.x,B.y0+2.3,e.z,H.hoop.x,H.hoop.y-.3,H.hoop.z,dt);};
   g.cleanup=()=>{H.ball.position.set(H.lx,1.05,H.lz+3.2);drawHoopScore(H,0,40);};
   MINI.cur=g; miniHUD('קליעה לסל',IS_TOUCH?'לחצו קפיצה כשהסמן בתוך האזור הירוק':'רווח כשהסמן בתוך האזור הירוק'); Sound.ui();
 }
@@ -3409,7 +3444,7 @@ const Sound = {
    lists, plain text), plus an optional niqqud pronunciation layer.
    ===================================================================== */
 const HEB='֐-׿';
-const PRON=[["איתן","אֵיתָן"],["נראה","נִרְאֶה"],["יפה","יָפֶה"],["מיקה","מִיקָה"],["טופי","טוֹפִי"],["וטופי","וְטוֹפִי"],["פלפל","פִּלְפֵּל"],["מנגו","מַנְגּוֹ"],["צדפים","צְדָפִים"],["הצדפים","הַצְּדָפִים"],["צדף","צֶדֶף"],["היציע","הַיָּצִיעַ"],["ביציע","בַּיָּצִיעַ"],["מהיציע","מֵהַיָּצִיעַ"],["מתוק","מָתוֹק"],["עסקה","עִסְקָה"],["בארקייד","בָּאַרְקֵייד"],["ארקייד","אַרְקֵייד"],["המנומרת","הַמְּנֻמֶּרֶת"],["ברוך הבא","בָּרוּךְ הַבָּא"],["החוף","הַחוֹף"],["בחוף","בַּחוֹף"],["כשהייתי","כְּשֶׁהָיִיתִי"],["לך קודם", "לֵךְ קוֹדֶם"], ["לך מאחורי", "לֵךְ מֵאֲחוֹרֵי"], ["לך בעקבות", "לֵךְ בְּעִקְּבוֹת"], ["לך אחריו", "לֵךְ אַחֲרָיו"], ["אתה", "אַתָּה"], ["תשמע", "תִּשְׁמַע"], ["סבתא קוקיש", "סָבְתָא קוּקִישׁ"], ["לסבתא קוקיש", "לְסָבְתָא קוּקִישׁ"], ["קוקיש", "קוּקִישׁ"], ["סבתא", "סָבְתָא"], ["לסבתא", "לְסָבְתָא"], ["בעמק השחר", "בְּעֵמֶק הַשַּׁחַר"], ["ביער הגחליליות", "בְּיַעַר הַגַּחְלִילִיּוֹת"], ["לפסגות הבדולח", "לְפִסְגוֹת הַבְּדֹלַח"], ["בפסגות הבדולח", "בְּפִסְגוֹת הַבְּדֹלַח"], ["מעמק השחר", "מֵעֵמֶק הַשַּׁחַר"], ["עמק השחר", "עֵמֶק הַשַּׁחַר"], ["עץ האור", "עֵץ הָאוֹר"], ["רוח הצל", "רוּחַ הַצֵּל"], ["שער הצללים", "שַׁעַר הַצְּלָלִים"], ["כנפי הרוח", "כַּנְפֵי הָרוּחַ"], ["פלא", "פֶּלֶא"], ["חכמון", "חַכְמוֹן"], ["זוזה", "זוּזָה"], ["טיפי", "טִיפִּי"], ["וטיפי", "וְטִיפִּי"], ["גילי", "גִּילִי"], ["עמק", "עֵמֶק"], ["בעמק", "בָּעֵמֶק"], ["העמק", "הָעֵמֶק"], ["והעמק", "וְהָעֵמֶק"], ["השחר", "הַשַּׁחַר"], ["יער", "יַעַר"], ["ביער", "בַּיַּעַר"], ["היער", "הַיַּעַר"], ["הגחליליות", "הַגַּחְלִילִיּוֹת"], ["שהגחליליות", "שֶׁהַגַּחְלִילִיּוֹת"], ["לפסגות", "לַפִּסְגוֹת"], ["בפסגות", "בַּפִּסְגוֹת"], ["שבפסגות", "שֶׁבַּפִּסְגוֹת"], ["הבדולח", "הַבְּדֹלַח"], ["הבדולחים", "הַבְּדֹלְחִים"], ["עץ", "עֵץ"], ["לעץ", "לָעֵץ"], ["העץ", "הָעֵץ"], ["והעץ", "וְהָעֵץ"], ["שהעץ", "שֶׁהָעֵץ"], ["האור", "הָאוֹר"], ["והאור", "וְהָאוֹר"], ["באור", "בְּאוֹר"], ["זהוב", "זָהֹב"], ["הזהובים", "הַזְּהֻבִּים"], ["וחם", "וְחַם"], ["מאיר", "מֵאִיר"], ["כולו", "כֻּלּוֹ"], ["בלילה", "בַּלַּיְלָה"], ["בלילות", "בַּלֵּילוֹת"], ["לילה", "לַיְלָה"], ["נשבה", "נָשְׁבָה"], ["רוח", "רוּחַ"], ["הרוח", "הָרוּחַ"], ["הצל", "הַצֵּל"], ["סחפה", "סָחֲפָה"], ["כבה", "כָּבָה"], ["שיכבה", "שֶׁיִּכְבֶּה"], ["התעורר", "הִתְעוֹרֵר"], ["ולידו", "וּלְיָדוֹ"], ["החתול", "הֶחָתוּל"], ["והחתול", "וְהֶחָתוּל"], ["הסיאמי", "הַסִּיאָמִי"], ["ההרפתקה", "הַהַרְפַּתְקָה"], ["הרפתקה", "הַרְפַּתְקָה"], ["שלהם", "שֶׁלָּהֶם"], ["לנו", "לָנוּ"], ["הגדול", "הַגָּדוֹל"], ["הולכים", "הוֹלְכִים"], ["תתקרב", "תִּתְקָרֵב"], ["כמובן", "כַּמּוּבָן"], ["דולק", "דּוֹלֵק"], ["חשוכים", "חֲשׁוּכִים"], ["להירדם", "לְהֵרָדֵם"], ["הפרחים", "הַפְּרָחִים"], ["החיות", "הַחַיּוֹת"], ["פיזרה", "פִּזְּרָה"], ["רסיסי", "רְסִיסֵי"], ["רסיס", "רְסִיס"], ["הרסיס", "הָרְסִיס"], ["הרסיסים", "הָרְסִיסִים"], ["רסיסים", "רְסִיסִים"], ["בחולות", "בַּחוֹלוֹת"], ["החולות", "הַחוֹלוֹת"], ["ובאגם", "וּבָאֲגַם"], ["להחזיק", "לְהַחֲזִיק"], ["סקרן", "סַקְרָן"], ["תעזור", "תַּעֲזֹר"], ["להחזיר", "לְהַחֲזִיר"], ["אמצא", "אֶמְצָא"], ["שולח", "שׁוֹלֵחַ"], ["עמוד", "עַמּוּד"], ["עמודי", "עַמּוּדֵי"], ["תרים", "תָּרִים"], ["הראש", "הָרֹאשׁ"], ["ותראה", "וְתִרְאֶה"], ["מרחוק", "מֵרָחוֹק"], ["מסומנים", "מְסֻמָּנִים"], ["במפה", "בַּמַּפָּה"], ["אבן", "אֶבֶן"], ["מסע", "מַסָּע"], ["גע", "גַּע"], ["ותוכל", "וְתוּכַל"], ["לחזור", "לַחֲזֹר"], ["מהמפה", "מֵהַמַּפָּה"], ["ידעתי", "יָדַעְתִּי"], ["לסמוך", "לִסְמֹךְ"], ["תפגוש", "תִּפְגֹּשׁ"], ["ותיקים", "וָתִיקִים"], ["הינשוף", "הַיַּנְשׁוּף"], ["השועלה", "הַשּׁוּעָלָה"], ["הענן", "הֶעָנָן"], ["הקטן", "הַקָּטָן"], ["תתעייף", "תִּתְעַיֵּף"], ["הגלידאית", "הַגְּלִידָאִית"], ["הכיכר", "הַכִּכָּר"], ["כוחות", "כֹּחוֹת"], ["חמישה", "חֲמִשָּׁה"], ["חמשת", "חֲמֵשֶׁת"], ["מקומות", "מְקוֹמוֹת"], ["וגלידה", "וּגְלִידָה"], ["יאללה", "יַאלְלָה"], ["מרגישה", "מַרְגִּישָׁה"], ["להתחמם", "לְהִתְחַמֵּם"], ["גיבור", "גִּבּוֹר"], ["אמיתי", "אֲמִתִּי"], ["נחזיר", "נַחֲזִיר"], ["יחד", "יַחַד"], ["נדליק", "נַדְלִיק"], ["עפו", "עָפוּ"], ["מתוך", "מִתּוֹךְ"], ["התיק", "הַתִּיק"], ["הסתחררו", "הִסְתַּחְרְרוּ"], ["ונבלעו", "וְנִבְלְעוּ"], ["בגזע", "בַּגֶּזַע"], ["נושם", "נוֹשֵׁם"], ["ממקודם", "מִמִּקֹּדֶם"], ["תקשיב", "תַּקְשִׁיב"], ["נולדה", "נוֹלְדָה"], ["סתם", "סְתָם"], ["מעבר", "מֵעֵבֶר"], ["משער", "מִשַּׁעַר"], ["הצללים", "הַצְּלָלִים"], ["כשתהיה", "כְּשֶׁתִּהְיֶה"], ["נגלה", "נְגַלֶּה"], ["פתח", "פָּתַח"], ["לחקור", "לַחְקֹר"], ["ער", "עֵר"], ["ילד", "יֶלֶד"], ["שומר", "שׁוֹמֵר"], ["העתיק", "הָעַתִּיק"], ["השורשים", "הַשָּׁרָשִׁים"], ["נופל", "נוֹפֵל"], ["חכם", "חָכָם"], ["נותן", "נוֹתֵן"], ["חידה", "חִידָה"], ["הקשב", "הַקְשֵׁב"], ["היטב", "הֵיטֵב"], ["נעשה", "נַעֲשֶׂה"], ["רטוב", "רָטֹב"], ["מייבש", "מְיַבֵּשׁ"], ["מגבת", "מַגֶּבֶת"], ["השמש", "הַשֶּׁמֶשׁ"], ["ענן", "עָנָן"], ["חשוב", "חֲשֹׁב"], ["בדיוק", "בְּדִיּוּק"], ["מאחורי", "מֵאֲחוֹרֵי"], ["בקצה", "בִּקְצֵה"], ["הקרחת", "הַקָּרַחַת"], ["מהר", "מַהֵר"], ["יתחילו", "יַתְחִילוּ"], ["רוקדות", "רוֹקְדוֹת"], ["שים", "שִׂים"], ["לב", "לֵב"], ["להקשיב", "לְהַקְשִׁיב"], ["מיילל", "מְיַלֵּל"], ["מריח", "מֵרִיחַ"], ["כוכבי", "כּוֹכְבֵי"], ["זהב", "זָהָב"], ["הזהב", "הַזָּהָב"], ["חוקרת", "חוֹקֶרֶת"], ["חיפשתי", "חִפַּשְׂתִּי"], ["העיר", "הָעִיר"], ["העתיקה", "הָעַתִּיקָה"], ["שלמות", "שְׁלֵמוֹת"], ["גרו", "גָּרוּ"], ["בוני", "בּוֹנֵי"], ["המגדלים", "הַמִּגְדָּלִים"], ["בנו", "בָּנוּ"], ["עמודים", "עַמּוּדִים"], ["גבוהים", "גְּבוֹהִים"], ["שכמעט", "שֶׁכִּמְעַט"], ["נגעו", "נָגְעוּ"], ["בירח", "בַּיָּרֵחַ"], ["המגדל", "הַמִּגְדָּל"], ["הגבוה", "הַגָּבוֹהַּ"], ["העמודים", "הָעַמּוּדִים"], ["שמסביבו", "שֶׁמִּסָּבִיב לוֹ"], ["מדרגות", "מַדְרֵגוֹת"], ["ענקיות", "עֲנָקִיּוֹת"], ["לקפיצה", "לִקְפִיצָה"], ["תלחץ", "תִּלְחַץ"], ["באמצע", "בְּאֶמְצַע"], ["האוויר", "הָאֲוִיר"], ["באוויר", "בָּאֲוִיר"], ["תגיע", "תַּגִּיעַ"], ["כפולה", "כְּפוּלָה"], ["הקטע", "הַקֶּטַע"], ["הקירות", "הַקִּירוֹת"], ["שבוני", "שֶׁבּוֹנֵי"], ["שמרו", "שָׁמְרוּ"], ["בכדי", "בְּכַדֵּי"], ["חרס", "חֶרֶס"], ["נעלמו", "נֶעֶלְמוּ"], ["הקשת", "הַקֶּשֶׁת"], ["נוצץ", "נוֹצֵץ"], ["נפלתי", "נָפַלְתִּי"], ["תקוע", "תָּקוּעַ"], ["המרחף", "הַמְּרַחֵף"], ["רחוק", "רָחוֹק"], ["בקפיצות", "בִּקְפִיצוֹת"], ["לבד", "לְבַד"], ["קח", "קַח"], ["כנפי", "כַּנְפֵי"], ["כשאתה", "כְּשֶׁאַתָּה"], ["תחזיק", "תַּחֲזִיק"], ["והכנפיים", "וְהַכְּנָפַיִם"], ["ירחפו", "יְרַחֲפוּ"], ["לאט", "לְאַט"], ["כנפיים", "כְּנָפַיִם"], ["מעופפות", "מְעוֹפְפוֹת"], ["תראה", "תִּרְאֶה"], ["פרצוף", "פַּרְצוּף"], ["מודאג", "מֻדְאָג"], ["תגיד", "תַּגִּיד"], ["מתאמן", "מִתְאַמֵּן"], ["חלוץ", "חָלוּץ"], ["תבקיע", "תַּבְקִיעַ"], ["שלושה", "שְׁלוֹשָׁה"], ["גולים", "גּוֹלִים"], ["גול", "גּוֹל"], ["ואתן", "וְאֶתֵּן"], ["מיוחד", "מְיֻחָד"], ["תרוץ", "תָּרוּץ"], ["לכדרר", "לְכַדְרֵר"], ["הכדור", "הַכַּדּוּר"], ["כפתור", "כַּפְתּוֹר"], ["הבעיטה", "הַבְּעִיטָה"], ["לבעוט", "לִבְעֹט"], ["הבקעת", "הִבְקַעְתָּ"], ["מאמין", "מַאֲמִין"], ["אלוף", "אַלּוּף"], ["בעיטות", "בְּעִיטוֹת"], ["נעלי", "נַעֲלֵי"], ["תופסת", "תּוֹפֶסֶת"], ["שמעתי", "שָׁמַעְתִּי"], ["רודף", "רוֹדֵף"], ["חמוד", "חָמוּד"], ["העגלה", "הָעֲגָלָה"], ["והעגלה", "וְהָעֲגָלָה"], ["מלאה", "מְלֵאָה"], ["טעימות", "טְעִימוֹת"], ["מחזירה", "מַחֲזִירָה"], ["עייפים", "עֲיֵפִים"], ["לגיבורים", "לַגִּבּוֹרִים"], ["עליי", "עָלַי"], ["בצורת", "בְּצוּרַת"], ["שושנה", "שׁוֹשַׁנָּה"], ["הטעם", "הַטַּעַם"], ["האהוב", "הָאָהוּב"], ["אכין", "אָכִין"], ["גלידת", "גְּלִידַת"], ["מיוחדת", "מְיֻחֶדֶת"], ["שנותנת", "שֶׁנּוֹתֶנֶת"], ["נוסף", "נוֹסָף"], ["לרחרח", "לְרַחְרֵחַ"], ["טרייה", "טְרִיָּה"], ["מצוין", "מְצֻיָּן"], ["תחכה", "תְּחַכֶּה"], ["שהייתי", "שֶׁהָיִיתִי"], ["צריכה", "צְרִיכָה"], ["כוכב", "כּוֹכָב"], ["הנוצה", "הַנּוֹצָה"], ["חכה", "חַכֵּה"], ["חפש", "חַפֵּשׂ"], ["ליטוף", "לִטּוּף"], ["לשחק", "לְשַׂחֵק"], ["מגרגר", "מְגַרְגֵּר"], ["ניצח", "נִצַּח"], ["מרחרח", "מְרַחְרֵחַ"], ["רץ", "רָץ"], ["אחריו", "אַחֲרָיו"], ["קרובים", "קְרוֹבִים"], ["באזור", "בְּאֵזוֹר"], ["מספר", "מִסְפָּר"], ["חברים", "חֲבֵרִים"], ["הו", "הוֹ"]];
+const PRON=[["איתן","אֵיתָן"],["נראה","נִרְאֶה"],["יפה","יָפֶה"],["מיקה","מִיקָה"],["טופי","טוֹפִי"],["וטופי","וְטוֹפִי"],["פלפל","פִּלְפֵּל"],["מנגו","מַנְגּוֹ"],["צדפים","צְדָפִים"],["הצדפים","הַצְּדָפִים"],["צדף","צֶדֶף"],["היציע","הַיָּצִיעַ"],["ביציע","בַּיָּצִיעַ"],["מהיציע","מֵהַיָּצִיעַ"],["מתוק","מָתוֹק"],["עסקה","עִסְקָה"],["בארקייד","בָּאַרְקֵייד"],["ארקייד","אַרְקֵייד"],["המנומרת","הַמְּנֻמֶּרֶת"],["ברוך הבא","בָּרוּךְ הַבָּא"],["החוף","הַחוֹף"],["בחוף","בַּחוֹף"],["כשהייתי","כְּשֶׁהָיִיתִי"],["לך קודם", "לֵךְ קוֹדֶם"], ["לך מאחורי", "לֵךְ מֵאֲחוֹרֵי"], ["לך בעקבות", "לֵךְ בְּעִקְּבוֹת"], ["לך אחריו", "לֵךְ אַחֲרָיו"], ["אתה", "אַתָּה"], ["תשמע", "תִּשְׁמַע"], ["סבתא קוקיש", "סָבְתָא קוּקִישׁ"], ["לסבתא קוקיש", "לְסָבְתָא קוּקִישׁ"], ["קוקיש", "קוּקִישׁ"], ["סבתא", "סָבְתָא"], ["לסבתא", "לְסָבְתָא"], ["בעמק השחר", "בְּעֵמֶק הַשַּׁחַר"], ["ביער הגחליליות", "בְּיַעַר הַגַּחְלִילִיּוֹת"], ["לפסגות הבדולח", "לְפִסְגוֹת הַבְּדֹלַח"], ["בפסגות הבדולח", "בְּפִסְגוֹת הַבְּדֹלַח"], ["מעמק השחר", "מֵעֵמֶק הַשַּׁחַר"], ["עמק השחר", "עֵמֶק הַשַּׁחַר"], ["לעץ האור", "לְעֵץ הָאוֹר"], ["עץ האור", "עֵץ הָאוֹר"], ["רוח הצל", "רוּחַ הַצֵּל"], ["שער הצללים", "שַׁעַר הַצְּלָלִים"], ["כנפי הרוח", "כַּנְפֵי הָרוּחַ"], ["פלא", "פֶּלֶא"], ["חכמון", "חַכְמוֹן"], ["זוזה", "זוּזָה"], ["טיפי", "טִיפִּי"], ["וטיפי", "וְטִיפִּי"], ["גילי", "גִּילִי"], ["עמק", "עֵמֶק"], ["בעמק", "בָּעֵמֶק"], ["העמק", "הָעֵמֶק"], ["והעמק", "וְהָעֵמֶק"], ["השחר", "הַשַּׁחַר"], ["יער", "יַעַר"], ["ביער", "בַּיַּעַר"], ["היער", "הַיַּעַר"], ["הגחליליות", "הַגַּחְלִילִיּוֹת"], ["שהגחליליות", "שֶׁהַגַּחְלִילִיּוֹת"], ["לפסגות", "לַפִּסְגוֹת"], ["בפסגות", "בַּפִּסְגוֹת"], ["שבפסגות", "שֶׁבַּפִּסְגוֹת"], ["הבדולח", "הַבְּדֹלַח"], ["הבדולחים", "הַבְּדֹלְחִים"], ["עץ", "עֵץ"], ["העץ", "הָעֵץ"], ["והעץ", "וְהָעֵץ"], ["שהעץ", "שֶׁהָעֵץ"], ["האור", "הָאוֹר"], ["והאור", "וְהָאוֹר"], ["באור", "בְּאוֹר"], ["זהוב", "זָהֹב"], ["הזהובים", "הַזְּהֻבִּים"], ["וחם", "וְחַם"], ["מאיר", "מֵאִיר"], ["כולו", "כֻּלּוֹ"], ["בלילה", "בַּלַּיְלָה"], ["בלילות", "בַּלֵּילוֹת"], ["לילה", "לַיְלָה"], ["נשבה", "נָשְׁבָה"], ["רוח", "רוּחַ"], ["הרוח", "הָרוּחַ"], ["הצל", "הַצֵּל"], ["סחפה", "סָחֲפָה"], ["כבה", "כָּבָה"], ["שיכבה", "שֶׁיִּכְבֶּה"], ["התעורר", "הִתְעוֹרֵר"], ["ולידו", "וּלְיָדוֹ"], ["החתול", "הֶחָתוּל"], ["והחתול", "וְהֶחָתוּל"], ["הסיאמי", "הַסִּיאָמִי"], ["ההרפתקה", "הַהַרְפַּתְקָה"], ["הרפתקה", "הַרְפַּתְקָה"], ["שלהם", "שֶׁלָּהֶם"], ["לנו", "לָנוּ"], ["הגדול", "הַגָּדוֹל"], ["הולכים", "הוֹלְכִים"], ["תתקרב", "תִּתְקָרֵב"], ["כמובן", "כַּמּוּבָן"], ["דולק", "דּוֹלֵק"], ["חשוכים", "חֲשׁוּכִים"], ["להירדם", "לְהֵרָדֵם"], ["הפרחים", "הַפְּרָחִים"], ["החיות", "הַחַיּוֹת"], ["פיזרה", "פִּזְּרָה"], ["רסיסי", "רְסִיסֵי"], ["רסיס", "רְסִיס"], ["הרסיס", "הָרְסִיס"], ["הרסיסים", "הָרְסִיסִים"], ["רסיסים", "רְסִיסִים"], ["בחולות", "בַּחוֹלוֹת"], ["החולות", "הַחוֹלוֹת"], ["ובאגם", "וּבָאֲגַם"], ["להחזיק", "לְהַחֲזִיק"], ["סקרן", "סַקְרָן"], ["תעזור", "תַּעֲזֹר"], ["להחזיר", "לְהַחֲזִיר"], ["אמצא", "אֶמְצָא"], ["שולח", "שׁוֹלֵחַ"], ["עמודי", "עַמּוּדֵי"], ["תרים", "תָּרִים"], ["הראש", "הָרֹאשׁ"], ["ותראה", "וְתִרְאֶה"], ["מרחוק", "מֵרָחוֹק"], ["מסומנים", "מְסֻמָּנִים"], ["במפה", "בַּמַּפָּה"], ["אבן", "אֶבֶן"], ["מסע", "מַסָּע"], ["גע", "גַּע"], ["ותוכל", "וְתוּכַל"], ["לחזור", "לַחֲזֹר"], ["מהמפה", "מֵהַמַּפָּה"], ["ידעתי", "יָדַעְתִּי"], ["לסמוך", "לִסְמֹךְ"], ["תפגוש", "תִּפְגֹּשׁ"], ["ותיקים", "וָתִיקִים"], ["הינשוף", "הַיַּנְשׁוּף"], ["השועלה", "הַשּׁוּעָלָה"], ["הענן", "הֶעָנָן"], ["הקטן", "הַקָּטָן"], ["תתעייף", "תִּתְעַיֵּף"], ["הגלידאית", "הַגְּלִידָאִית"], ["הכיכר", "הַכִּכָּר"], ["כוחות", "כֹּחוֹת"], ["חמישה", "חֲמִשָּׁה"], ["חמשת", "חֲמֵשֶׁת"], ["מקומות", "מְקוֹמוֹת"], ["וגלידה", "וּגְלִידָה"], ["יאללה", "יַאלְלָה"], ["מרגישה", "מַרְגִּישָׁה"], ["להתחמם", "לְהִתְחַמֵּם"], ["גיבור", "גִּבּוֹר"], ["אמיתי", "אֲמִתִּי"], ["נחזיר", "נַחֲזִיר"], ["יחד", "יַחַד"], ["נדליק", "נַדְלִיק"], ["עפו", "עָפוּ"], ["מתוך", "מִתּוֹךְ"], ["התיק", "הַתִּיק"], ["הסתחררו", "הִסְתַּחְרְרוּ"], ["ונבלעו", "וְנִבְלְעוּ"], ["בגזע", "בַּגֶּזַע"], ["נושם", "נוֹשֵׁם"], ["ממקודם", "מִמִּקֹּדֶם"], ["תקשיב", "תַּקְשִׁיב"], ["נולדה", "נוֹלְדָה"], ["סתם", "סְתָם"], ["מעבר", "מֵעֵבֶר"], ["משער", "מִשַּׁעַר"], ["הצללים", "הַצְּלָלִים"], ["כשתהיה", "כְּשֶׁתִּהְיֶה"], ["נגלה", "נְגַלֶּה"], ["לחקור", "לַחְקֹר"], ["ער", "עֵר"], ["ילד", "יֶלֶד"], ["שומר", "שׁוֹמֵר"], ["העתיק", "הָעַתִּיק"], ["השורשים", "הַשָּׁרָשִׁים"], ["נופל", "נוֹפֵל"], ["חכם", "חָכָם"], ["נותן", "נוֹתֵן"], ["חידה", "חִידָה"], ["הקשב", "הַקְשֵׁב"], ["היטב", "הֵיטֵב"], ["רטוב", "רָטֹב"], ["מייבש", "מְיַבֵּשׁ"], ["מגבת", "מַגֶּבֶת"], ["השמש", "הַשֶּׁמֶשׁ"], ["ענן", "עָנָן"], ["בדיוק", "בְּדִיּוּק"], ["מאחורי", "מֵאֲחוֹרֵי"], ["בקצה", "בִּקְצֵה"], ["הקרחת", "הַקָּרַחַת"], ["מהר", "מַהֵר"], ["יתחילו", "יַתְחִילוּ"], ["רוקדות", "רוֹקְדוֹת"], ["שים", "שִׂים"], ["לב", "לֵב"], ["להקשיב", "לְהַקְשִׁיב"], ["מיילל", "מְיַלֵּל"], ["מריח", "מֵרִיחַ"], ["כוכבי", "כּוֹכְבֵי"], ["זהב", "זָהָב"], ["הזהב", "הַזָּהָב"], ["חוקרת", "חוֹקֶרֶת"], ["חיפשתי", "חִפַּשְׂתִּי"], ["העיר", "הָעִיר"], ["העתיקה", "הָעַתִּיקָה"], ["שלמות", "שְׁלֵמוֹת"], ["גרו", "גָּרוּ"], ["בוני", "בּוֹנֵי"], ["המגדלים", "הַמִּגְדָּלִים"], ["עמודים", "עַמּוּדִים"], ["גבוהים", "גְּבוֹהִים"], ["שכמעט", "שֶׁכִּמְעַט"], ["נגעו", "נָגְעוּ"], ["בירח", "בַּיָּרֵחַ"], ["המגדל", "הַמִּגְדָּל"], ["הגבוה", "הַגָּבוֹהַּ"], ["העמודים", "הָעַמּוּדִים"], ["שמסביבו", "שֶׁמִּסְּבִיבוֹ"], ["מדרגות", "מַדְרֵגוֹת"], ["ענקיות", "עֲנָקִיּוֹת"], ["לקפיצה", "לִקְפִיצָה"], ["תלחץ", "תִּלְחַץ"], ["באמצע", "בְּאֶמְצַע"], ["האוויר", "הָאֲוִיר"], ["באוויר", "בָּאֲוִיר"], ["תגיע", "תַּגִּיעַ"], ["כפולה", "כְּפוּלָה"], ["הקטע", "הַקֶּטַע"], ["הקירות", "הַקִּירוֹת"], ["שבוני", "שֶׁבּוֹנֵי"], ["שמרו", "שָׁמְרוּ"], ["בכדי", "בְּכַדֵּי"], ["חרס", "חֶרֶס"], ["נעלמו", "נֶעֶלְמוּ"], ["הקשת", "הַקֶּשֶׁת"], ["נוצץ", "נוֹצֵץ"], ["נפלתי", "נָפַלְתִּי"], ["תקוע", "תָּקוּעַ"], ["המרחף", "הַמְּרַחֵף"], ["רחוק", "רָחוֹק"], ["בקפיצות", "בִּקְפִיצוֹת"], ["לבד", "לְבַד"], ["קח", "קַח"], ["כנפי", "כַּנְפֵי"], ["כשאתה", "כְּשֶׁאַתָּה"], ["תחזיק", "תַּחֲזִיק"], ["והכנפיים", "וְהַכְּנָפַיִם"], ["ירחפו", "יְרַחֲפוּ"], ["לאט", "לְאַט"], ["כנפיים", "כְּנָפַיִם"], ["מעופפות", "מְעוֹפְפוֹת"], ["תראה", "תִּרְאֶה"], ["פרצוף", "פַּרְצוּף"], ["מודאג", "מֻדְאָג"], ["תגיד", "תַּגִּיד"], ["מתאמן", "מִתְאַמֵּן"], ["חלוץ", "חָלוּץ"], ["תבקיע", "תַּבְקִיעַ"], ["שלושה", "שְׁלוֹשָׁה"], ["גולים", "גּוֹלִים"], ["גול", "גּוֹל"], ["ואתן", "וְאֶתֵּן"], ["מיוחד", "מְיֻחָד"], ["תרוץ", "תָּרוּץ"], ["לכדרר", "לְכַדְרֵר"], ["הכדור", "הַכַּדּוּר"], ["כפתור", "כַּפְתּוֹר"], ["הבעיטה", "הַבְּעִיטָה"], ["לבעוט", "לִבְעֹט"], ["הבקעת", "הִבְקַעְתָּ"], ["מאמין", "מַאֲמִין"], ["אלוף", "אַלּוּף"], ["בעיטות", "בְּעִיטוֹת"], ["נעלי", "נַעֲלֵי"], ["תופסת", "תּוֹפֶסֶת"], ["שמעתי", "שָׁמַעְתִּי"], ["רודף", "רוֹדֵף"], ["חמוד", "חָמוּד"], ["העגלה", "הָעֲגָלָה"], ["והעגלה", "וְהָעֲגָלָה"], ["מלאה", "מְלֵאָה"], ["טעימות", "טְעִימוֹת"], ["מחזירה", "מַחֲזִירָה"], ["עייפים", "עֲיֵפִים"], ["לגיבורים", "לַגִּבּוֹרִים"], ["עליי", "עָלַי"], ["בצורת", "בְּצוּרַת"], ["שושנה", "שׁוֹשַׁנָּה"], ["הטעם", "הַטַּעַם"], ["האהוב", "הָאָהוּב"], ["אכין", "אָכִין"], ["גלידת", "גְּלִידַת"], ["מיוחדת", "מְיֻחֶדֶת"], ["שנותנת", "שֶׁנּוֹתֶנֶת"], ["נוסף", "נוֹסָף"], ["לרחרח", "לְרַחְרֵחַ"], ["טרייה", "טְרִיָּה"], ["מצוין", "מְצֻיָּן"], ["תחכה", "תְּחַכֶּה"], ["שהייתי", "שֶׁהָיִיתִי"], ["צריכה", "צְרִיכָה"], ["כוכב", "כּוֹכָב"], ["הנוצה", "הַנּוֹצָה"], ["חכה", "חַכֵּה"], ["חפש", "חַפֵּשׂ"], ["ליטוף", "לִטּוּף"], ["לשחק", "לְשַׂחֵק"], ["מגרגר", "מְגַרְגֵּר"], ["ניצח", "נִצַּח"], ["מרחרח", "מְרַחְרֵחַ"], ["רץ", "רָץ"], ["אחריו", "אַחֲרָיו"], ["קרובים", "קְרוֹבִים"], ["באזור", "בְּאֵזוֹר"], ["חברים", "חֲבֵרִים"], ["הו", "הוֹ"]];
 const PRON_RE=PRON.sort((a,b)=>b[0].length-a[0].length).map(([w,r])=>{try{return [new RegExp(`(^|[^${HEB}])()${w}(?=$|[^${HEB}])`,'g'),r];}catch(e){return null;}}).filter(Boolean);
 /* {shown|spoken}: a word shown plain in the dialog box but read aloud with niqqud */
 const MARK_RE=/\{([^|{}]+)\|([^{}]+)\}/g;
@@ -3441,7 +3476,7 @@ function speakable(text,ctx={sg:'m',ag:'m'}){
   let t=String(text).replace(MARK_RE,(m,a,b)=>settings.niqqud?b:a);
   if((S.catName||'ריי')==='ריי') t=t.replace(/(^|[^\u0590-\u05FF])([ולשבהמכ]?)ריי(?=$|[^\u0590-\u05FF])/g,(m,a,p)=>a+(p&&raySay()==='Ray'?p+' ':p)+raySay());
   t=t.replace(/[«»"״]/g,'').replace(/…/g,', ').replace(/־/g,' ');
-  if(settings.niqqud){ for(const [re,r] of PRON_RE) t=t.replace(re,(m,a,p)=>a+(p||'')+r); t=genderPass(t,ctx); }
+  if(settings.niqqud){ if(!ctx.noPron)for(const [re,r] of PRON_RE) t=t.replace(re,(m,a,p)=>a+(p||'')+r); t=genderPass(t,ctx); }
   return t;
 }
 /* ---------- recorded voice pack (voices.json + voices.bin next to the game): natural neural voices,
@@ -3451,9 +3486,14 @@ const VoicePack={idx:null,bin:null,ready:false,src:null,gain:null,
   key(id,text,ag){ return fnv(id+'|'+plain(String(text)).replace(/\s+/g,' ').trim()+'|'+(ag||'m')); },
   has(k){ return !!(this.idx&&this.idx[k]); },
   async load(){ if(this.idx||this.loading||!/^https?:/.test(location.protocol))return; this.loading=true;
-    try{ const r=await fetch('voices.json',{cache:'no-cache'}); if(!r.ok)throw 0; const j=await r.json(); const b=await fetch('voices.bin'); if(!b.ok)throw 0;
-      this.bin=await b.arrayBuffer(); if(j.size&&this.bin.byteLength!==j.size)throw 0; this.idx=j.clips||j; this.ready=true; Voice.note(`חבילת קולות: ${Object.keys(this.idx).length} משפטים`); updateVoiceNote(); }
-    catch(e){ this.idx=null; } this.loading=false; },
+    try{ // one file: voices.pack = "PELEVOX1" + index length + JSON index + audio
+      const p=await fetch('voices.pack',{cache:'no-cache'});
+      if(p.ok){ const buf=await p.arrayBuffer(), u=new Uint8Array(buf); if(String.fromCharCode(...u.slice(0,8))!=='PELEVOX1')throw 0;
+        const n=new DataView(buf).getUint32(8,true); const j=JSON.parse(new TextDecoder().decode(u.slice(12,12+n))); this.bin=buf.slice(12+n); this.idx=j.clips; }
+      else { const r=await fetch('voices.json',{cache:'no-cache'}); if(!r.ok)throw 0; const j=await r.json(); const b=await fetch('voices.bin'); if(!b.ok)throw 0;
+        this.bin=await b.arrayBuffer(); if(j.size&&this.bin.byteLength!==j.size)throw 0; this.idx=j.clips||j; }
+      this.ready=true; Voice.note(`חבילת קולות: ${Object.keys(this.idx).length} משפטים`); updateVoiceNote(); }
+    catch(e){ this.idx=null; this.bin=null; } this.loading=false; },
   async play(k){ const c=Sound.ctx; if(!c)return; this.stop(); const [o,l]=this.idx[k]; const tok=this.tok=(this.tok||0)+1;
     try{ const buf=await c.decodeAudioData(this.bin.slice(o,o+l)); if(tok!==this.tok)return; if(!this.gain){this.gain=c.createGain();this.gain.connect(c.destination);} this.gain.gain.value=clamp(Number(settings.vol)||.8,.1,1)*1.1;
       const s=c.createBufferSource(); s.buffer=buf; s.connect(this.gain); s.start(); this.src=s; s.onended=()=>{if(this.src===s)this.src=null;}; }catch(e){} },
@@ -3557,16 +3597,16 @@ const cat=()=>S.catName||'ריי';
 
 const SPEAKERS = {
   noga:{name:'סבתא קוקיש', color:'#b69cff', letter:'ק', g:'f', pitch:.88, rate:.8, vi:1},
-  pele:{name:'פלא', color:'#7cb9e8', letter:'פ', g:'k', pitch:1.42, rate:1.07, vi:0},
+  pele:{name:'פלא', color:'#7cb9e8', letter:'פ', g:'k', pitch:1.4, rate:1.02, vi:0},
   owl:{name:'חכמון הינשוף', color:'#d9a25f', letter:'ח', g:'m', pitch:.52, rate:.78, vi:2},
   zuza:{name:'זוזה השועלה', color:'#ff8a4c', letter:'ז', g:'f', pitch:1.28, rate:1.2, vi:3},
-  tipi:{name:'טיפי', color:'#8fe3ff', letter:'ט', g:'k', pitch:1.95, rate:1.18, vi:1},
-  adam:{name:'אדם', color:'#e85a4a', letter:'א', g:'k', pitch:1.62, rate:1.16, vi:2},
+  tipi:{name:'טיפי', color:'#8fe3ff', letter:'ט', g:'k', pitch:2, rate:1.12, vi:1},
+  adam:{name:'אדם', color:'#e85a4a', letter:'א', g:'k', pitch:1.72, rate:1.2, vi:2},
   gili:{name:'גילי הגלידאית', color:'#ff8fb0', letter:'ג', g:'f', pitch:1.18, rate:1.0, vi:3},
   mom:{name:'אמא', color:'#ffb3a0', letter:'א', g:'f', pitch:1.05, rate:.94, vi:1},
   dad:{name:'אבא', color:'#e8a060', letter:'א', g:'m', pitch:.62, rate:.92, vi:2},
-  eitan:{name:'איתן', color:'#5fd07a', letter:'א', g:'k', pitch:1.52, rate:1.12, vi:1},
-  oram:{name:'אורם', color:'#ffa04a', letter:'א', g:'k', pitch:1.32, rate:1.2, vi:3},
+  eitan:{name:'איתן', color:'#5fd07a', letter:'א', g:'k', pitch:1.18, rate:.94, vi:1},
+  oram:{name:'אורם', color:'#ffa04a', letter:'א', g:'k', pitch:1.56, rate:1.3, vi:3},
   mika:{name:'מיקה הבריסטה', color:'#5fd0b0', letter:'מ', g:'m', pitch:.76, rate:1.04, vi:0},
   narrator:{name:'המספר', color:'#ffe9b0', letter:'✦', g:'m', pitch:.95, rate:.88, vi:2},
 };
@@ -3645,7 +3685,7 @@ const DIALOGUES = {
     {s:'owl',t:'אבל ינשוף חכם לא נותן שום דבר בלי חידה. הקשב היטב:',go:'owl_q'},
   ],
   owl_q:[{s:'owl',t:'מה נעשה רטוב יותר ויותר, ככל שהוא מייבש יותר?',choices:[{t:'השמש',go:'owl_wrong'},{t:'מגבת',go:'owl_right'},{t:'ענן',go:'owl_wrong'}]}],
-  owl_wrong:[{s:'owl',t:'הו־הו… לא בדיוק. חשוב שוב, ילד סקרן.',go:'owl_q'}],
+  owl_wrong:[{s:'owl',t:'הו־הו… לא בדיוק. {חשוב|חֲשֹׁב} שוב, ילד סקרן.',go:'owl_q'}],
   owl_right:[
     {act:'owlSolved'},
     {s:'owl',t:'הו־הו־הו! נכון מאוד! מגבת!'},
@@ -4006,7 +4046,7 @@ function cheerParents(){ for(const id of ['mom','dad']){const n=NPCS[id]; if(!n)
    ===================================================================== */
 const player = {pos:new THREE.Vector3(), vel:new THREE.Vector3(), yaw:Math.PI, onGround:true, jumps:1, coyote:0, buf:0, air:0,
   gliding:false, swim:false, hp:5, invuln:0, safe:new THREE.Vector3(), safeT:0, model:null, speed:0, stepPhase:0, fallV:0};
-const GRAV=30, JUMP_V=12.5, DJUMP_V=11, WALK=7, RUN=12, SWIM=4.5, GLIDE_FALL=2.1, GLIDE_SPEED=12;
+const GRAV=30, JUMP_V=12.5, DJUMP_V=11, WALK=5.2, RUN=8.6, SWIM=4.5, GLIDE_FALL=2.1, GLIDE_SPEED=12;
 
 const input = {x:0,y:0,sprint:false,jumpHeld:false,jumpPressed:false,interact:false,kick:false,lookDX:0,lookDY:0,zoom:0,touchX:0,touchY:0,touchJump:false,runToggle:false,lastLook:0,pad:null};
 const keys=new Set();
@@ -4017,17 +4057,19 @@ function updatePlayer(dt){
   // ---- intent
   let ix=input.x, iy=input.y;
   if(Math.hypot(input.touchX,input.touchY)>.08){ix=input.touchX;iy=input.touchY;}
-  const il=Math.hypot(ix,iy); if(il>1){ix/=il;iy/=il;}
-  const sprint = (input.sprint || input.runToggle || il>.92&&IS_TOUCH) && (S.hunger??100)>=22;
+  let il=Math.hypot(ix,iy); if(il>1){ix/=il;iy/=il;il=1;}
+  if(IS_TOUCH&&il>.01){ const c=Math.min(1,Math.pow(il,1.35)*1.08)/il; ix*=c; iy*=c; } // softer joystick: small push = slow walk
+  const sprint = (input.sprint || input.runToggle) && (S.hunger??100)>=22;
   const fx=-Math.sin(cam.yaw), fz=-Math.cos(cam.yaw), rx=-fz, rz=fx;
   const wx=fx*iy+rx*ix, wz=fz*iy+rz*ix, wl=Math.hypot(wx,wz);
   const maxS = P.swim?SWIM : P.gliding?GLIDE_SPEED : sprint?(S.shoes?RUN*1.3:RUN):(S.shoes?WALK*1.15:WALK);
   const tvx=wx*maxS, tvz=wz*maxS;
-  const acc = P.onGround||P.swim ? 55 : P.gliding?7:16;
+  const slowing = tvx*tvx+tvz*tvz < P.vel.x*P.vel.x+P.vel.z*P.vel.z;
+  const acc = P.onGround||P.swim ? (slowing?40:26) : P.gliding?7:14;
   const dvx=tvx-P.vel.x, dvz=tvz-P.vel.z, dl=Math.hypot(dvx,dvz), step=acc*dt;
   if(dl<=step){P.vel.x=tvx;P.vel.z=tvz;}else{P.vel.x+=dvx/dl*step;P.vel.z+=dvz/dl*step;}
   const yaw0=P.yaw;
-  if(wl>.1) P.yaw=angDamp(P.yaw,Math.atan2(wx,wz),P.gliding?5:14,dt);
+  if(wl>.1) P.yaw=angDamp(P.yaw,Math.atan2(wx,wz),P.gliding?4.5:10,dt);
   { let dy=P.yaw-yaw0; dy=((dy+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI; M.leanT=clamp(-dy/Math.max(dt,1e-3)*Math.hypot(P.vel.x,P.vel.z)*.012,-.28,.28)*(P.onGround||P.gliding?1:.3); }
   M.crouch=damp(M.crouch||0,(catState.purrT>0&&Math.hypot(catState.pos.x-P.pos.x,catState.pos.z-P.pos.z)<2.2&&P.speed<.5)||P.crouchT>0?1:0,8,dt); if(P.crouchT>0)P.crouchT-=dt;
   // ---- jumping
@@ -4288,7 +4330,7 @@ function updateCamera(dt,snap=false){
     cam.pitch=clamp(cam.pitch,-.35,1.25); input.lastLook=clock;
   }
   cam.dist=damp(cam.dist,cam.tdist,8,dt);
-  if(mode==='playing' && clock-input.lastLook>1.4 && player.speed>2.5) cam.yaw=angDamp(cam.yaw,player.yaw+Math.PI,1.3,dt);
+  if(mode==='playing' && clock-input.lastLook>2 && player.speed>2.5) cam.yaw=angDamp(cam.yaw,player.yaw+Math.PI,.8,dt);
   let target=_t.copy(player.pos).setY(player.pos.y+1.15), dist=cam.dist, yaw=cam.yaw, pitch=cam.pitch;
   if(cam.focus){ // dialog framing
     _d.subVectors(cam.focus,player.pos).setY(0); const dl=_d.length()||1;
@@ -4745,14 +4787,15 @@ function addToCart(id,shop){
 const cartTotal=()=>CART.items.reduce((a,id)=>a+CATALOG[id].price,0);
 function owns(id){ const it=CATALOG[id]; if(it.kind==='outfit')return !!S.flags['buy_'+id]; if(it.kind==='acc')return !!(S.acc&&S.acc[id]!==undefined); if(it.kind==='gear')return !!(S.gear&&S.gear[id]); return false; }
 function openCheckout(){
-  if(mode!=='playing')return; exitLock();
+  if(mode!=='playing')return; exitLock(); renderCheckout(); openSub('checkout'); Sound.ui();
+}
+function renderCheckout(){
   const L=$('co-list'); const total=cartTotal();
   $('co-title').textContent=CART.shop?`קופה אוטומטית · ${SHOP_NAMES[CART.shop]}`:'קופה אוטומטית';
   L.innerHTML=CART.items.length?CART.items.map((id,k)=>`<div class="co-row"><span class="co-dot" style="background:${CATALOG[id].col}"></span><span class="co-n">${CATALOG[id].name}</span><span class="co-p">🪙 ${CATALOG[id].price}</span><button class="mini co-x" data-k="${k}" aria-label="הסר">✕</button></div>`).join(''):'<p class="note">הסל ריק. ניגשים למוצר על המדף ולוחצים עליו כדי לשים אותו בסל.</p>';
   $('co-total').textContent=total; $('co-have').textContent=S.coins||0;
   const pay=$('co-pay'); pay.disabled=!CART.items.length||(S.coins||0)<total; pay.textContent=(S.coins||0)<total&&CART.items.length?'אין מספיק מטבעות':'לתשלום ✓';
-  L.querySelectorAll('.co-x').forEach(b=>b.onclick=()=>{CART.items.splice(+b.dataset.k,1);Sound.ui();openCheckout();});
-  openSub('checkout'); Sound.ui();
+  L.querySelectorAll('.co-x').forEach(b=>b.onclick=e=>{e.stopPropagation();CART.items.splice(+b.dataset.k,1);Sound.ui();renderCheckout();});
 }
 function payCart(){
   const total=cartTotal(); if(!CART.items.length||!payCoins(total))return;
@@ -4772,7 +4815,7 @@ function cartGuard(){ // leaving a shop with unpaid items puts them back on the 
 
 /* ---------- Pele's bag ---------- */
 function openBag(){
-  if(mode!=='playing')return; exitLock(); S.inv=S.inv||{}; S.acc=S.acc||{}; S.gear=S.gear||{};
+  if(mode!=='playing'&&!(mode==='sub'&&!$('bag').hidden))return; exitLock(); S.inv=S.inv||{}; S.acc=S.acc||{}; S.gear=S.gear||{};
   const food=Object.entries(S.inv).filter(([id,n])=>n>0);
   const acc=Object.keys(S.acc), gear=Object.keys(S.gear);
   $('bag-body').innerHTML=`
@@ -5426,8 +5469,8 @@ document.querySelectorAll('#settings .tab[data-st="cast"]').forEach(t=>t.addEven
    DAY / NIGHT — real sun path drives sky, light, fog and reflections
    ===================================================================== */
 let dayTime=.3, clock=0, treeGlow=0, treeTarget=0, nightF=0;
-const SKYC={sunLow:C('#ffb070'),sunHi:C('#fff4e4'),moon:C('#a8bcff'),hsN:C('#3a4a80'),hsD:C('#cfe6ff'),hgN:C('#141826'),hgD:C('#6a5a3a'),
-  fogD:C('#c2d8ea'),fogK:C('#e8b89a'),fogN:C('#10162e'),fogF:C('#9fc0b4')};
+const SKYC={sunLow:C('#ffb070'),sunHi:C('#fff4e4'),moon:C('#b4c6ff'),hsN:C('#6878b8'),hsD:C('#cfe6ff'),hgN:C('#2a3150'),hgD:C('#6a5a3a'),
+  fogD:C('#a9c9ea'),fogK:C('#e8b89a'),fogN:C('#1e2a4e'),fogF:C('#9fc0b4')};
 const MOTE={meadow:[C('#ffe38a'),.3,C('#d8ff6a'),1.7],forest:[C('#6ff6ff'),.9,C('#6ff6ff'),1.9],desert:[C('#ffe2a8'),.2,C('#ffffff'),.5],peaks:[C('#dff6ff'),.6,C('#bfeaff'),1.2],town:[C('#fff2c8'),.25,C('#ffd27a'),1.1],lake:[C('#bfe8ff'),.35,C('#d8ff6a'),1.4]};
 const _v2s=new THREE.Vector3(), sunDir=new THREE.Vector3(), lastEnvSun=new THREE.Vector3(9,9,9), _fc=new THREE.Color();
 function updateSky(dt=0){
@@ -5436,21 +5479,22 @@ function updateSky(dt=0){
   const el=sunDir.y, dayF=smooth(-.12,.25,el), dusk=Math.exp(-Math.pow(el/.18,2));
   nightF=1-smooth(-.18,.06,el);
   skyU.sunPosition.value.copy(sunDir);
-  skyU.rayleigh.value=lerp(1.9,3,dusk); skyU.turbidity.value=lerp(2.2,6,dusk);
+  skyU.rayleigh.value=lerp(.9,2.2,dusk); skyU.turbidity.value=lerp(2,4.5,dusk); skyU.uGain.value=lerp(.52,.8,dusk);
   const sunCol=_fc.copy(SKYC.sunLow).lerp(SKYC.sunHi,smooth(0,.45,el));
   nightU.uNight.value=nightF; nightU.uSunDir.value.copy(sunDir); nightU.uSunCol.value.copy(sunCol); nightU.uDay.value=dayF;
   const focus=mode==='title'||mode==='loading'?_v.set(LM.tree.x,5,LM.tree.z):player.pos;
   if(el>-.04){ sun.position.copy(focus).addScaledVector(sunDir,180); sun.intensity=2.5*smooth(-.04,.28,el); sun.color.copy(sunCol); }
-  else { sun.position.copy(focus).addScaledVector(sunDir,-180); sun.intensity=.75*smooth(.04,.25,-el); sun.color.copy(SKYC.moon); }
+  else { sun.position.copy(focus).addScaledVector(sunDir,-180); sun.intensity=1.25*smooth(.04,.25,-el); sun.color.copy(SKYC.moon); }
   { const tx=2*SH/sun.shadow.mapSize.x; _v2s.set(Math.round(focus.x/tx)*tx,focus.y,Math.round(focus.z/tx)*tx); sun.position.sub(focus).add(_v2s); sun.target.position.copy(_v2s); } sun.target.updateMatrixWorld();
-  hemi.color.copy(SKYC.hsN).lerp(SKYC.hsD,dayF); hemi.groundColor.copy(SKYC.hgN).lerp(SKYC.hgD,dayF); hemi.intensity=lerp(.55,.35,dayF);
-  scene.environmentIntensity=lerp(.22,.8,dayF);
+  hemi.color.copy(SKYC.hsN).lerp(SKYC.hsD,dayF); hemi.groundColor.copy(SKYC.hgN).lerp(SKYC.hgD,dayF); const inF=clock-INTERIOR.stamp<.3?INTERIOR.f:0;
+  hemi.intensity=lerp(1.05,.4,dayF)+inF*.35*nightF;
+  scene.environmentIntensity=lerp(.42,.75,dayF)+inF*.25*nightF;
   const bid=BIOMES[Math.max(biomeNow,0)].id;
   scene.fog.color.copy(SKYC.fogN).lerp(SKYC.fogD,dayF).lerp(SKYC.fogK,dusk*.55); if(bid==='forest')scene.fog.color.lerp(SKYC.fogF,.35*dayF);
-  const wantD=(bid==='forest'?.0036:bid==='peaks'?.0022:.0016)+nightF*.001; scene.fog.density=damp(scene.fog.density,wantD,.6,dt||.016);
+  const wantD=(bid==='forest'?.003:bid==='peaks'?.0018:.0011)+nightF*.0006; scene.fog.density=damp(scene.fog.density,wantD,.6,dt||.016);
   moon.position.copy(sunDir).multiplyScalar(-1300); moon.material.opacity=smooth(-.05,.15,-el);
   const mc=MOTE[bid]; moteU.uColor.value.copy(mc[0]).lerp(mc[2],nightF); moteU.uIntensity.value=lerp(mc[1],mc[3],nightF);
-  if(bloomFX) bloomFX.intensity=.35+nightF*.45;
+  if(bloomFX) bloomFX.intensity=.3+nightF*.35;
   envTimer-=dt; if(envTimer<=0&&mode!=='dialog'&&sunDir.distanceTo(lastEnvSun)>(QL()==='low'?.3:.14)){envTimer=10;lastEnvSun.copy(sunDir);updateEnv();}
 }
 
@@ -5481,7 +5525,7 @@ function frame(now){
     if(mode==='playing'){updatePlayer(dt); S.play+=dt; dayTime=(dayTime+dt/DAY_LEN)%1;}
     else { Dialog.update(dt); animateKid(player.model,dt,{speed:0,onGround:true,t:clock}); player.model.root.rotation.y=angDamp(player.model.root.rotation.y,player.yaw,8,dt); }
     updateCat(dt); updateBall(dt); updateBubbles(dt);
-    updateCamera(dt); if(MINI.cur&&MINI.cur.cam)MINI.cur.cam(dt); updateBiome(dt); updateHUD(dt); drawMinimap(dt);
+    if(MINI.cur&&MINI.cur.cam)MINI.cur.cam(dt); else updateCamera(dt); updateBiome(dt); updateHUD(dt); drawMinimap(dt);
     updateCoins(dt); updateHunger(dt); updateAccessories(); if((frameN&15)===0)cartGuard();
     saveT+=dt; if(saveT>40){saveT=0;if(mode==='playing')autosave(true);}
     netT+=dt; if(netT>.1){netT=0;Net.send('state',Net.snapshot());}
