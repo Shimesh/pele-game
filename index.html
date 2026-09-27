@@ -1,4 +1,4 @@
-<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10152b"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="פלא"><script>window.PELE_PWA=true</script></head><body>
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#10152b"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="פלא"><script>window.PELE_PWA=true</script></head><body>
 <title>פלא וארץ האור האבוד</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,10 +90,10 @@ kbd{font-family:var(--ui);font-weight:700;background:var(--cream);color:var(--in
 #b-ray-face{width:28px;height:28px;border-radius:9px;background:#2a3566 center/cover;flex:none;box-shadow:0 0 0 1.5px var(--gold)}
 #b-ray{padding-inline:8px 12px}
 #b-ray #b-ray-face{display:block!important}
-#joy-zone{position:absolute;left:0;bottom:0;width:45%;height:58%;pointer-events:auto;touch-action:none}
+#joy-zone{position:absolute;left:0;bottom:0;width:45%;height:62%;pointer-events:auto;touch-action:none;z-index:1}
 #joy{position:absolute;width:128px;height:128px;border-radius:50%;border:2px solid rgba(255,246,226,.3);background:radial-gradient(circle,rgba(16,21,43,.2),rgba(16,21,43,.5));left:calc(26px + env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));pointer-events:none}
 #knob{position:absolute;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,#d8d0bf);left:36px;top:36px;box-shadow:0 6px 14px rgba(0,0,0,.35)}
-#look-zone{position:absolute;right:0;top:0;width:55%;height:100%;pointer-events:auto;touch-action:none}
+#look-zone{position:absolute;inset:0;pointer-events:auto;touch-action:none}
 #tb{position:absolute;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:auto auto;gap:14px;align-items:end;pointer-events:auto}
 .tb{width:72px;height:72px;border-radius:50%;border:2px solid rgba(255,246,226,.35);background:rgba(16,21,43,.55);font-size:15px;font-weight:700;touch-action:none;display:grid;place-items:center;backdrop-filter:blur(6px)}
 .tb.big{width:94px;height:94px;background:radial-gradient(circle at 40% 30%,#ffe2a8,var(--gold));color:var(--ink);border-color:transparent;box-shadow:0 8px 20px rgba(0,0,0,.35)}
@@ -297,6 +297,17 @@ select,input[type=text]{font-family:var(--ui);font-size:16px;background:var(--in
 .cast .c{grid-area:c;display:grid;grid-template-columns:auto 1fr auto 1fr;gap:6px 8px;align-items:center;font-size:13px;color:var(--muted)}
 .cast .c select{grid-column:1/-1;font-size:14px;max-width:100%}
 .cast input[type=range]{width:100%;min-width:60px}
+
+html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#app{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#app .sheet,#app .list,#app #j-body,#app #cast-list,#app [data-sp],#app #fm-side{touch-action:pan-y}
+#app button{touch-action:manipulation}
+input[type=range]{touch-action:pan-x}
+
+.steps{margin:6px 0 4px;padding-inline-start:22px;display:flex;flex-direction:column;gap:12px;font-size:16.5px;line-height:1.55}
+.steps li::marker{color:var(--gold);font-weight:700}
+.arrow-hint{text-align:center;font-size:34px;color:var(--gold);animation:bob 1.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(8px)}}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -432,6 +443,29 @@ select,input[type=text]{font-family:var(--ui);font-size:16px;background:var(--in
         <div class="row"><label for="s-day">אורך יום במשחק<span class="sub" id="s-day-v"></span></label><input type="range" id="s-day" min="4" max="40" step="1"></div>
         <div class="row"><label for="s-text">מהירות טקסט</label><input type="range" id="s-text" min="15" max="90" step="5"></div>
         <div class="row"><label for="s-cat">שם החתול</label><input type="text" id="s-cat" maxlength="14"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="install" class="overlay" hidden>
+    <div class="sheet glass">
+      <div class="head"><h2>התקנה כאפליקציה</h2><button class="x" id="i-close" aria-label="סגור">✕</button></div>
+      <div id="i-ios">
+        <p class="note" id="i-inapp" hidden style="color:#ffc35c">המשחק נפתח כרגע בתוך אפליקציה אחרת (כמו וואטסאפ). קודם פותחים אותו ב־Safari: לוחצים על שלוש הנקודות או על סמל המצפן ובוחרים "פתח ב־Safari".</p>
+        <ol class="steps">
+          <li>לוחצים על כפתור <b>השיתוף</b> <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M5 11v9h14v-9"/></svg> בסרגל של Safari (למטה, או למעלה באייפד). ב־Chrome באייפון הוא נמצא ליד שורת הכתובת.</li>
+          <li>גוללים ברשימה ובוחרים <b>"הוסף למסך הבית"</b> <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-5px"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>. אם זה לא מופיע, לוחצים "עריכת פעולות" ומוסיפים.</li>
+          <li>לוחצים <b>"הוסף"</b> בפינה. אייקון עם הפנים של פלא יופיע במסך הבית.</li>
+          <li>מעכשיו פותחים את המשחק מהאייקון: במסך מלא, בלי שורת כתובת, וגם בלי אינטרנט.</li>
+        </ol>
+        <div class="arrow-hint" id="i-arrow">⬇</div>
+      </div>
+      <div id="i-android" hidden>
+        <ol class="steps">
+          <li>ב־Chrome לוחצים על שלוש הנקודות <b>⋮</b> למעלה.</li>
+          <li>בוחרים <b>"התקנת אפליקציה"</b> או <b>"הוספה למסך הבית"</b>.</li>
+          <li>מאשרים. האייקון של פלא יופיע במסך הבית.</li>
+        </ol>
       </div>
     </div>
   </div>
@@ -1909,7 +1943,8 @@ function buildCafe(){
   sign.castShadow=false;
   // counter, espresso machine, cake display, chalk menu, pendant lamps
   const wood=new THREE.MeshStandardMaterial({map:plankTex('#7a4a2a'),roughness:.55});
-  add(G.box(4.6,1.05,.8),wood,-3.8,.6,-3.2); add(G.box(4.8,.06,1),pbr('#e8e0d4',{roughness:.3}),-3.8,1.15,-3.2); B.col(-3.8,-3.2,2.4,.5,1.2);
+  add(G.box(4.6,1.05,.8),wood,-3.8,.6,-3.2); add(G.box(4.8,.06,1),pbr('#e8e0d4',{roughness:.3}),-3.8,1.15,-3.2);
+  B.col(-4.05,-3.75,2.65,1.05); // counter + the barista's space behind it: nobody gets wedged back there
   add(G.box(.6,.55,.45),pbr('#c8ccd2',{metalness:.9,roughness:.2}),-5.2,1.46,-3.3); add(G.cyl(.08,.08,.2,12),pbr('#222'),-5.1,1.3,-3.0);
   const disp=add(G.box(1.4,.5,.6),new THREE.MeshPhysicalMaterial({color:'#ffffff',transparent:true,opacity:.25,roughness:.02,depthWrite:false}),-3,1.44,-3.25); disp.castShadow=false;
   ['#ffb3c8','#8a5a3a','#fff2d8','#c6f0c0'].forEach((c,i)=>add(G.cyl(.14,.14,.14,16),pbr(c,{roughness:.6}),-3.45+i*.3,1.28,-3.25));
@@ -1925,8 +1960,8 @@ function buildCafe(){
   const plush=pbr('#e8d8c8',{roughness:1});
   add(G.cyl(.14,.14,2.6,12),sisal,5.4,1.4,-3.4); for(const [yy,r] of [[.9,.55],[1.7,.5],[2.6,.6]])add(G.cyl(r,r,.1,20),plush,5.4,yy,-3.4);
   add(G.cyl(.14,.14,1.2,12),sisal,4.6,.7,-2.6); add(G.cyl(.4,.4,.1,20),plush,4.6,1.3,-2.6);
-  B.col(5.4,-3.4,.6,.6);
-  for(const [cx,cz,c] of [[-1.6,-3.6,'#d88aa8'],[-.6,3.9,'#8ac8d8'],[5.2,3.6,'#e8c070']]){const k=add(G.cyl(.55,.6,.18,24),pbr(c,{roughness:1}),cx,.25,cz);k.scale.set(1,1,.8);}
+  B.col(5.55,-3.8,1.15,.95); B.col(4.6,-2.6,.5,.5); // cat tree tucked into the corner (no gaps to squeeze into)
+  for(const [cx,cz,c] of [[-3.6,1.4,'#d88aa8'],[-.6,3.9,'#8ac8d8'],[5.2,3.6,'#e8c070']]){const k=add(G.cyl(.55,.6,.18,24),pbr(c,{roughness:1}),cx,.25,cz);k.scale.set(1,1,.8);}
   for(let i=0;i<3;i++)add(G.box(.9,.08,.35),wood,-6.8,1.2+i*.7,-1+i*1.3);
   const rug=add(new THREE.CircleGeometry(2,40).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({map:stripeTex('#e8c8a8','#d8a888',10),roughness:1}),2.6,.17,.6); rug.castShadow=false;
   for(const [px,pz] of [[-6.4,-4.2],[6.4,4.3]]){add(G.cyl(.3,.24,.5,16),pbr('#c8643a',{roughness:.8}),px,.4,pz);add(G.sph(.55,12,10),MAT.bush,px,1.1,pz);}
@@ -1934,12 +1969,12 @@ function buildCafe(){
   for(const s of [-1,1]){const tx=s*4.5, tz=8.2; add(G.cyl(.5,.5,.05,24),pbr('#f4eee4',{roughness:.4}),tx,.78,tz);add(G.cyl(.04,.04,2.4,8),metalM(),tx,1.2,tz);
     add(G.cone(1.6,.6,16),new THREE.MeshStandardMaterial({map:stripeTex('#7fcfb8','#fff6ea',16),roughness:.8,side:THREE.DoubleSide}),tx,2.5,tz); B.col(tx,tz,.4,.4);}
   // the café cats
-  const spots=[{lx:5.4,ly:2.66,lz:-3.4,pose:'loaf'},{lx:-1.6,ly:.36,lz:-3.6,pose:'lie'},{lx:5.2,ly:.36,lz:3.6,pose:'sit'},{lx:2.4,ly:.18,lz:.6,pose:'walk'}];
+  const spots=[{lx:4.6,ly:1.36,lz:-2.6,pose:'loaf'},{lx:-3.6,ly:.36,lz:1.4,pose:'lie'},{lx:5.2,ly:.36,lz:3.6,pose:'sit'},{lx:2.4,ly:.18,lz:.6,pose:'walk'}];
   CAFE_CATS.forEach((cc,i)=>{const c=makeCat({coat:cc.coat,shells:IS_MOBILE?0:1}); c.root.scale.setScalar(.9+i*.04); const sp=spots[i];
     const wp=B.toW(sp.lx,sp.lz); const y=B.y0+sp.ly; c.root.position.set(wp.x,y,wp.z); c.root.rotation.y=Math.random()*6.28; scene.add(c.root);
     const st={...cc,obj:c,pos:new THREE.Vector3(wp.x,y,wp.z),home:new THREE.Vector3(wp.x,y,wp.z),pose:sp.pose,purrT:0,yaw:c.root.rotation.y,tgt:null,wait:2+i,speed:0,B};
     TOWN.cafeCats.push(st);
-    st.th=thing(wp.x,wp.z,1.6,`ללטף את ${cc.name}`,cc.name,()=>petCafeCat(st),{y});
+    st.th=thing(wp.x,wp.z,2.1,`ללטף את ${cc.name}`,cc.name,()=>petCafeCat(st),{y});
   });
   CAFE_M={B}; finishBuilding(B);
   function metalM(){return pbr('#3a3a40',{metalness:.7,roughness:.35});}
@@ -1957,7 +1992,7 @@ function updateCafeCats(dt){
     const d=Math.hypot(c.pos.x-player.pos.x,c.pos.z-player.pos.z); if(d>38){c.obj.root.visible=false;continue;} c.obj.root.visible=true;
     if(c.purrT>0){c.purrT-=dt; c.yaw=angDamp(c.yaw,Math.atan2(player.pos.x-c.pos.x,player.pos.z-c.pos.z),5,dt);}
     if(c.pose==='walk'&&c.purrT<=0){ c.wait-=dt;
-      if(!c.tgt&&c.wait<0){const lx=-5+Math.random()*9,lz=-3+Math.random()*6;const w=c.B.toW(lx,lz);c.tgt=new THREE.Vector3(w.x,c.home.y,w.z);}
+      if(!c.tgt&&c.wait<0){const lx=-5.5+Math.random()*9,lz=-1.8+Math.random()*4.8;const w=c.B.toW(lx,lz);c.tgt=new THREE.Vector3(w.x,c.home.y,w.z);}
       if(c.tgt){const dx=c.tgt.x-c.pos.x,dz=c.tgt.z-c.pos.z,dd=Math.hypot(dx,dz);if(dd<.3){c.tgt=null;c.wait=3+Math.random()*5;c.speed=0;}else{c.yaw=angDamp(c.yaw,Math.atan2(dx,dz),6,dt);c.speed=damp(c.speed,1.3,4,dt);c.pos.x+=Math.sin(c.yaw)*c.speed*dt;c.pos.z+=Math.cos(c.yaw)*c.speed*dt;}}
       else c.speed=damp(c.speed,0,6,dt);
     }
@@ -2193,19 +2228,21 @@ function updateTown(dt){
   { const sd=(P.pos.x+P.pos.z)*SQ; Sound.sea=beachMask(P.pos.x,P.pos.z)*smooth(330,420,sd); }
   { const da=Math.hypot(P.pos.x-LM.arcade.x,P.pos.z-LM.arcade.z)<50; for(const c of TOWN.cabinets)c.g.visible=da;
     const db=beachMask(P.pos.x,P.pos.z)>.05&&(P.pos.x+P.pos.z)*SQ>300; for(const g of TOWN.gulls)g.g.visible=db; }
-  updateCafeCats(dt); updateBuildings();
+  updateRace(dt); updateCafeCats(dt); updateBuildings();
 }
 /* playground physics hooks, called from updatePlayer */
 function townGround(dt){
   const P=player, M=P.model;
   // trampoline: every landing bounces higher (up to a limit)
   for(const t of TOWN.tramps){ if(P.onGround&&Math.hypot(P.pos.x-t.x,P.pos.z-t.z)<t.r&&Math.abs(P.pos.y-t.top)<.08){
-    P.bounces=(P.bounceT>0?(P.bounces||0)+1:1); P.bounceT=1.2; const v=Math.min(13+P.bounces*1.6,21); P.vel.y=v; P.onGround=false; P.jumps=1; P.air=0; t.sag=1; M.squash=.8;
+    P.bounces=(P.bounceT>0?(P.bounces||0)+1:1); P.bounceT=2.2; const v=Math.min(13+P.bounces*1.6,21); P.vel.y=v; P.onGround=false; P.jumps=1; P.air=0; t.sag=1; M.squash=.8;
+    const mb=S.maxBounce||0; S.maxBounce=Math.max(mb,P.bounces); if(P.bounces===6&&mb<6&&S.flags.eitanMet&&!S.flags.eitanShirt)setTimeout(()=>toast('שש קפיצות ברצף! רוץ לספר לאיתן','gold'),300);
     Sound.boing(1+Math.min(P.bounces,6)*.08); if(P.bounces>=3&&P.bounces%2)M.flip=.42; S.bounces=(S.bounces||0)+1; if(S.bounces>=25)unlock('bounce'); } }
   if(P.bounceT>0)P.bounceT-=dt;
 }
 function townPlayerPhysics(dt){
   const P=player, M=P.model;
+  if(TOWN.race&&TOWN.race.t<0){ P.vel.set(0,0,0); animateKid(M,dt,{speed:0,onGround:true,t:clock}); M.root.position.copy(P.pos); M.root.rotation.y=P.yaw; return true; }
   // slide: step onto the chute from the tower and whoosh down
   if(!P.sliding){ for(const s of TOWN.slides){ if(P.pos.x>s.x0&&P.pos.x<s.x0+.8&&Math.abs(P.pos.z-s.z)<.55&&Math.abs(P.pos.y-s.top)<.35){P.sliding={s,t:0};Sound.whoosh();break;} } }
   if(P.sliding){ const sl=P.sliding; sl.t+=dt*(.55+sl.t*.9); const t=Math.min(sl.t,1); const p=sl.s.curve.getPointAt(t);
@@ -2226,6 +2263,37 @@ function townPlayerPhysics(dt){
     if(input.jumpPressed||input.interact){input.interact=false; const v=sw.vel*sw.L; P.swing=null; M.spin.rotation.x=0; P.vel.set(0,Math.max(6,Math.abs(v)*.9),v*1.1); P.onGround=false; P.air=.1; Sound.jump(); if(Math.abs(v)>4)toast('טיסה מהנדנדה!');}
     return 'swing'; }
   return false;
+}
+
+/* ---------- the pier race with Oram ---------- */
+function startRace(){
+  const n=NPCS.oram; if(!n||TOWN.race)return; const lat=34, s0=beachXZ(411,lat-1.1), s1=beachXZ(411,lat+1.1), end=beachXZ(472,lat);
+  const yaw=Math.atan2(end.x-s0.x,end.z-s0.z);
+  player.pos.set(s0.x,groundAt(s0.x,s0.z,99),s0.z); player.vel.set(0,0,0); player.yaw=yaw; cam.yaw=yaw+Math.PI; cam.pitch=.22; updateCamera(.016,true);
+  n.home=n.home||n.pos.clone(); n.pos.set(s1.x,groundAt(s1.x,s1.z,99),s1.z); n.obj.position.copy(n.pos); n.obj.rotation.y=yaw; n.racing=true; n.baseY=n.pos.y;
+  catState.pos.set(s0.x-1.5*Math.sin(yaw),player.pos.y,s0.z-1.5*Math.cos(yaw));
+  TOWN.race={t:-3.4,end,yaw,n,shown:0,go:false};
+}
+function updateRace(dt){
+  const R=TOWN.race; if(!R)return; const P=player, n=R.n; R.t+=dt;
+  if(R.t<0){ const k=Math.ceil(-R.t); if(k!==R.shown&&k<=3){R.shown=k;showBanner(String(k),'מתכוננים למרוץ…');Sound.ui();} return; }
+  if(!R.go){ R.go=true; showBanner('רוצו!','עד הפנס בסוף המזח'); Sound.jump(); bark('oram','יאללה!',{speak:false,time:1.5}); }
+  if(R.done){ R.after-=dt; if(n.racing){animateKid(n.rig,dt,{speed:0,onGround:true,t:clock});}
+    if(R.after<=0){ n.racing=false; n.pos.copy(n.home); n.baseY=n.home.y; n.obj.position.copy(n.pos); TOWN.race=null; } return; }
+  const sp=Math.min(7.3,2.2+R.t*2.8), dx=R.end.x-n.pos.x, dz=R.end.z-n.pos.z, d=Math.hypot(dx,dz);
+  if(d>.3){ n.pos.x+=dx/d*sp*dt; n.pos.z+=dz/d*sp*dt; }
+  n.pos.y=Math.max(groundAt(n.pos.x,n.pos.z,n.pos.y+1.2),WATER); n.baseY=n.pos.y; n.obj.position.copy(n.pos); n.obj.rotation.y=R.yaw;
+  animateKid(n.rig,dt,{speed:sp,onGround:true,t:clock,run:true});
+  const dP=Math.hypot(R.end.x-P.pos.x,R.end.z-P.pos.z);
+  const win=dP<2.4&&P.pos.y>WATER+.5, lose=d<1.4, timeout=R.t>45;
+  if(win||lose||timeout){ R.done=true; R.after=3;
+    if(win){ Sound.goal(); showBanner('ניצחת!','הגעת ראשון לפנס');
+      emit(P.pos.x,P.pos.y+1.5,P.pos.z,40,{color:'#ffd24a',speed:5,up:3,life:1.2,size:12});
+      bark('oram',vary('race_l',['וואו! אתה מהיר מדי!','לא יאומן, ניצחת אותי!','טוב, טוב… עוד מרוץ?']));
+      if(!S.flags.wavesShirt){ S.flags.wavesShirt=true; unlock('race'); setTimeout(()=>toast('קיבלת את חולצת הגלים של אורם! אפשר ללבוש אותה ביומן','gold'),1200); }
+      autosave(true); }
+    else { showBanner(timeout?'נגמר הזמן':'אורם ניצח','אפשר לנסות שוב, רק לדבר איתו');
+      bark('oram',vary('race_w',['ניצחתי! עוד פעם?','כמעט! בפעם הבאה תרוץ בלי לעצור.',S.shoes?'עם נעלי הרוח זה יהיה קל יותר, תנסה עוד פעם!':'טיפ: תחזיק את כפתור הריצה!'])); } }
 }
 
 /* =====================================================================
@@ -2316,6 +2384,11 @@ function jerseyTexture(kind,plain=false){
   } else if(kind==='navy'){
     x.fillStyle='#1f2d4f';x.fillRect(0,0,W,H);const r=mulberry32(3);for(let i=0;i<9000;i++){x.fillStyle=`rgba(${r()<.5?'255,255,255':'0,0,0'},${.02+r()*.03})`;x.fillRect(r()*W,r()*H,2,1);}
     if(!plain){x.strokeStyle='#e8eef8';x.lineWidth=5;x.beginPath();x.arc(W*.5+70,H*.3,22,0,6.28);x.stroke();x.fillStyle='#e8eef8';x.font='700 26px Fredoka, Arial';x.textAlign='center';x.fillText('P',W*.5+70,H*.3+9);}
+  } else if(kind==='eitan'){
+    x.fillStyle='#f4f8f0';x.fillRect(0,0,W,H);for(let j=0;j<10;j++){x.fillStyle=j%2?'#2e9a4e':'#f4f8f0';x.fillRect(0,j*H/10,W,H/10);}
+  } else if(kind==='waves'){
+    const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#3aa0e0');g.addColorStop(1,'#1a5a9a');x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.strokeStyle='rgba(255,255,255,.85)';x.lineWidth=7;for(let j=0;j<6;j++){x.beginPath();for(let i=0;i<=W;i+=8)x.lineTo(i,H*.2+j*H*.14+Math.sin(i/W*Math.PI*12)*10);x.stroke();}
   } else { x.fillStyle=kind||'#e85a4a';x.fillRect(0,0,W,H); }
   const t=albedoTex(c,true); t.wrapS=THREE.RepeatWrapping; return t;
 }
@@ -2665,6 +2738,8 @@ function makeCloud(){
   return g;
 }
 function makeAdam(){ const k=makeKid({skin:'#d9a07a',hair:['#2a1a12','#5a3a22','#120a06'],freckles:false,brow:'#2a1a12',eyes:['#4a3020','#6a4a2a','#2a1a10'],shirt:'#e85a4a',shorts:'#f2f2f2',shoes:'#222',shoeAccent:'#e85a4a',bag:false,seed:11,height:1.36}); return k; }
+function makeEitan(){ return makeKid({skin:'#e2b08e',hair:['#3a2618','#6a4a30','#1a100a'],freckles:false,brow:'#3a2618',eyes:['#5a4a2a','#7a6a3a','#3a2a18'],shirt:'#3aa65a',shorts:'#2a2f44',shoes:'#f4f4f4',shoeAccent:'#3aa65a',bag:false,seed:14,height:1.38}); }
+function makeOram(){ return makeKid({skin:'#dca47e',hair:['#7a5230','#a8784a','#4a2e18'],freckles:true,brow:'#6a4228',eyes:['#4a6a8a','#6a8aaa','#2a3a5a'],shirt:'#ff8a3a',shorts:'#2a4a7a',shoes:'#222',shoeAccent:'#ff8a3a',bag:false,seed:15,height:1.42}); }
 function makeGili(){ const k=makeKid({skin:'#e8b898',hair:['#5a3420','#8a5a3a','#2a1a10'],freckles:false,brow:'#4a2a18',eyes:['#4a6a8a','#3a5a7a','#2a3a5a'],shirt:'#ff8fb0',shorts:'#3a3a5a',shoes:'#fff',shoeAccent:'#ff8fb0',bag:false,long:true,seed:12,height:1.72});
   const apron=mesh(new THREE.PlaneGeometry(.34,.5),new THREE.MeshStandardMaterial({map:stripeTex('#ffffff','#ffb8cc',8),side:THREE.DoubleSide,roughness:.9}),0,.12,.14,k.spine); return k; }
 /* =====================================================================
@@ -2864,10 +2939,11 @@ function makeMika(){ return makeAdult({skin:'#c98e6a',hair:['#1a120c','#3a2a1c',
    ===================================================================== */
 const Sound = {
   ctx:null, master:null, music:null, sfx:null, amb:null, noiseBuf:null, delay:null,
-  biome:0, night:0, nextNote:0, step:0, chordStep:0, glideGain:null,
+  biome:0, night:0, nextNote:0, beatStep:0, chordStep:0, glideGain:null,
   SCALES:[ [0,2,4,7,9,12,14,16], [0,3,5,7,10,12,15,17], [0,1,4,5,7,8,11,12], [0,2,4,6,7,11,12,14], [0,2,4,7,9,12,14,19], [0,2,4,5,7,9,11,12] ],
   ROOTS:[60,62,64,65,63,67],
   init(){
+    if(!this._spk){ this._spk=true; try{ if('speechSynthesis' in window&&settings.voice){ const u=new SpeechSynthesisUtterance(' '); u.volume=0; u.lang='he-IL'; speechSynthesis.speak(u); } }catch(e){} } // iPhone: unlock speech inside the first tap
     if(this.ctx){ if(this.ctx.state!=='running') this.ctx.resume(); return; }
     try{ this.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; }
     const c=this.ctx;
@@ -2953,7 +3029,7 @@ const Sound = {
     const beat=60/(night>.5?60:72)/2;
     while(this.nextNote<c.currentTime+.25){
       const t=this.nextNote-c.currentTime, sc=this.SCALES[biome], root=this.ROOTS[biome]-(night>.5?12:0);
-      if(this.step%16===0){ // pad chord
+      if(this.beatStep%16===0){ // pad chord
         const deg=[0,3,4,2][this.chordStep++%4];
         [0,2,4].forEach(k=>{const idx=(deg+k)%sc.length;const f=this.mtof(root-12+sc[idx]);
           this.tone(f,{t,a:1.2,d:beat*16,vol:.035,type:'sine',dest:this.music});this.tone(f*1.005,{t,a:1.4,d:beat*15,vol:.02,type:'triangle',dest:this.music});});
@@ -2966,12 +3042,12 @@ const Sound = {
         this.env(g,st,.008,.07,.9); o.connect(g); g.connect(this.music); g.connect(this.delay); o.start(st); o.stop(st+1);
       }
       // ambience critters
-      if(this.step%4===0){
+      if(this.beatStep%4===0){
         if(night<.4 && (biome===0||biome===1||biome===4) && Math.random()<.18){const b=2400+Math.random()*1400;for(let i=0;i<2+Math.random()*3;i++)this.tone(b,{t:t+i*.11,to:b*1.35,slide:.06,d:.07,vol:.025,dest:this.amb});}
         if(night>.6 && biome!==3 && Math.random()<.35){for(let i=0;i<3;i++)this.tone(4400,{t:t+i*.05,d:.03,vol:.012,type:'square',dest:this.amb});}
         if(biome===3 && Math.random()<.12){this.tone(this.mtof(84+sc[Math.floor(Math.random()*sc.length)]),{t,d:1.6,vol:.03,dest:this.amb});}
       }
-      this.nextNote+=beat; this.step++;
+      this.nextNote+=beat; this.beatStep++;
     }
   }
 };
@@ -2981,7 +3057,7 @@ const Sound = {
    lists, plain text), plus an optional niqqud pronunciation layer.
    ===================================================================== */
 const HEB='֐-׿';
-const PRON=[["נראה","נִרְאֶה"],["יפה","יָפֶה"],["מיקה","מִיקָה"],["טופי","טוֹפִי"],["וטופי","וְטוֹפִי"],["פלפל","פִּלְפֵּל"],["מנגו","מַנְגּוֹ"],["צדפים","צְדָפִים"],["הצדפים","הַצְּדָפִים"],["צדף","צֶדֶף"],["היציע","הַיָּצִיעַ"],["ביציע","בַּיָּצִיעַ"],["מהיציע","מֵהַיָּצִיעַ"],["מתוק","מָתוֹק"],["עסקה","עִסְקָה"],["בארקייד","בָּאַרְקֵייד"],["ארקייד","אַרְקֵייד"],["המנומרת","הַמְּנֻמֶּרֶת"],["ברוך הבא","בָּרוּךְ הַבָּא"],["החוף","הַחוֹף"],["בחוף","בַּחוֹף"],["כשהייתי","כְּשֶׁהָיִיתִי"],["לך קודם", "לֵךְ קוֹדֶם"], ["לך מאחורי", "לֵךְ מֵאֲחוֹרֵי"], ["לך בעקבות", "לֵךְ בְּעִקְּבוֹת"], ["לך אחריו", "לֵךְ אַחֲרָיו"], ["אתה", "אַתָּה"], ["תשמע", "תִּשְׁמַע"], ["סבתא קוקיש", "סָבְתָא קוּקִישׁ"], ["לסבתא קוקיש", "לְסָבְתָא קוּקִישׁ"], ["קוקיש", "קוּקִישׁ"], ["סבתא", "סָבְתָא"], ["לסבתא", "לְסָבְתָא"], ["בעמק השחר", "בְּעֵמֶק הַשַּׁחַר"], ["ביער הגחליליות", "בְּיַעַר הַגַּחְלִילִיּוֹת"], ["לפסגות הבדולח", "לְפִסְגוֹת הַבְּדֹלַח"], ["בפסגות הבדולח", "בְּפִסְגוֹת הַבְּדֹלַח"], ["מעמק השחר", "מֵעֵמֶק הַשַּׁחַר"], ["עמק השחר", "עֵמֶק הַשַּׁחַר"], ["עץ האור", "עֵץ הָאוֹר"], ["רוח הצל", "רוּחַ הַצֵּל"], ["שער הצללים", "שַׁעַר הַצְּלָלִים"], ["כנפי הרוח", "כַּנְפֵי הָרוּחַ"], ["פלא", "פֶּלֶא"], ["חכמון", "חַכְמוֹן"], ["זוזה", "זוּזָה"], ["טיפי", "טִיפִּי"], ["וטיפי", "וְטִיפִּי"], ["גילי", "גִּילִי"], ["עמק", "עֵמֶק"], ["בעמק", "בָּעֵמֶק"], ["העמק", "הָעֵמֶק"], ["והעמק", "וְהָעֵמֶק"], ["השחר", "הַשַּׁחַר"], ["יער", "יַעַר"], ["ביער", "בַּיַּעַר"], ["היער", "הַיַּעַר"], ["הגחליליות", "הַגַּחְלִילִיּוֹת"], ["שהגחליליות", "שֶׁהַגַּחְלִילִיּוֹת"], ["לפסגות", "לַפִּסְגוֹת"], ["בפסגות", "בַּפִּסְגוֹת"], ["שבפסגות", "שֶׁבַּפִּסְגוֹת"], ["הבדולח", "הַבְּדֹלַח"], ["הבדולחים", "הַבְּדֹלְחִים"], ["עץ", "עֵץ"], ["לעץ", "לָעֵץ"], ["העץ", "הָעֵץ"], ["והעץ", "וְהָעֵץ"], ["שהעץ", "שֶׁהָעֵץ"], ["האור", "הָאוֹר"], ["והאור", "וְהָאוֹר"], ["באור", "בְּאוֹר"], ["זהוב", "זָהֹב"], ["הזהובים", "הַזְּהֻבִּים"], ["וחם", "וְחַם"], ["מאיר", "מֵאִיר"], ["כולו", "כֻּלּוֹ"], ["בלילה", "בַּלַּיְלָה"], ["בלילות", "בַּלֵּילוֹת"], ["לילה", "לַיְלָה"], ["נשבה", "נָשְׁבָה"], ["רוח", "רוּחַ"], ["הרוח", "הָרוּחַ"], ["הצל", "הַצֵּל"], ["סחפה", "סָחֲפָה"], ["כבה", "כָּבָה"], ["שיכבה", "שֶׁיִּכְבֶּה"], ["התעורר", "הִתְעוֹרֵר"], ["ולידו", "וּלְיָדוֹ"], ["החתול", "הֶחָתוּל"], ["והחתול", "וְהֶחָתוּל"], ["הסיאמי", "הַסִּיאָמִי"], ["ההרפתקה", "הַהַרְפַּתְקָה"], ["הרפתקה", "הַרְפַּתְקָה"], ["שלהם", "שֶׁלָּהֶם"], ["לנו", "לָנוּ"], ["הגדול", "הַגָּדוֹל"], ["הולכים", "הוֹלְכִים"], ["תתקרב", "תִּתְקָרֵב"], ["כמובן", "כַּמּוּבָן"], ["דולק", "דּוֹלֵק"], ["חשוכים", "חֲשׁוּכִים"], ["להירדם", "לְהֵרָדֵם"], ["הפרחים", "הַפְּרָחִים"], ["החיות", "הַחַיּוֹת"], ["פיזרה", "פִּזְּרָה"], ["רסיסי", "רְסִיסֵי"], ["רסיס", "רְסִיס"], ["הרסיס", "הָרְסִיס"], ["הרסיסים", "הָרְסִיסִים"], ["רסיסים", "רְסִיסִים"], ["בחולות", "בַּחוֹלוֹת"], ["החולות", "הַחוֹלוֹת"], ["ובאגם", "וּבָאֲגַם"], ["להחזיק", "לְהַחֲזִיק"], ["סקרן", "סַקְרָן"], ["תעזור", "תַּעֲזֹר"], ["להחזיר", "לְהַחֲזִיר"], ["אמצא", "אֶמְצָא"], ["שולח", "שׁוֹלֵחַ"], ["עמוד", "עַמּוּד"], ["עמודי", "עַמּוּדֵי"], ["תרים", "תָּרִים"], ["הראש", "הָרֹאשׁ"], ["ותראה", "וְתִרְאֶה"], ["מרחוק", "מֵרָחוֹק"], ["מסומנים", "מְסֻמָּנִים"], ["במפה", "בַּמַּפָּה"], ["אבן", "אֶבֶן"], ["מסע", "מַסָּע"], ["גע", "גַּע"], ["ותוכל", "וְתוּכַל"], ["לחזור", "לַחֲזֹר"], ["מהמפה", "מֵהַמַּפָּה"], ["ידעתי", "יָדַעְתִּי"], ["לסמוך", "לִסְמֹךְ"], ["תפגוש", "תִּפְגֹּשׁ"], ["ותיקים", "וָתִיקִים"], ["הינשוף", "הַיַּנְשׁוּף"], ["השועלה", "הַשּׁוּעָלָה"], ["הענן", "הֶעָנָן"], ["הקטן", "הַקָּטָן"], ["תתעייף", "תִּתְעַיֵּף"], ["הגלידאית", "הַגְּלִידָאִית"], ["הכיכר", "הַכִּכָּר"], ["כוחות", "כֹּחוֹת"], ["חמישה", "חֲמִשָּׁה"], ["חמשת", "חֲמֵשֶׁת"], ["מקומות", "מְקוֹמוֹת"], ["וגלידה", "וּגְלִידָה"], ["יאללה", "יַאלְלָה"], ["מרגישה", "מַרְגִּישָׁה"], ["להתחמם", "לְהִתְחַמֵּם"], ["גיבור", "גִּבּוֹר"], ["אמיתי", "אֲמִתִּי"], ["נחזיר", "נַחֲזִיר"], ["יחד", "יַחַד"], ["נדליק", "נַדְלִיק"], ["עפו", "עָפוּ"], ["מתוך", "מִתּוֹךְ"], ["התיק", "הַתִּיק"], ["הסתחררו", "הִסְתַּחְרְרוּ"], ["ונבלעו", "וְנִבְלְעוּ"], ["בגזע", "בַּגֶּזַע"], ["נושם", "נוֹשֵׁם"], ["ממקודם", "מִמִּקֹּדֶם"], ["תקשיב", "תַּקְשִׁיב"], ["נולדה", "נוֹלְדָה"], ["סתם", "סְתָם"], ["מעבר", "מֵעֵבֶר"], ["משער", "מִשַּׁעַר"], ["הצללים", "הַצְּלָלִים"], ["כשתהיה", "כְּשֶׁתִּהְיֶה"], ["נגלה", "נְגַלֶּה"], ["פתח", "פָּתַח"], ["לחקור", "לַחְקֹר"], ["ער", "עֵר"], ["ילד", "יֶלֶד"], ["שומר", "שׁוֹמֵר"], ["העתיק", "הָעַתִּיק"], ["השורשים", "הַשָּׁרָשִׁים"], ["נופל", "נוֹפֵל"], ["חכם", "חָכָם"], ["נותן", "נוֹתֵן"], ["חידה", "חִידָה"], ["הקשב", "הַקְשֵׁב"], ["היטב", "הֵיטֵב"], ["נעשה", "נַעֲשֶׂה"], ["רטוב", "רָטֹב"], ["מייבש", "מְיַבֵּשׁ"], ["מגבת", "מַגֶּבֶת"], ["השמש", "הַשֶּׁמֶשׁ"], ["ענן", "עָנָן"], ["חשוב", "חֲשֹׁב"], ["בדיוק", "בְּדִיּוּק"], ["מאחורי", "מֵאֲחוֹרֵי"], ["בקצה", "בִּקְצֵה"], ["הקרחת", "הַקָּרַחַת"], ["מהר", "מַהֵר"], ["יתחילו", "יַתְחִילוּ"], ["רוקדות", "רוֹקְדוֹת"], ["שים", "שִׂים"], ["לב", "לֵב"], ["להקשיב", "לְהַקְשִׁיב"], ["מיילל", "מְיַלֵּל"], ["מריח", "מֵרִיחַ"], ["כוכבי", "כּוֹכְבֵי"], ["זהב", "זָהָב"], ["הזהב", "הַזָּהָב"], ["חוקרת", "חוֹקֶרֶת"], ["חיפשתי", "חִפַּשְׂתִּי"], ["העיר", "הָעִיר"], ["העתיקה", "הָעַתִּיקָה"], ["שלמות", "שְׁלֵמוֹת"], ["גרו", "גָּרוּ"], ["בוני", "בּוֹנֵי"], ["המגדלים", "הַמִּגְדָּלִים"], ["בנו", "בָּנוּ"], ["עמודים", "עַמּוּדִים"], ["גבוהים", "גְּבוֹהִים"], ["שכמעט", "שֶׁכִּמְעַט"], ["נגעו", "נָגְעוּ"], ["בירח", "בַּיָּרֵחַ"], ["המגדל", "הַמִּגְדָּל"], ["הגבוה", "הַגָּבוֹהַּ"], ["העמודים", "הָעַמּוּדִים"], ["שמסביבו", "שֶׁמִּסָּבִיב לוֹ"], ["מדרגות", "מַדְרֵגוֹת"], ["ענקיות", "עֲנָקִיּוֹת"], ["לקפיצה", "לִקְפִיצָה"], ["תלחץ", "תִּלְחַץ"], ["באמצע", "בְּאֶמְצַע"], ["האוויר", "הָאֲוִיר"], ["באוויר", "בָּאֲוִיר"], ["תגיע", "תַּגִּיעַ"], ["כפולה", "כְּפוּלָה"], ["הקטע", "הַקֶּטַע"], ["הקירות", "הַקִּירוֹת"], ["שבוני", "שֶׁבּוֹנֵי"], ["שמרו", "שָׁמְרוּ"], ["בכדי", "בְּכַדֵּי"], ["חרס", "חֶרֶס"], ["נעלמו", "נֶעֶלְמוּ"], ["הקשת", "הַקֶּשֶׁת"], ["נוצץ", "נוֹצֵץ"], ["נפלתי", "נָפַלְתִּי"], ["תקוע", "תָּקוּעַ"], ["המרחף", "הַמְּרַחֵף"], ["רחוק", "רָחוֹק"], ["בקפיצות", "בִּקְפִיצוֹת"], ["לבד", "לְבַד"], ["קח", "קַח"], ["כנפי", "כַּנְפֵי"], ["כשאתה", "כְּשֶׁאַתָּה"], ["תחזיק", "תַּחֲזִיק"], ["והכנפיים", "וְהַכְּנָפַיִם"], ["ירחפו", "יְרַחֲפוּ"], ["לאט", "לְאַט"], ["כנפיים", "כְּנָפַיִם"], ["מעופפות", "מְעוֹפְפוֹת"], ["תראה", "תִּרְאֶה"], ["פרצוף", "פַּרְצוּף"], ["מודאג", "מֻדְאָג"], ["תגיד", "תַּגִּיד"], ["מתאמן", "מִתְאַמֵּן"], ["חלוץ", "חָלוּץ"], ["תבקיע", "תַּבְקִיעַ"], ["שלושה", "שְׁלוֹשָׁה"], ["גולים", "גּוֹלִים"], ["גול", "גּוֹל"], ["ואתן", "וְאֶתֵּן"], ["מיוחד", "מְיֻחָד"], ["תרוץ", "תָּרוּץ"], ["לכדרר", "לְכַדְרֵר"], ["הכדור", "הַכַּדּוּר"], ["כפתור", "כַּפְתּוֹר"], ["הבעיטה", "הַבְּעִיטָה"], ["לבעוט", "לִבְעֹט"], ["הבקעת", "הִבְקַעְתָּ"], ["מאמין", "מַאֲמִין"], ["אלוף", "אַלּוּף"], ["בעיטות", "בְּעִיטוֹת"], ["נעלי", "נַעֲלֵי"], ["תופסת", "תּוֹפֶסֶת"], ["שמעתי", "שָׁמַעְתִּי"], ["רודף", "רוֹדֵף"], ["חמוד", "חָמוּד"], ["העגלה", "הָעֲגָלָה"], ["והעגלה", "וְהָעֲגָלָה"], ["מלאה", "מְלֵאָה"], ["טעימות", "טְעִימוֹת"], ["מחזירה", "מַחֲזִירָה"], ["עייפים", "עֲיֵפִים"], ["לגיבורים", "לַגִּבּוֹרִים"], ["עליי", "עָלַי"], ["בצורת", "בְּצוּרַת"], ["שושנה", "שׁוֹשַׁנָּה"], ["הטעם", "הַטַּעַם"], ["האהוב", "הָאָהוּב"], ["אכין", "אָכִין"], ["גלידת", "גְּלִידַת"], ["מיוחדת", "מְיֻחֶדֶת"], ["שנותנת", "שֶׁנּוֹתֶנֶת"], ["נוסף", "נוֹסָף"], ["לרחרח", "לְרַחְרֵחַ"], ["טרייה", "טְרִיָּה"], ["מצוין", "מְצֻיָּן"], ["תחכה", "תְּחַכֶּה"], ["שהייתי", "שֶׁהָיִיתִי"], ["צריכה", "צְרִיכָה"], ["כוכב", "כּוֹכָב"], ["הנוצה", "הַנּוֹצָה"], ["חכה", "חַכֵּה"], ["חפש", "חַפֵּשׂ"], ["ליטוף", "לִטּוּף"], ["לשחק", "לְשַׂחֵק"], ["מגרגר", "מְגַרְגֵּר"], ["ניצח", "נִצַּח"], ["מרחרח", "מְרַחְרֵחַ"], ["רץ", "רָץ"], ["אחריו", "אַחֲרָיו"], ["קרובים", "קְרוֹבִים"], ["באזור", "בְּאֵזוֹר"], ["מספר", "מִסְפָּר"], ["חברים", "חֲבֵרִים"], ["הו", "הוֹ"]];
+const PRON=[["איתן","אֵיתָן"],["נראה","נִרְאֶה"],["יפה","יָפֶה"],["מיקה","מִיקָה"],["טופי","טוֹפִי"],["וטופי","וְטוֹפִי"],["פלפל","פִּלְפֵּל"],["מנגו","מַנְגּוֹ"],["צדפים","צְדָפִים"],["הצדפים","הַצְּדָפִים"],["צדף","צֶדֶף"],["היציע","הַיָּצִיעַ"],["ביציע","בַּיָּצִיעַ"],["מהיציע","מֵהַיָּצִיעַ"],["מתוק","מָתוֹק"],["עסקה","עִסְקָה"],["בארקייד","בָּאַרְקֵייד"],["ארקייד","אַרְקֵייד"],["המנומרת","הַמְּנֻמֶּרֶת"],["ברוך הבא","בָּרוּךְ הַבָּא"],["החוף","הַחוֹף"],["בחוף","בַּחוֹף"],["כשהייתי","כְּשֶׁהָיִיתִי"],["לך קודם", "לֵךְ קוֹדֶם"], ["לך מאחורי", "לֵךְ מֵאֲחוֹרֵי"], ["לך בעקבות", "לֵךְ בְּעִקְּבוֹת"], ["לך אחריו", "לֵךְ אַחֲרָיו"], ["אתה", "אַתָּה"], ["תשמע", "תִּשְׁמַע"], ["סבתא קוקיש", "סָבְתָא קוּקִישׁ"], ["לסבתא קוקיש", "לְסָבְתָא קוּקִישׁ"], ["קוקיש", "קוּקִישׁ"], ["סבתא", "סָבְתָא"], ["לסבתא", "לְסָבְתָא"], ["בעמק השחר", "בְּעֵמֶק הַשַּׁחַר"], ["ביער הגחליליות", "בְּיַעַר הַגַּחְלִילִיּוֹת"], ["לפסגות הבדולח", "לְפִסְגוֹת הַבְּדֹלַח"], ["בפסגות הבדולח", "בְּפִסְגוֹת הַבְּדֹלַח"], ["מעמק השחר", "מֵעֵמֶק הַשַּׁחַר"], ["עמק השחר", "עֵמֶק הַשַּׁחַר"], ["עץ האור", "עֵץ הָאוֹר"], ["רוח הצל", "רוּחַ הַצֵּל"], ["שער הצללים", "שַׁעַר הַצְּלָלִים"], ["כנפי הרוח", "כַּנְפֵי הָרוּחַ"], ["פלא", "פֶּלֶא"], ["חכמון", "חַכְמוֹן"], ["זוזה", "זוּזָה"], ["טיפי", "טִיפִּי"], ["וטיפי", "וְטִיפִּי"], ["גילי", "גִּילִי"], ["עמק", "עֵמֶק"], ["בעמק", "בָּעֵמֶק"], ["העמק", "הָעֵמֶק"], ["והעמק", "וְהָעֵמֶק"], ["השחר", "הַשַּׁחַר"], ["יער", "יַעַר"], ["ביער", "בַּיַּעַר"], ["היער", "הַיַּעַר"], ["הגחליליות", "הַגַּחְלִילִיּוֹת"], ["שהגחליליות", "שֶׁהַגַּחְלִילִיּוֹת"], ["לפסגות", "לַפִּסְגוֹת"], ["בפסגות", "בַּפִּסְגוֹת"], ["שבפסגות", "שֶׁבַּפִּסְגוֹת"], ["הבדולח", "הַבְּדֹלַח"], ["הבדולחים", "הַבְּדֹלְחִים"], ["עץ", "עֵץ"], ["לעץ", "לָעֵץ"], ["העץ", "הָעֵץ"], ["והעץ", "וְהָעֵץ"], ["שהעץ", "שֶׁהָעֵץ"], ["האור", "הָאוֹר"], ["והאור", "וְהָאוֹר"], ["באור", "בְּאוֹר"], ["זהוב", "זָהֹב"], ["הזהובים", "הַזְּהֻבִּים"], ["וחם", "וְחַם"], ["מאיר", "מֵאִיר"], ["כולו", "כֻּלּוֹ"], ["בלילה", "בַּלַּיְלָה"], ["בלילות", "בַּלֵּילוֹת"], ["לילה", "לַיְלָה"], ["נשבה", "נָשְׁבָה"], ["רוח", "רוּחַ"], ["הרוח", "הָרוּחַ"], ["הצל", "הַצֵּל"], ["סחפה", "סָחֲפָה"], ["כבה", "כָּבָה"], ["שיכבה", "שֶׁיִּכְבֶּה"], ["התעורר", "הִתְעוֹרֵר"], ["ולידו", "וּלְיָדוֹ"], ["החתול", "הֶחָתוּל"], ["והחתול", "וְהֶחָתוּל"], ["הסיאמי", "הַסִּיאָמִי"], ["ההרפתקה", "הַהַרְפַּתְקָה"], ["הרפתקה", "הַרְפַּתְקָה"], ["שלהם", "שֶׁלָּהֶם"], ["לנו", "לָנוּ"], ["הגדול", "הַגָּדוֹל"], ["הולכים", "הוֹלְכִים"], ["תתקרב", "תִּתְקָרֵב"], ["כמובן", "כַּמּוּבָן"], ["דולק", "דּוֹלֵק"], ["חשוכים", "חֲשׁוּכִים"], ["להירדם", "לְהֵרָדֵם"], ["הפרחים", "הַפְּרָחִים"], ["החיות", "הַחַיּוֹת"], ["פיזרה", "פִּזְּרָה"], ["רסיסי", "רְסִיסֵי"], ["רסיס", "רְסִיס"], ["הרסיס", "הָרְסִיס"], ["הרסיסים", "הָרְסִיסִים"], ["רסיסים", "רְסִיסִים"], ["בחולות", "בַּחוֹלוֹת"], ["החולות", "הַחוֹלוֹת"], ["ובאגם", "וּבָאֲגַם"], ["להחזיק", "לְהַחֲזִיק"], ["סקרן", "סַקְרָן"], ["תעזור", "תַּעֲזֹר"], ["להחזיר", "לְהַחֲזִיר"], ["אמצא", "אֶמְצָא"], ["שולח", "שׁוֹלֵחַ"], ["עמוד", "עַמּוּד"], ["עמודי", "עַמּוּדֵי"], ["תרים", "תָּרִים"], ["הראש", "הָרֹאשׁ"], ["ותראה", "וְתִרְאֶה"], ["מרחוק", "מֵרָחוֹק"], ["מסומנים", "מְסֻמָּנִים"], ["במפה", "בַּמַּפָּה"], ["אבן", "אֶבֶן"], ["מסע", "מַסָּע"], ["גע", "גַּע"], ["ותוכל", "וְתוּכַל"], ["לחזור", "לַחֲזֹר"], ["מהמפה", "מֵהַמַּפָּה"], ["ידעתי", "יָדַעְתִּי"], ["לסמוך", "לִסְמֹךְ"], ["תפגוש", "תִּפְגֹּשׁ"], ["ותיקים", "וָתִיקִים"], ["הינשוף", "הַיַּנְשׁוּף"], ["השועלה", "הַשּׁוּעָלָה"], ["הענן", "הֶעָנָן"], ["הקטן", "הַקָּטָן"], ["תתעייף", "תִּתְעַיֵּף"], ["הגלידאית", "הַגְּלִידָאִית"], ["הכיכר", "הַכִּכָּר"], ["כוחות", "כֹּחוֹת"], ["חמישה", "חֲמִשָּׁה"], ["חמשת", "חֲמֵשֶׁת"], ["מקומות", "מְקוֹמוֹת"], ["וגלידה", "וּגְלִידָה"], ["יאללה", "יַאלְלָה"], ["מרגישה", "מַרְגִּישָׁה"], ["להתחמם", "לְהִתְחַמֵּם"], ["גיבור", "גִּבּוֹר"], ["אמיתי", "אֲמִתִּי"], ["נחזיר", "נַחֲזִיר"], ["יחד", "יַחַד"], ["נדליק", "נַדְלִיק"], ["עפו", "עָפוּ"], ["מתוך", "מִתּוֹךְ"], ["התיק", "הַתִּיק"], ["הסתחררו", "הִסְתַּחְרְרוּ"], ["ונבלעו", "וְנִבְלְעוּ"], ["בגזע", "בַּגֶּזַע"], ["נושם", "נוֹשֵׁם"], ["ממקודם", "מִמִּקֹּדֶם"], ["תקשיב", "תַּקְשִׁיב"], ["נולדה", "נוֹלְדָה"], ["סתם", "סְתָם"], ["מעבר", "מֵעֵבֶר"], ["משער", "מִשַּׁעַר"], ["הצללים", "הַצְּלָלִים"], ["כשתהיה", "כְּשֶׁתִּהְיֶה"], ["נגלה", "נְגַלֶּה"], ["פתח", "פָּתַח"], ["לחקור", "לַחְקֹר"], ["ער", "עֵר"], ["ילד", "יֶלֶד"], ["שומר", "שׁוֹמֵר"], ["העתיק", "הָעַתִּיק"], ["השורשים", "הַשָּׁרָשִׁים"], ["נופל", "נוֹפֵל"], ["חכם", "חָכָם"], ["נותן", "נוֹתֵן"], ["חידה", "חִידָה"], ["הקשב", "הַקְשֵׁב"], ["היטב", "הֵיטֵב"], ["נעשה", "נַעֲשֶׂה"], ["רטוב", "רָטֹב"], ["מייבש", "מְיַבֵּשׁ"], ["מגבת", "מַגֶּבֶת"], ["השמש", "הַשֶּׁמֶשׁ"], ["ענן", "עָנָן"], ["חשוב", "חֲשֹׁב"], ["בדיוק", "בְּדִיּוּק"], ["מאחורי", "מֵאֲחוֹרֵי"], ["בקצה", "בִּקְצֵה"], ["הקרחת", "הַקָּרַחַת"], ["מהר", "מַהֵר"], ["יתחילו", "יַתְחִילוּ"], ["רוקדות", "רוֹקְדוֹת"], ["שים", "שִׂים"], ["לב", "לֵב"], ["להקשיב", "לְהַקְשִׁיב"], ["מיילל", "מְיַלֵּל"], ["מריח", "מֵרִיחַ"], ["כוכבי", "כּוֹכְבֵי"], ["זהב", "זָהָב"], ["הזהב", "הַזָּהָב"], ["חוקרת", "חוֹקֶרֶת"], ["חיפשתי", "חִפַּשְׂתִּי"], ["העיר", "הָעִיר"], ["העתיקה", "הָעַתִּיקָה"], ["שלמות", "שְׁלֵמוֹת"], ["גרו", "גָּרוּ"], ["בוני", "בּוֹנֵי"], ["המגדלים", "הַמִּגְדָּלִים"], ["בנו", "בָּנוּ"], ["עמודים", "עַמּוּדִים"], ["גבוהים", "גְּבוֹהִים"], ["שכמעט", "שֶׁכִּמְעַט"], ["נגעו", "נָגְעוּ"], ["בירח", "בַּיָּרֵחַ"], ["המגדל", "הַמִּגְדָּל"], ["הגבוה", "הַגָּבוֹהַּ"], ["העמודים", "הָעַמּוּדִים"], ["שמסביבו", "שֶׁמִּסָּבִיב לוֹ"], ["מדרגות", "מַדְרֵגוֹת"], ["ענקיות", "עֲנָקִיּוֹת"], ["לקפיצה", "לִקְפִיצָה"], ["תלחץ", "תִּלְחַץ"], ["באמצע", "בְּאֶמְצַע"], ["האוויר", "הָאֲוִיר"], ["באוויר", "בָּאֲוִיר"], ["תגיע", "תַּגִּיעַ"], ["כפולה", "כְּפוּלָה"], ["הקטע", "הַקֶּטַע"], ["הקירות", "הַקִּירוֹת"], ["שבוני", "שֶׁבּוֹנֵי"], ["שמרו", "שָׁמְרוּ"], ["בכדי", "בְּכַדֵּי"], ["חרס", "חֶרֶס"], ["נעלמו", "נֶעֶלְמוּ"], ["הקשת", "הַקֶּשֶׁת"], ["נוצץ", "נוֹצֵץ"], ["נפלתי", "נָפַלְתִּי"], ["תקוע", "תָּקוּעַ"], ["המרחף", "הַמְּרַחֵף"], ["רחוק", "רָחוֹק"], ["בקפיצות", "בִּקְפִיצוֹת"], ["לבד", "לְבַד"], ["קח", "קַח"], ["כנפי", "כַּנְפֵי"], ["כשאתה", "כְּשֶׁאַתָּה"], ["תחזיק", "תַּחֲזִיק"], ["והכנפיים", "וְהַכְּנָפַיִם"], ["ירחפו", "יְרַחֲפוּ"], ["לאט", "לְאַט"], ["כנפיים", "כְּנָפַיִם"], ["מעופפות", "מְעוֹפְפוֹת"], ["תראה", "תִּרְאֶה"], ["פרצוף", "פַּרְצוּף"], ["מודאג", "מֻדְאָג"], ["תגיד", "תַּגִּיד"], ["מתאמן", "מִתְאַמֵּן"], ["חלוץ", "חָלוּץ"], ["תבקיע", "תַּבְקִיעַ"], ["שלושה", "שְׁלוֹשָׁה"], ["גולים", "גּוֹלִים"], ["גול", "גּוֹל"], ["ואתן", "וְאֶתֵּן"], ["מיוחד", "מְיֻחָד"], ["תרוץ", "תָּרוּץ"], ["לכדרר", "לְכַדְרֵר"], ["הכדור", "הַכַּדּוּר"], ["כפתור", "כַּפְתּוֹר"], ["הבעיטה", "הַבְּעִיטָה"], ["לבעוט", "לִבְעֹט"], ["הבקעת", "הִבְקַעְתָּ"], ["מאמין", "מַאֲמִין"], ["אלוף", "אַלּוּף"], ["בעיטות", "בְּעִיטוֹת"], ["נעלי", "נַעֲלֵי"], ["תופסת", "תּוֹפֶסֶת"], ["שמעתי", "שָׁמַעְתִּי"], ["רודף", "רוֹדֵף"], ["חמוד", "חָמוּד"], ["העגלה", "הָעֲגָלָה"], ["והעגלה", "וְהָעֲגָלָה"], ["מלאה", "מְלֵאָה"], ["טעימות", "טְעִימוֹת"], ["מחזירה", "מַחֲזִירָה"], ["עייפים", "עֲיֵפִים"], ["לגיבורים", "לַגִּבּוֹרִים"], ["עליי", "עָלַי"], ["בצורת", "בְּצוּרַת"], ["שושנה", "שׁוֹשַׁנָּה"], ["הטעם", "הַטַּעַם"], ["האהוב", "הָאָהוּב"], ["אכין", "אָכִין"], ["גלידת", "גְּלִידַת"], ["מיוחדת", "מְיֻחֶדֶת"], ["שנותנת", "שֶׁנּוֹתֶנֶת"], ["נוסף", "נוֹסָף"], ["לרחרח", "לְרַחְרֵחַ"], ["טרייה", "טְרִיָּה"], ["מצוין", "מְצֻיָּן"], ["תחכה", "תְּחַכֶּה"], ["שהייתי", "שֶׁהָיִיתִי"], ["צריכה", "צְרִיכָה"], ["כוכב", "כּוֹכָב"], ["הנוצה", "הַנּוֹצָה"], ["חכה", "חַכֵּה"], ["חפש", "חַפֵּשׂ"], ["ליטוף", "לִטּוּף"], ["לשחק", "לְשַׂחֵק"], ["מגרגר", "מְגַרְגֵּר"], ["ניצח", "נִצַּח"], ["מרחרח", "מְרַחְרֵחַ"], ["רץ", "רָץ"], ["אחריו", "אַחֲרָיו"], ["קרובים", "קְרוֹבִים"], ["באזור", "בְּאֵזוֹר"], ["מספר", "מִסְפָּר"], ["חברים", "חֲבֵרִים"], ["הו", "הוֹ"]];
 const PRON_RE=PRON.sort((a,b)=>b[0].length-a[0].length).map(([w,r])=>{try{return [new RegExp(`(^|[^${HEB}])()${w}(?=$|[^${HEB}])`,'g'),r];}catch(e){return null;}}).filter(Boolean);
 /* {shown|spoken}: a word shown plain in the dialog box but read aloud with niqqud */
 const MARK_RE=/\{([^|{}]+)\|([^{}]+)\}/g;
@@ -3088,10 +3164,12 @@ const OUTFITS=[
   {id:'explorer',name:'מדי החוקר',need:10},
   {id:'stars',name:'חולצת הכוכבים',need:20},
   {id:'navy',name:'החולצה הכחולה',need:0,flag:'navyShirt',lock:'מתנה מאמא'},
+  {id:'eitan',name:'חולצת הפסים של איתן',need:0,flag:'eitanShirt',lock:'אתגר הטרמפולינה של איתן'},
+  {id:'waves',name:'חולצת הגלים',need:0,flag:'wavesShirt',lock:'לנצח את אורם במרוץ'},
 ];
 function freshState(){
   return {v:2, stage:0, collected:[], stars:[], flags:{}, glider:false, shoes:false, hp:5, maxHp:5, time:.3, play:0, waypoint:null,
-    catName:'ריי', outfit:'argentina', goals:0, iceCreams:0, pets:0, glideDist:0, waystones:['village'], achievements:[], biomesSeen:[], shells:[], cafePets:[], goldBall:false, hi:{}, bounces:0, slides:0,
+    catName:'ריי', outfit:'argentina', goals:0, iceCreams:0, pets:0, glideDist:0, waystones:['village'], achievements:[], biomesSeen:[], shells:[], cafePets:[], goldBall:false, hi:{}, bounces:0, slides:0, maxBounce:0,
     player:{x:LM.spawn.x, y:null, z:LM.spawn.z, yaw:Math.PI}, cam:{yaw:0,pitch:.28}};
 }
 let S = freshState();
@@ -3109,6 +3187,8 @@ const SPEAKERS = {
   gili:{name:'גילי הגלידאית', color:'#ff8fb0', letter:'ג', g:'f', pitch:1.18, rate:1.0, vi:3},
   mom:{name:'אמא', color:'#ffb3a0', letter:'א', g:'f', pitch:1.05, rate:.94, vi:1},
   dad:{name:'אבא', color:'#e8a060', letter:'א', g:'m', pitch:.62, rate:.92, vi:2},
+  eitan:{name:'איתן', color:'#5fd07a', letter:'א', g:'k', pitch:1.52, rate:1.12, vi:1},
+  oram:{name:'אורם', color:'#ffa04a', letter:'א', g:'k', pitch:1.32, rate:1.2, vi:3},
   mika:{name:'מיקה הבריסטה', color:'#5fd0b0', letter:'מ', g:'m', pitch:.76, rate:1.04, vi:0},
   narrator:{name:'המספר', color:'#ffe9b0', letter:'✦', g:'m', pitch:.95, rate:.88, vi:2},
 };
@@ -3260,6 +3340,8 @@ function sideQuests(){
   q.push({title:'גלידת כוכבים',giver:'גילי',done:S.maxHp>5,text:S.maxHp>5?'קיבלת לב נוסף!':S.flags.giliMet?`מצא 5 כוכבי זהב והבא אותם לגילי (${Math.min(S.stars.length,5)}/5)`:'יש עגלת גלידה ליד הכיכר…'});
   if(S.flags.momMet) q.push({title:'חברים של חתולים',giver:'אמא',done:!!S.flags.navyShirt,text:S.flags.navyShirt?'קיבלת את החולצה הכחולה!':`לטף את כל ארבעת החתולים בבית הקפה (${Math.min((S.cafePets||[]).length,4)}/4) וחזור לאמא`});
   if(S.flags.dadMet) q.push({title:'צדפים מהחוף',giver:'אבא',done:!!S.goldBall,text:S.goldBall?'קיבלת את כדור הזהב!':`מצא 10 צדפים בחוף של עיר החוף (${Math.min((S.shells||[]).length,10)}/10) וחזור לאבא`});
+  if(S.flags.eitanMet) q.push({title:'אתגר הטרמפולינה',giver:'איתן',done:!!S.flags.eitanShirt,text:S.flags.eitanShirt?'קיבלת את חולצת הפסים!':`קפוץ 6 פעמים ברצף על הטרמפולינה (שיא: ${Math.min(S.maxBounce||0,6)}/6) וחזור לאיתן`});
+  if(S.flags.oramMet) q.push({title:'מרוץ על המזח',giver:'אורם',done:!!S.flags.wavesShirt,text:S.flags.wavesShirt?'ניצחת את אורם וקיבלת את חולצת הגלים!':'נצח את אורם במרוץ עד הפנס בסוף המזח'});
   q.push({title:'אבני המסע',giver:'העמק',done:S.waystones.length>=WAYSTONES.length,text:`הער את כל אבני המסע (${S.waystones.length}/${WAYSTONES.length})`});
   q.push({title:'אספן הכוכבים',giver:'העמק',done:S.stars.length>=STAR_COUNT,text:`מצא את כל כוכבי הזהב (${S.stars.length}/${STAR_COUNT})`});
   return q;
@@ -3282,6 +3364,8 @@ const ACH = [
   {id:'bounce',name:'קפצן על',desc:'קפצת 25 פעמים על הטרמפולינה'},
   {id:'arcade',name:'אלוף הארקייד',desc:'השגת שיא מרשים באחד המשחקים'},
   {id:'family',name:'משפחה',desc:'דיברת עם אמא ואבא ביציע'},
+  {id:'eitan',name:'מלך הטרמפולינה',desc:'עמדת באתגר של איתן'},
+  {id:'race',name:'הכי מהיר בחוף',desc:'ניצחת את אורם במרוץ על המזח'},
 ];
 function unlock(id){ if(S.achievements.includes(id))return; S.achievements.push(id); const a=ACH.find(x=>x.id===id); if(a){toast(`הישג חדש: ${a.name}`,'gold');Sound.star();} }
 
@@ -3313,6 +3397,8 @@ function spawnNPCs(){
     {id:'mom',build:makeMom,x:LM.pitch.x-.35,z:LM.stands.z-.3,y:.45,ry:0,scale:1,kid:true,sit:true,talk:()=>!S.flags.momMet?'mom_intro':(S.cafePets||[]).length>=4&&!S.flags.navyShirt?'mom_reward':'mom_talk'},
     {id:'dad',build:makeDad,x:LM.pitch.x+.3,z:LM.stands.z-.3,y:.45,ry:0,scale:1,kid:true,sit:true,talk:()=>!S.flags.dadMet?'dad_intro':(S.shells||[]).length>=10&&!S.goldBall?'dad_reward':'dad_talk'},
     {id:'mika',build:makeMika,x:LM.cafe.x-4.1,z:LM.cafe.z+3.8,y:.16,ry:Math.PI/2,scale:1,kid:true,talk:()=>!S.flags.mikaMet?'mika_intro':'mika_again'},
+    {id:'eitan',build:makeEitan,x:LM.playground.x+9.5,z:LM.playground.z-8,scale:1,kid:true,talk:()=>!S.flags.eitanMet?'eitan_intro':(S.maxBounce||0)>=6&&!S.flags.eitanShirt?'eitan_reward':S.flags.eitanShirt?'eitan_after':'eitan_progress'},
+    {id:'oram',build:makeOram,x:beachXZ(409,30).x,z:beachXZ(409,30).z,scale:1,kid:true,talk:()=>!S.flags.oramMet?'oram_intro':'oram_again'},
     {id:'gili',build:makeGiliAdult,x:LM.ice.x+2.2,z:LM.ice.z+1.4,scale:1,kid:true,talk:()=>!S.flags.giliMet?'gili_intro':(S.stars.length>=5&&S.maxHp<6?'gili_stars':'gili_again')},
   ];
   for(const d of def){
@@ -3336,6 +3422,8 @@ function npcHasNews(id){
   if(id==='mom') return !S.flags.momMet||((S.cafePets||[]).length>=4&&!S.flags.navyShirt);
   if(id==='dad') return !S.flags.dadMet||((S.shells||[]).length>=10&&!S.goldBall);
   if(id==='mika') return !S.flags.mikaMet;
+  if(id==='eitan') return !S.flags.eitanMet||((S.maxBounce||0)>=6&&!S.flags.eitanShirt);
+  if(id==='oram') return !S.flags.oramMet;
   if(id==='gili') return !S.flags.giliMet||(S.stars.length>=5&&S.maxHp<6);
   return false;
 }
@@ -3484,10 +3572,42 @@ Object.assign(DIALOGUES,{
   mika_cats:[{s:'mika',t:()=>vary('mika_k',['מנגו הכי שובב. הוא אוהב לשבת על מגדל החתולים ולהסתכל על כולם מלמעלה.','פלפל ביישן בהתחלה, אבל כשהוא מגרגר, כל בית הקפה רועד.','ענן ישנוני. אם תלטף אותו בעדינות, הוא יתגלגל על הגב.','טופי היא הכי חברותית. היא תמיד מסתובבת בין השולחנות.'])}],
   mika_bye:[{s:'mika',t:()=>vary('mika_b',['להתראות! תבוא לבקר שוב.','יום נפלא! ותגיד שלום לחתולים בדרך החוצה.','ביי! השוקו מחכה לך.'])}],
 });
+Object.assign(DIALOGUES,{
+  eitan_intro:[
+    {act:'eitanMet'},
+    {s:'eitan',t:'פלא! גם אתה פה? הגינה הזאת הכי טובה בכל העיר.'},
+    {s:'pele',t:'איתן! מה אתה עושה פה?'},
+    {s:'eitan',t:'אני מתאמן על הטרמפולינה. אני כבר מגיע לשש קפיצות ברצף, בלי לרדת ממנה!'},
+    {s:'eitan',t:'בוא נראה אם אתה מצליח גם. שש קפיצות ברצף, ואני נותן לך את חולצת הפסים שלי. יש לי עוד אחת בבית.'},
+    {s:'pele',t:'שש קפיצות? זה קל. תסתכל!'},
+  ],
+  eitan_progress:[{s:'eitan',t:()=>vary('eitan_p',[()=>`השיא שלך עד עכשיו: ${S.maxBounce||0} קפיצות ברצף. צריך שש!`,'טיפ: כשאתה נוחת על הטרמפולינה, היא זורקת אותך עוד יותר גבוה. רק אל תזוז הצידה.','ניסית כבר את המגלשה? היא ממש מהירה!','אם אתה נופל מהטרמפולינה, מתחילים לספור מההתחלה. אבל אפשר לנסות כמה שרוצים.'])}],
+  eitan_reward:[
+    {s:'eitan',t:'ראיתי! שש קפיצות ברצף! אתה אלוף הטרמפולינה.'},
+    {act:'giveEitanShirt'},
+    {s:'eitan',t:'הנה, חולצת הפסים הירוקה. היא שלך עכשיו. אפשר ללבוש אותה דרך היומן.'},
+    {s:'pele',t:'תודה, איתן! היא מגניבה!'},
+  ],
+  eitan_after:[{s:'eitan',t:()=>vary('eitan_a',['בוא נתחרה מי מגיע ראשון לראש המגלשה!',()=>`${cat()} קפץ פעם על הטרמפולינה? הייתי רוצה לראות את זה!`,'אתמול כמעט עשיתי סיבוב שלם על הנדנדה. טוב, כמעט.','אורם מחכה לך בחוף. הוא אוהב מרוצים, ואף אחד עוד לא ניצח אותו.','מחר נביא את אדם, ונשחק תופסת בכל הגינה.'])}],
+  oram_intro:[
+    {act:'oramMet'},
+    {s:'oram',t:'היי פלא! הגעת בדיוק בזמן. אני מתאמן בריצה על המזח.'},
+    {s:'pele',t:'אורם! אתה רץ מהר?'},
+    {s:'oram',t:'הכי מהר בחוף! בוא נעשה מרוץ: מתחילת המזח ועד הפנס בסוף שלו. מי שמגיע ראשון, מנצח.'},
+    {s:'oram',t:'אם תנצח אותי, תקבל את חולצת הגלים שלי. מוכן?',choices:[{t:'יאללה, מרוץ!',act:'startRace'},{t:'אחר כך',go:'oram_later'}]},
+  ],
+  oram_again:[{s:'oram',t:()=>vary('oram_a',['נו, עוד מרוץ עד הפנס?','הפעם אני מנצח, אני מרגיש את זה!','אימנתי את הרגליים כל הבוקר. בוא נראה אותך!',()=>S.flags.wavesShirt?'חולצת הגלים יושבת עליך מעולה. רוצה עוד מרוץ, סתם בשביל הכיף?':'חולצת הגלים עדיין אצלי. תנצח, והיא שלך!']),
+    choices:[{t:'יאללה, מרוץ!',act:'startRace'},{t:'אחר כך',go:'oram_later'}]}],
+  oram_later:[{s:'oram',t:()=>vary('oram_l',['בסדר. אני פה, על החוף. תחזור כשאתה מוכן.','אוקיי! בינתיים אני מתאמן.','תחזור, אני מחכה!'])}],
+});
 Object.assign(ACTIONS,{
   momMet(){ S.flags.momMet=true; if(S.flags.dadMet)unlock('family'); },
   dadMet(){ S.flags.dadMet=true; if(S.flags.momMet)unlock('family'); },
   mikaMet(){ S.flags.mikaMet=true; },
+  eitanMet(){ S.flags.eitanMet=true; },
+  oramMet(){ S.flags.oramMet=true; },
+  giveEitanShirt(){ S.flags.eitanShirt=true; unlock('eitan'); toast('קיבלת את חולצת הפסים של איתן! אפשר ללבוש אותה ביומן','gold'); Sound.fanfare(); autosave(); },
+  startRace(){ setTimeout(()=>startRace(),50); },
   giveNavy(){ S.flags.navyShirt=true; toast('קיבלת את החולצה הכחולה! אפשר ללבוש אותה ביומן','gold'); Sound.fanfare(); autosave(); },
   giveGoldBall(){ S.goldBall=true; setGoldBall(true); toast('כדור הזהב שלך מחכה במגרש!','gold'); Sound.fanfare(); autosave(); },
   cocoa(){ player.hp=S.maxHp; renderHearts(); Sound.slurp(); Sound.heal(); emit(player.pos.x,player.pos.y+1.4,player.pos.z,16,{color:'#c89a6a',speed:1.2,up:1.5,life:1,size:10,grav:0}); autosave(true); },
@@ -4024,7 +4144,7 @@ function makePortraits(){
   ps.add(new THREE.HemisphereLight('#fff4e6','#6a5a7a',1.6));
   const key=new THREE.DirectionalLight('#fff0dc',3.2); key.position.set(-1.2,1.6,2); ps.add(key);
   const rim=new THREE.DirectionalLight('#9fd8ff',2.4); rim.position.set(1.5,1,-1.5); ps.add(rim);
-  const bgs={mom:['#ffd8c8','#8a4a5a'],dad:['#ffd8a8','#6a4a2a'],mika:['#b8f0e0','#2a6a5a'],pele:['#8fc6f0','#2a4a8a'],noga:['#c8b0f0','#4a3a7a'],owl:['#e8c890','#5a3a1a'],zuza:['#ffc090','#8a3a1a'],tipi:['#c8f0ff','#3a6a9a'],adam:['#ffb0a0','#7a2a2a'],gili:['#ffd0e0','#8a3a5a'],narrator:['#ffe9b0','#6a4a1a'],cat:['#e8f0ff','#4a5a8a']};
+  const bgs={eitan:['#c8f0c8','#2a6a3a'],oram:['#ffd8b0','#8a4a1a'],mom:['#ffd8c8','#8a4a5a'],dad:['#ffd8a8','#6a4a2a'],mika:['#b8f0e0','#2a6a5a'],pele:['#8fc6f0','#2a4a8a'],noga:['#c8b0f0','#4a3a7a'],owl:['#e8c890','#5a3a1a'],zuza:['#ffc090','#8a3a1a'],tipi:['#c8f0ff','#3a6a9a'],adam:['#ffb0a0','#7a2a2a'],gili:['#ffd0e0','#8a3a5a'],narrator:['#ffe9b0','#6a4a1a'],cat:['#e8f0ff','#4a5a8a']};
   const shoot=(id,obj,look,dist,yOff=0)=>{
     const g=bgs[id]||['#fff','#888'];
     const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');const gr=x.createRadialGradient(128,100,10,128,128,190);gr.addColorStop(0,g[0]);gr.addColorStop(1,g[1]);x.fillStyle=gr;x.fillRect(0,0,256,256);
@@ -4035,7 +4155,7 @@ function makePortraits(){
   };
   const kid=(k,id)=>{k.root.position.set(0,0,0);k.root.rotation.set(0,0,0);k.root.updateMatrixWorld(true);const hp=new THREE.Vector3();k.head.getWorldPosition(hp);shoot(id,k.root,hp,.95*k.opts.height/1.4);};
   try{
-    kid(makeKid({seed:7}),'pele'); kid(makeAdam(),'adam');
+    kid(makeKid({seed:7}),'pele'); kid(makeAdam(),'adam'); kid(makeEitan(),'eitan'); kid(makeOram(),'oram');
     const adult=(k,id)=>{k.root.position.set(0,0,0);k.root.rotation.set(0,0,0);animateAdult(k,1,{sit:false,t:0,look:0});k.root.updateMatrixWorld(true);const hp=new THREE.Vector3();k.head.getWorldPosition(hp);hp.y-=.03;shoot(id,k.root,hp,.8);};
     adult(makeGiliAdult(),'gili'); adult(makeKookish(),'noga'); adult(makeMom(),'mom'); adult(makeDad(),'dad'); adult(makeMika(),'mika');
     const o=makeOwl(); shoot('owl',o,new THREE.Vector3(0,.9,0),3.6);
@@ -4320,7 +4440,7 @@ function slotSummary(d){ if(!d)return null; const n=d.stage>=3?'פרק 1 הוש�
    MODES & MENUS
    ===================================================================== */
 let mode='loading', subStack=[];
-const SUBS=['settings','help','slots','confirm','naming','journal'];
+const SUBS=['settings','help','slots','confirm','naming','journal','install'];
 function setMode(m){
   mode=m; $('app').dataset.mode=m;
   const inGame=!['title','loading'].includes(m)&&!(m==='sub'&&subStack[0]==='title');
@@ -4373,13 +4493,15 @@ $('t-settings').onclick=()=>{Sound.init();fillSettings();openSub('settings');};
 $('t-help').onclick=()=>openSub('help');
 /* PWA: install prompt + offline cache (only in the hosted app build) */
 let installEvt=null; const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
-const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+const isInApp=/FBAN|FBAV|Instagram|WhatsApp|Line\/|GSA\//i.test(navigator.userAgent);
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('t-install').hidden=false;});
 addEventListener('appinstalled',()=>{$('t-install').hidden=true;toast('המשחק הותקן! אפשר לפתוח אותו מהמסך הבית');});
-if(window.PELE_PWA&&isIOS&&!isStandalone())$('t-install').hidden=false;
-$('t-install').onclick=async()=>{Sound.ui(); if(installEvt){installEvt.prompt(); try{await installEvt.userChoice;}catch(e){} installEvt=null; $('t-install').hidden=true;}
-  else if(isIOS) toast('באייפון: לחצו על כפתור השיתוף ואז "הוסף למסך הבית"');
-  else toast('בתפריט הדפדפן (⋮) בחרו "התקן אפליקציה" או "הוסף למסך הבית"');};
+if(window.PELE_PWA&&!isStandalone()&&(isIOS||IS_TOUCH))$('t-install').hidden=false;
+function openInstallHelp(){ $('i-ios').hidden=!isIOS; $('i-android').hidden=isIOS; $('i-inapp').hidden=!(isIOS&&isInApp);
+  $('i-arrow').hidden=!(isIOS&&!/CriOS/.test(navigator.userAgent)&&!/iPad|Macintosh/.test(navigator.userAgent)); openSub('install'); }
+$('i-close').onclick=()=>closeSub();
+$('t-install').onclick=async()=>{Sound.ui(); if(installEvt){installEvt.prompt(); try{await installEvt.userChoice;}catch(e){} installEvt=null; $('t-install').hidden=true;} else openInstallHelp();};
 if(window.PELE_PWA&&'serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 $('p-resume').onclick=()=>enterGame();
 $('p-save').onclick=()=>{autosave();$('p-save-note').textContent=`נשמר במשבצת ${slot}`;Sound.ui();};
@@ -4440,13 +4562,13 @@ function renderJournal(){
     const rows=[['רסיסי אור',S.stage>=3?5:S.collected.length,5],['כוכבי זהב',S.stars.length,STAR_COUNT],['אבני מסע',S.waystones.length,WAYSTONES.length],['אזורים שביקרת',S.biomesSeen.length,6],['גולים',S.goals,10],['גלידות שנאכלו',S.iceCreams,5],['ליטופים ל'+cat(),S.pets,10],['צדפים מהחוף',(S.shells||[]).length,10],['חתולי בית הקפה',(S.cafePets||[]).length,4],['קפיצות בטרמפולינה',S.bounces||0,25]];
     B.innerHTML=`<div class="cols">${rows.map(([n,a,b])=>`<div class="qcard"><div class="t">${n}<span style="font-family:var(--ui);font-size:14px">${a}/${b}</span></div>${pct(a,b)}</div>`).join('')}</div><p class="note">טיפ: כש${cat()} מיילל ומביט לכיוון מסוים, כנראה שיש כוכב זהב קרוב.</p>`;}
   else if(jTab==='outfits'){
-    const sw={argentina:'repeating-linear-gradient(90deg,#fff 0 14px,#7cb9e8 14px 28px)',pixel:'repeating-conic-gradient(#f2a6a6 0 25%,#6f9a4a 0 50%) 0 0/28px 28px',explorer:'repeating-linear-gradient(90deg,#c9a86a 0 6px,#b08f55 6px 8px)',stars:'radial-gradient(circle at 30% 30%,#ffd86b 0 3px,transparent 4px) 0 0/22px 22px,linear-gradient(#1d2b6a,#3a2a7a)',navy:'linear-gradient(#24345a,#1a2744)'};
+    const sw={argentina:'repeating-linear-gradient(90deg,#fff 0 14px,#7cb9e8 14px 28px)',pixel:'repeating-conic-gradient(#f2a6a6 0 25%,#6f9a4a 0 50%) 0 0/28px 28px',explorer:'repeating-linear-gradient(90deg,#c9a86a 0 6px,#b08f55 6px 8px)',stars:'radial-gradient(circle at 30% 30%,#ffd86b 0 3px,transparent 4px) 0 0/22px 22px,linear-gradient(#1d2b6a,#3a2a7a)',navy:'linear-gradient(#24345a,#1a2744)',eitan:'repeating-linear-gradient(0deg,#2e9a4e 0 6px,#f4f8f0 6px 12px)',waves:'repeating-radial-gradient(circle at 50% 120%,#fff 0 2px,#2a80c8 3px 9px)'};
     B.innerHTML=`<div class="cols">${OUTFITS.map(o=>{const ok=o.flag?!!S.flags[o.flag]:S.stars.length>=o.need;return `<button class="outfit" data-o="${o.id}" aria-pressed="${S.outfit===o.id}" ${ok?'':'disabled'}><span class="sw8" style="background:${sw[o.id]}"></span>${o.name}<span class="note" style="margin:0">${ok?(S.outfit===o.id?'לבוש עכשיו':'לחץ כדי ללבוש'):(o.flag?o.lock:`נפתח אחרי ${o.need} כוכבים`)}</span></button>`;}).join('')}</div>`;
     B.querySelectorAll('.outfit').forEach(b=>b.onclick=()=>{S.outfit=b.dataset.o;player.model.setShirt(S.outfit);Sound.star();autosave(true);renderJournal();});}
   else if(jTab==='ach'){
     B.innerHTML=`<div class="cols">${ACH.map(a=>{const on=S.achievements.includes(a.id);return `<div class="ach ${on?'on':''}"><div class="i">${on?'★':'☆'}</div><div><div class="t">${a.name}</div><div class="d">${a.desc}</div></div></div>`;}).join('')}</div>`;}
   else {
-    const fr=[['pele','פלא','הגיבור שלנו. סקרן, אמיץ, חובב גלידות ומספר 10 על הגב.'],['cat',cat(),'החתול הסיאמי של פלא: פרווה קצרה בצבע שמנת, פנים, אוזניים וזנב חומים כהים ועיניים כחולות. אוהב לשחק בנוצה, לנמנם על השטיח ולמצוא כוכבי זהב.'],['noga','סבתא קוקיש','שומרת עץ האור. יודעת את כל סיפורי העמק.'],['owl','חכמון הינשוף','שומר היער. אוהב חידות, ומרכיב משקפיים עגולים.'],['zuza','זוזה השועלה','חוקרת החולות. מחפשת את בוני המגדלים כבר שבע שנים.'],['tipi','טיפי','ענן קטן שנפל מאמא ענן. נתן לפלא את כנפי הרוח.'],['adam','אדם','החבר הכי טוב של פלא. תמיד עם כדור.'],['gili','גילי הגלידאית','מכינה את הגלידות הכי טעימות בעמק.'],['mom','אמא','יושבת ביציע ליד המגרש ומעודדת את פלא. אוהבת חתולים ובית קפה טוב.'],['dad','אבא','תמיד ביציע, תמיד מעודד. אוהב כדורגל, שקיעות וצדפים מהחוף.'],['mika','מיקה הבריסטה','מכין את השוקו הכי טוב בעיר החוף, ושומר על ארבעת החתולים של בית הקפה.']];
+    const fr=[['pele','פלא','הגיבור שלנו. סקרן, אמיץ, חובב גלידות ומספר 10 על הגב.'],['cat',cat(),'החתול הסיאמי של פלא: פרווה קצרה בצבע שמנת, פנים, אוזניים וזנב חומים כהים ועיניים כחולות. אוהב לשחק בנוצה, לנמנם על השטיח ולמצוא כוכבי זהב.'],['noga','סבתא קוקיש','שומרת עץ האור. יודעת את כל סיפורי העמק.'],['owl','חכמון הינשוף','שומר היער. אוהב חידות, ומרכיב משקפיים עגולים.'],['zuza','זוזה השועלה','חוקרת החולות. מחפשת את בוני המגדלים כבר שבע שנים.'],['tipi','טיפי','ענן קטן שנפל מאמא ענן. נתן לפלא את כנפי הרוח.'],['adam','אדם','החבר הכי טוב של פלא. תמיד עם כדור.'],['gili','גילי הגלידאית','מכינה את הגלידות הכי טעימות בעמק.'],['mom','אמא','יושבת ביציע ליד המגרש ומעודדת את פלא. אוהבת חתולים ובית קפה טוב.'],['dad','אבא','תמיד ביציע, תמיד מעודד. אוהב כדורגל, שקיעות וצדפים מהחוף.'],['mika','מיקה הבריסטה','מכין את השוקו הכי טוב בעיר החוף, ושומר על ארבעת החתולים של בית הקפה.'],['eitan','איתן','חבר של פלא. גר ליד גינת השעשועים ואלוף בקפיצות על הטרמפולינה.'],['oram','אורם','חבר של פלא מהחוף. הכי מהיר על המזח, ואוהב מרוצים.']];
     B.innerHTML=`<div class="cols">${fr.map(([id,n,d])=>`<div class="qcard" style="flex-direction:row;gap:12px;align-items:center"><span style="width:64px;height:64px;border-radius:16px;flex:none;background:#2a3566 url(${PORTRAITS[id]||''}) center/cover"></span><span><div class="t">${n}</div><div class="g" style="font-size:13px;line-height:1.45">${d}</div></span></div>`).join('')}</div>`;}
 }
 $('j-close').onclick=()=>closeSub();
@@ -4492,24 +4614,58 @@ canvas.addEventListener('pointerdown',(e)=>{ Sound.init(); if(e.pointerType!=='m
 addEventListener('pointerup',(e)=>{if(e.pointerType==='mouse')dragging=false;});
 addEventListener('pointermove',(e)=>{ if(e.pointerType!=='mouse'||mode!=='playing')return; if(locked||dragging){input.lookDX+=e.movementX;input.lookDY+=e.movementY;} });
 canvas.addEventListener('wheel',(e)=>{e.preventDefault();cam.tdist=clamp(cam.tdist+Math.sign(e.deltaY)*.8,3,14);},{passive:false});
+/* ---------- touch controls: raw Touch Events (reliable multi-touch on iPhone and Android) ----------
+   left-bottom: floating joystick · anywhere else on the screen: drag to turn the camera · buttons on the right */
 let joyId=null, joyO={x:0,y:0}, lookId=null, lookP={x:0,y:0};
 const joy=$('joy'), knob=$('knob');
-function resetJoy(){joyId=null;input.touchX=input.touchY=0;knob.style.transform='';joy.style.left='';joy.style.top='';joy.style.bottom='';}
-$('joy-zone').addEventListener('pointerdown',(e)=>{ if(joyId!==null)return; joyId=e.pointerId; e.currentTarget.setPointerCapture(e.pointerId); Sound.init();
-  joyO={x:e.clientX,y:e.clientY}; joy.style.left=(e.clientX-64)+'px'; joy.style.top=(e.clientY-64)+'px'; joy.style.bottom='auto'; });
-$('joy-zone').addEventListener('pointermove',(e)=>{ if(e.pointerId!==joyId)return; let dx=e.clientX-joyO.x, dy=e.clientY-joyO.y; const l=Math.hypot(dx,dy), m=52;
-  if(l>m){dx*=m/l;dy*=m/l;} knob.style.transform=`translate(${dx}px,${dy}px)`; input.touchX=dx/m; input.touchY=-dy/m; });
-const joyEnd=(e)=>{if(e.pointerId===joyId)resetJoy();};
-$('joy-zone').addEventListener('pointerup',joyEnd); $('joy-zone').addEventListener('pointercancel',joyEnd);
-$('look-zone').addEventListener('pointerdown',(e)=>{ if(lookId!==null)return; lookId=e.pointerId; e.currentTarget.setPointerCapture(e.pointerId); lookP={x:e.clientX,y:e.clientY}; Sound.init(); });
-$('look-zone').addEventListener('pointermove',(e)=>{ if(e.pointerId!==lookId)return; input.lookDX+=e.clientX-lookP.x; input.lookDY+=e.clientY-lookP.y; lookP={x:e.clientX,y:e.clientY}; });
-const lookEnd=(e)=>{if(e.pointerId===lookId)lookId=null;};
-$('look-zone').addEventListener('pointerup',lookEnd); $('look-zone').addEventListener('pointercancel',lookEnd);
-const tj=$('t-jump');
-tj.addEventListener('pointerdown',(e)=>{e.preventDefault();tj.setPointerCapture(e.pointerId);input.jumpPressed=true;input.touchJump=true;Sound.init();});
-const tjEnd=()=>{input.touchJump=false;}; tj.addEventListener('pointerup',tjEnd); tj.addEventListener('pointercancel',tjEnd);
-$('t-run').addEventListener('pointerdown',(e)=>{e.preventDefault();input.runToggle=!input.runToggle;e.currentTarget.classList.toggle('on',input.runToggle);});
-$('t-act').addEventListener('pointerdown',(e)=>{e.preventDefault();input.interact=true;});
+function resetJoy(){joyId=null;lookId=null;input.touchX=input.touchY=0;knob.style.transform='';joy.style.left='';joy.style.top='';joy.style.bottom='';}
+const JM=52;
+function joyStart(id,x,y){ joyId=id; joyO={x,y}; joy.style.left=(x-64)+'px'; joy.style.top=(y-64)+'px'; joy.style.bottom='auto'; Sound.init(); }
+function joyMove(x,y){ let dx=x-joyO.x, dy=y-joyO.y; const l=Math.hypot(dx,dy); if(l>JM){dx*=JM/l;dy*=JM/l;} knob.style.transform=`translate(${dx}px,${dy}px)`; input.touchX=dx/JM; input.touchY=-dy/JM; }
+function joyStop(){ joyId=null; input.touchX=input.touchY=0; knob.style.transform=''; joy.style.left='';joy.style.top='';joy.style.bottom=''; }
+const HAS_TOUCH='ontouchstart' in window;
+if(HAS_TOUCH){
+  const zone=$('touch');
+  const isJoyArea=(x,y)=>x<innerWidth*.45&&y>innerHeight*.38;
+  const onStart=(e)=>{ if(mode!=='playing')return; if(e.target.closest('button'))return; e.preventDefault();
+    for(const t of e.changedTouches){ if(joyId===null&&isJoyArea(t.clientX,t.clientY)) joyStart(t.identifier,t.clientX,t.clientY);
+      else if(lookId===null){ lookId=t.identifier; lookP={x:t.clientX,y:t.clientY}; Sound.init(); } } };
+  const onMove=(e)=>{ if(joyId===null&&lookId===null)return; e.preventDefault();
+    for(const t of e.changedTouches){ if(t.identifier===joyId) joyMove(t.clientX,t.clientY);
+      else if(t.identifier===lookId){ input.lookDX+=t.clientX-lookP.x; input.lookDY+=t.clientY-lookP.y; lookP={x:t.clientX,y:t.clientY}; } } };
+  const onEnd=(e)=>{ for(const t of e.changedTouches){ if(t.identifier===joyId) joyStop(); if(t.identifier===lookId) lookId=null; }
+    // safety net: when no finger remains on the glass, nothing may stay "held"
+    const ids=new Set([...e.touches].map(t=>t.identifier)); if(joyId!==null&&!ids.has(joyId))joyStop(); if(lookId!==null&&!ids.has(lookId))lookId=null; if(!e.touches.length){input.touchJump=false;} };
+  zone.addEventListener('touchstart',onStart,{passive:false});
+  addEventListener('touchmove',onMove,{passive:false});
+  addEventListener('touchend',onEnd,{passive:false}); addEventListener('touchcancel',onEnd,{passive:false});
+  // buttons
+  const btn=(id,down,up)=>{const b=$(id); b.addEventListener('touchstart',(e)=>{e.preventDefault();e.stopPropagation();Sound.init();down(e);},{passive:false});
+    if(up){b.addEventListener('touchend',(e)=>{e.preventDefault();up(e);},{passive:false});b.addEventListener('touchcancel',up);} };
+  btn('t-jump',()=>{input.jumpPressed=true;input.touchJump=true;},()=>{input.touchJump=false;});
+  btn('t-run',(e)=>{input.runToggle=!input.runToggle;$('t-run').classList.toggle('on',input.runToggle);});
+  btn('t-act',()=>{input.interact=true;});
+} else {
+  $('joy-zone').addEventListener('pointerdown',(e)=>{ if(joyId!==null)return; e.currentTarget.setPointerCapture(e.pointerId); joyStart(e.pointerId,e.clientX,e.clientY); });
+  $('joy-zone').addEventListener('pointermove',(e)=>{ if(e.pointerId===joyId)joyMove(e.clientX,e.clientY); });
+  const joyEnd=(e)=>{if(e.pointerId===joyId)joyStop();};
+  $('joy-zone').addEventListener('pointerup',joyEnd); $('joy-zone').addEventListener('pointercancel',joyEnd);
+  $('look-zone').addEventListener('pointerdown',(e)=>{ if(lookId!==null)return; lookId=e.pointerId; e.currentTarget.setPointerCapture(e.pointerId); lookP={x:e.clientX,y:e.clientY}; Sound.init(); });
+  $('look-zone').addEventListener('pointermove',(e)=>{ if(e.pointerId!==lookId)return; input.lookDX+=e.clientX-lookP.x; input.lookDY+=e.clientY-lookP.y; lookP={x:e.clientX,y:e.clientY}; });
+  const lookEnd=(e)=>{if(e.pointerId===lookId)lookId=null;};
+  $('look-zone').addEventListener('pointerup',lookEnd); $('look-zone').addEventListener('pointercancel',lookEnd);
+  const tj=$('t-jump');
+  tj.addEventListener('pointerdown',(e)=>{e.preventDefault();tj.setPointerCapture(e.pointerId);input.jumpPressed=true;input.touchJump=true;Sound.init();});
+  const tjEnd=()=>{input.touchJump=false;}; tj.addEventListener('pointerup',tjEnd); tj.addEventListener('pointercancel',tjEnd);
+  $('t-run').addEventListener('pointerdown',(e)=>{e.preventDefault();input.runToggle=!input.runToggle;e.currentTarget.classList.toggle('on',input.runToggle);});
+  $('t-act').addEventListener('pointerdown',(e)=>{e.preventDefault();input.interact=true;});
+}
+addEventListener('blur',()=>resetJoy()); document.addEventListener('visibilitychange',()=>{if(document.hidden)resetJoy();});
+/* the page never zooms or changes scale: no pinch, no double-tap zoom, no ctrl+wheel */
+for(const ev of ['gesturestart','gesturechange','gestureend']) document.addEventListener(ev,(e)=>e.preventDefault(),{passive:false});
+document.addEventListener('touchmove',(e)=>{ if(e.touches.length>1||(e.scale&&e.scale!==1)) e.preventDefault(); },{passive:false});
+addEventListener('wheel',(e)=>{ if(e.ctrlKey)e.preventDefault(); },{passive:false});
+document.addEventListener('dblclick',(e)=>e.preventDefault());
 let padPrev=[], padBlocked=false;
 function pollGamepad(){
   if(padBlocked)return; let gp=null; try{gp=navigator.getGamepads?.()[0];}catch(e){padBlocked=true;return;} if(!gp)return;
@@ -4547,8 +4703,8 @@ const Net = {
 }
 
 /* ---------- character voice casting ---------- */
-const CAST_ORDER=[['pele','ילד, קול גבוה ונמרץ'],['adam','ילד, מהיר ושמח'],['mom','חם ורגוע'],['dad','עמוק ונינוח'],['noga','סבתא, לאט ובחום'],['gili','עליזה'],['mika','נמוך וידידותי'],['owl','עמוק מאוד ואיטי'],['zuza','מהירה וסקרנית'],['tipi','ענן קטן, קול דקיק'],['narrator','מספר סיפורים']];
-const CAST_LINE={pele:()=>`יאללה ${cat()}, יוצאים להרפתקה!`,adam:()=>'בוא נשחק כדורגל! אני בשער!',mom:()=>'אני כל כך גאה בך, מתוק שלי.',dad:()=>'הנה הוא, מספר עשר שלנו!',noga:()=>'בוא, פלא, שב לידי ותקשיב לסיפור.',gili:()=>'גלידת שושנה? בדיוק הכנתי!',mika:()=>'ברוך הבא לקפה חתולים!',owl:()=>'הו־הו. יש לי חידה בשבילך.',zuza:()=>'מהר, מהר! ראיתי משהו נוצץ!',tipi:()=>'פוף! היי! אני טיפי!',narrator:()=>'ובעמק השחר, התחיל יום חדש.'};
+const CAST_ORDER=[['pele','ילד, קול גבוה ונמרץ'],['adam','ילד, מהיר ושמח'],['eitan','ילד, צוחק ושובב'],['oram','ילד, מהיר ותחרותי'],['mom','חם ורגוע'],['dad','עמוק ונינוח'],['noga','סבתא, לאט ובחום'],['gili','עליזה'],['mika','נמוך וידידותי'],['owl','עמוק מאוד ואיטי'],['zuza','מהירה וסקרנית'],['tipi','ענן קטן, קול דקיק'],['narrator','מספר סיפורים']];
+const CAST_LINE={eitan:()=>'בוא נראה כמה קפיצות אתה עושה!',oram:()=>'מרוץ עד הפנס? יאללה!',pele:()=>`יאללה ${cat()}, יוצאים להרפתקה!`,adam:()=>'בוא נשחק כדורגל! אני בשער!',mom:()=>'אני כל כך גאה בך, מתוק שלי.',dad:()=>'הנה הוא, מספר עשר שלנו!',noga:()=>'בוא, פלא, שב לידי ותקשיב לסיפור.',gili:()=>'גלידת שושנה? בדיוק הכנתי!',mika:()=>'ברוך הבא לקפה חתולים!',owl:()=>'הו־הו. יש לי חידה בשבילך.',zuza:()=>'מהר, מהר! ראיתי משהו נוצץ!',tipi:()=>'פוף! היי! אני טיפי!',narrator:()=>'ובעמק השחר, התחיל יום חדש.'};
 function castGet(id){return (settings.cast||{})[id]||{};}
 function castSet(id,patch){settings.cast=settings.cast||{};settings.cast[id]=Object.assign({},settings.cast[id]||{},patch);saveSettings();}
 function renderCast(){
@@ -4649,8 +4805,8 @@ function frame(now){
       let look=null; if(tx!==null){look=Math.atan2(tx-n.pos.x,tz-n.pos.z)-n.obj.rotation.y;look=((look+Math.PI)%(Math.PI*2)+Math.PI*2)%(Math.PI*2)-Math.PI;}
       if(n.cheer>0)n.cheer-=dt; animateAdult(n.rig,dt,{t:clock+n.x,sit:true,cheer:n.cheer||0,look,talk:mode==='dialog'&&Dialog.npc===n&&Dialog.spk===SPEAKERS[n.id]});
       const ox=n.id==='mom'?-.42:n.id==='dad'?.42:0; n.mark.position.set(n.pos.x+ox,n.baseY+n.topY+.6+Math.sin(clock*3)*.12,n.pos.z); n.name.position.set(n.pos.x+ox,n.baseY+n.topY+(n.id==='dad'?.12:0),n.pos.z); n.name.visible=camera.position.distanceTo(n.pos)<24; continue; }
-    else if(n.rig){ const dp=Math.hypot(player.pos.x-n.pos.x,player.pos.z-n.pos.z); n.obj.visible=dp<110; if(!n.obj.visible){n.name.visible=false;continue;} animateKid(n.rig,dt,{speed:0,onGround:true,t:clock+n.x});
-      const look=(n.id==='adam'&&S.flags.adamMet)?Math.atan2(BALL.pos.x-n.pos.x,BALL.pos.z-n.pos.z):(dp<7&&mode!=='title'?Math.atan2(player.pos.x-n.pos.x,player.pos.z-n.pos.z):null); if(look!==null)n.obj.rotation.y=angDamp(n.obj.rotation.y,look,5,dt); }
+    else if(n.rig){ const dp=Math.hypot(player.pos.x-n.pos.x,player.pos.z-n.pos.z); n.obj.visible=dp<110; if(!n.obj.visible){n.name.visible=false;continue;} if(!n.racing)animateKid(n.rig,dt,{speed:0,onGround:true,t:clock+n.x});
+      const look=(n.id==='adam'&&S.flags.adamMet)?Math.atan2(BALL.pos.x-n.pos.x,BALL.pos.z-n.pos.z):(dp<7&&mode!=='title'?Math.atan2(player.pos.x-n.pos.x,player.pos.z-n.pos.z):null); if(look!==null&&!n.racing)n.obj.rotation.y=angDamp(n.obj.rotation.y,look,5,dt); }
     else n.obj.scale.y=n.scale*(1+Math.sin(clock*2.2+n.x)*.012);
     n.mark.position.set(n.pos.x,n.baseY+n.topY+.65+Math.sin(clock*3)*.12+(n.float?Math.sin(clock*1.8)*.25:0),n.pos.z); n.name.position.set(n.pos.x,n.baseY+n.topY,n.pos.z);
     n.name.visible=camera.position.distanceTo(n.pos)<24; }
