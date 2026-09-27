@@ -5465,6 +5465,15 @@ $('cast-reset').onclick=()=>{settings.cast={};saveSettings();renderCast();Sound.
 document.querySelectorAll('#settings .tab[data-st="cast"]').forEach(t=>t.addEventListener('click',()=>renderCast()));
 
 
+/* keep the quest card below the hero card, whatever the hero card's height (coins/hunger row, font loading, rotation) */
+(function questLayout(){
+  const hero=$('hero'), q=$('quest'), hud=$('hud'); if(!hero||!q||!hud)return;
+  const place=()=>{ const r=hero.getBoundingClientRect(); if(r.height<4)return; const top=r.bottom-hud.getBoundingClientRect().top+8; q.style.top=Math.round(top)+'px'; };
+  if(window.ResizeObserver) new ResizeObserver(place).observe(hero);
+  addEventListener('resize',place); addEventListener('orientationchange',()=>setTimeout(place,300));
+  document.fonts&&document.fonts.ready.then(place); setInterval(place,2000); place();
+})();
+
 /* =====================================================================
    DAY / NIGHT — real sun path drives sky, light, fog and reflections
    ===================================================================== */
