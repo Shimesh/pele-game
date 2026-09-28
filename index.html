@@ -657,7 +657,7 @@ input[type=range]{touch-action:pan-x}
 </div>
 <script type="importmap">
 { "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
   "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
   "postprocessing": "https://cdn.jsdelivr.net/npm/postprocessing@6.36.7/build/index.js",
@@ -713,6 +713,8 @@ const SETTINGS_KEY='pele.settings.v5';
 const settings = Object.assign({vol:.8, music:.5, voice:true, voiceName:'', voiceRate:1, niqqud:true, quality:'auto', autoTier:IS_MOBILE?'medium':'high', sens:1, invert:false, camDist:4.8, dayLen:12, textSpeed:40, bigControls:false},
   (()=>{try{return JSON.parse(store.get(SETTINGS_KEY)||'{}')}catch(e){return {}}})());
 const saveSettings=()=>store.set(SETTINGS_KEY,JSON.stringify(settings));
+/* the old performance governor could leave a PC stuck on the lowest graphics; start fresh once with the smarter one */
+if(settings.gv!==2){ settings.gv=2; settings.autoTier=IS_MOBILE?'medium':'high'; settings.resScale=1; saveSettings(); }
 
 /* =====================================================================
    WORLD GENERATION
@@ -909,7 +911,9 @@ function tf(x,y,per,oct=5){let s=0,a=.5,f=1,t=0;for(let o=0;o<oct;o++){s+=a*tn(x
 function canvas2(n=TEX_SIZE){const c=document.createElement('canvas');c.width=c.height=n;return c;}
 /* iPhone keeps a hard cap on total canvas memory: painted textures are drawn at half resolution on phones, and identical ones are shared */
 const CSCALE=IS_MOBILE?.5:1;
-function canvasS(w,h=w){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*CSCALE));c.height=Math.max(1,Math.round(h*CSCALE));const x=c.getContext('2d');if(CSCALE!==1)x.scale(CSCALE,CSCALE);return c;}
+let _csOver=null; // per-texture override (supporting characters are painted smaller; Pele keeps full detail)
+function withScale(k,fn){ const o=_csOver; _csOver=k; try{ return fn(); } finally{ _csOver=o; } }
+function canvasS(w,h=w){const k=_csOver==null?CSCALE:Math.min(CSCALE,_csOver);const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));const x=c.getContext('2d');if(k!==1)x.scale(k,k);return c;}
 const _cvMemo=new Map(), _texMemo=new Map();
 function memoTex(key,fn){ if(!_texMemo.has(key))_texMemo.set(key,fn()); return _texMemo.get(key); }
 /* paint a field: fn(u,v) → [r,g,b,h] in 0..1 */
@@ -1065,6 +1069,8 @@ try{
   throw e;
 }
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+/* synchronous shader-error checks stall the GPU pipeline on every new program (seconds on Windows/ANGLE). Keep them only for local test builds */
+renderer.debug.checkShaderErrors = location.protocol==='file:';
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0xbcd6ea, 0.0016);
 const camera = new THREE.PerspectiveCamera(55, 1, 0.08, 3000);
@@ -1133,18 +1139,22 @@ const clouds=(()=>{
   const c=new THREE.Mesh(g,m); c.frustumCulled=false; c.renderOrder=-7; skyFX.add(c); return c;})();
 
 /* ---------- post-processing (pmndrs/postprocessing + N8AO) ---------- */
-let composer=null, bloomFX=null, aoPass=null, basePR=1, pixelRatio=1;
+let composer=null, bloomFX=null, aoPass=null, basePR=1, pixelRatio=1, resScale=1, _shadowOn=null, _lastTM=null;
 const TIERS=['low','medium','high','ultra'];
 const QL=()=>settings.quality==='auto'?(settings.autoTier||'medium'):settings.quality;
+/* pixel ratio per tier, and a pixel budget so big desktop monitors (1440p/4K, Windows 125-150% scaling) don't render 5-8 million pixels a frame */
+const PX_BUDGET={low:1.3e6,medium:2.1e6,high:3.1e6,ultra:4.6e6};
 function qualityPR(q){const d=devicePixelRatio||1;
-  if(IS_MOBILE) return q==='ultra'?Math.min(d,1.75):q==='high'?Math.min(d,1.5):q==='medium'?Math.min(d,1.25):1;
-  return q==='ultra'?Math.min(d,2):q==='high'?Math.min(d,1.6):q==='medium'?Math.min(d,1.25):1;}
+  const cap=IS_MOBILE?(q==='ultra'?Math.min(d,1.75):q==='high'?Math.min(d,1.5):q==='medium'?Math.min(d,1.25):1)
+                     :(q==='ultra'?Math.min(d,2):q==='high'?Math.min(d,1.6):q==='medium'?Math.min(d,1.25):1);
+  const fit=Math.sqrt(PX_BUDGET[q]/Math.max(1,innerWidth*innerHeight));
+  return Math.max(.75,Math.min(cap,fit));}
 function setupPost(){
   const q=QL();
-  renderer.shadowMap.enabled = q!=='low';
-  const sm=IS_MOBILE?(q==='ultra'?2048:1024):(q==='ultra'?4096:q==='high'?2048:1024); sun.shadow.mapSize.set(sm,sm);
-  if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}
-  basePR=qualityPR(q); pixelRatio=basePR; renderer.setPixelRatio(pixelRatio);
+  const shadowOn=q!=='low';
+  renderer.shadowMap.enabled = shadowOn;
+  const sm=IS_MOBILE?(q==='ultra'?2048:1024):(q==='ultra'?4096:q==='high'?2048:1024);
+  if(sun.shadow.mapSize.x!==sm){ sun.shadow.mapSize.set(sm,sm); if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;} }
   if(composer){composer.dispose();composer=null;} aoPass=null; bloomFX=null;
   if(q==='low'){ renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=.9; }
   else{
@@ -1164,12 +1174,38 @@ function setupPost(){
     composer.addPass(new PP.EffectPass(camera,bloomFX,tone,grade,bc,vig));
     if(q!=='medium') composer.addPass(new PP.EffectPass(camera,new PP.SMAAEffect({preset:PP.SMAAPreset.HIGH})));
   }
-  scene.traverse(o=>{if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true);}});
+  /* three.js notices tone-mapping/colour-space changes by itself; only a shadow on/off flip needs every material rebuilt.
+     (rebuilding them on every quality step used to freeze slow PCs for seconds, again and again) */
+  let rebuilt=false;
+  if(_shadowOn!==null&&_shadowOn!==shadowOn){ scene.traverse(o=>{if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true);}}); rebuilt=true; }
+  _shadowOn=shadowOn;
   onResize();
+  return rebuilt||(_lastTM!==renderer.toneMapping&&(_lastTM=renderer.toneMapping,true));
 }
 function onResize(){
   const w=innerWidth,h=innerHeight; camera.aspect=w/h; camera.updateProjectionMatrix();
+  basePR=qualityPR(QL()); const pr=Math.max(.5,+(basePR*resScale).toFixed(3));
+  if(pr!==pixelRatio||renderer.getPixelRatio()!==pr){ pixelRatio=pr; renderer.setPixelRatio(pr); }
   renderer.setSize(w,h,false); if(composer)composer.setSize(w,h);
+}
+/* build every shader program now (in parallel where the browser supports it), against the same target the game renders into,
+   so nothing compiles mid-game; the loop idles for the few moments it takes */
+let gfxBusy=false;
+async function warmShaders(maxMs=6000){
+  gfxBusy=true;
+  const rt=composer?new THREE.WebGLRenderTarget(4,4,{type:THREE.HalfFloatType}):null;
+  try{ const prev=renderer.getRenderTarget(); renderer.setRenderTarget(rt); const p=renderer.compileAsync(scene,camera); renderer.setRenderTarget(prev);
+    await Promise.race([p,new Promise(r=>setTimeout(r,maxMs))]); }catch(e){ console.warn('warm',e); }
+  rt?.dispose(); gfxBusy=false;
+}
+/* upload every texture to the GPU during loading instead of the first time its object walks into view (that is a hitch per texture) */
+function warmTextures(){
+  const seen=new Set(), add=t=>{ if(t&&t.isTexture&&!t.isRenderTargetTexture&&!seen.has(t))seen.add(t); };
+  scene.traverse(o=>{ if(!o.material)return; for(const m of (Array.isArray(o.material)?o.material:[o.material])){
+    for(const k in m){ const v=m[k]; if(v&&v.isTexture)add(v); }
+    if(m.uniforms)for(const k in m.uniforms)add(m.uniforms[k]&&m.uniforms[k].value); } });
+  let n=0; for(const t of seen){ try{ renderer.initTexture(t); n++; }catch(e){} }
+  return n;
 }
 addEventListener('resize',onResize);
 
@@ -3600,10 +3636,10 @@ function makeOram(){ return makeKid({skin:'#dca47e',hair:['#7a5230','#a8784a','#
 function makeGili(){ const k=makeKid({skin:'#e8b898',hair:['#5a3420','#8a5a3a','#2a1a10'],freckles:false,brow:'#4a2a18',eyes:['#4a6a8a','#3a5a7a','#2a3a5a'],shirt:'#ff8fb0',shorts:'#3a3a5a',shoes:'#fff',shoeAccent:'#ff8fb0',bag:false,long:true,seed:12,height:1.72});
   const apron=mesh(new THREE.PlaneGeometry(.34,.5),new THREE.MeshStandardMaterial({map:stripeTex('#ffffff','#ffb8cc',8),side:THREE.DoubleSide,roughness:.9}),0,.12,.14,k.spine); return k; }
 
-function faceTexture(o={}){ return memoTex('faceTexture'+JSON.stringify([o]),()=>_faceTexture(o)); }
+function faceTexture(o={}){ return memoTex('faceTexture'+JSON.stringify([o]),()=>withScale(o.seed===7?1:.5,()=>_faceTexture(o))); }
 function irisTexture(col){ return memoTex('irisTexture'+JSON.stringify([col]),()=>_irisTexture(col)); }
-function hairTextures(a,b,c){ return memoTex('hairTextures'+JSON.stringify([a,b,c]),()=>_hairTextures(a,b,c)); }
-function jerseyTexture(kind,plain){ return memoTex('jerseyTexture'+JSON.stringify([kind,plain]),()=>_jerseyTexture(kind,plain)); }
+function hairTextures(a,b,c){ return memoTex('hairTextures'+JSON.stringify([a,b,c]),()=>withScale(!a||a==='#b4532a'?1:.5,()=>_hairTextures(a,b,c))); }
+function jerseyTexture(kind,plain){ return memoTex('jerseyTexture'+JSON.stringify([kind,plain]),()=>withScale(String(kind).startsWith('#')||plain?.5:1,()=>_jerseyTexture(kind,plain))); }
 function bagTexture(){ return memoTex('bagTexture'+JSON.stringify([]),()=>_bagTexture()); }
 function siameseCoatTexture(){ return memoTex('siameseCoatTexture'+JSON.stringify([]),()=>_siameseCoatTexture()); }
 function siameseFaceTexture(){ return memoTex('siameseFaceTexture'+JSON.stringify([]),()=>_siameseFaceTexture()); }
@@ -3799,7 +3835,7 @@ function makeGiliAdult(){ return makeAdult({female:true,skin:'#e8b898',hair:['#5
 function makeMika(){ return makeAdult({skin:'#c98e6a',hair:['#1a120c','#3a2a1c','#0a0604'],hairStyle:'short',top:'tee',topCol:'#2f6a5a',pants:'#2a2a2a',denim:false,shoes:'#3a2a1a',
   eyes:['#4a3020','#6a4a2a','#2a1a10'],brow:'#1a120c',lip:'#a86a5a',height:1.76,seed:51,apron:'#6a4a32'}); }
 
-function fabricTexture(base,o={}){ return memoTex('fab'+base+JSON.stringify(o),()=>_fabricTexture(base,o)); }
+function fabricTexture(base,o={}){ return memoTex('fab'+base+JSON.stringify(o),()=>withScale(.5,()=>_fabricTexture(base,o))); }
 function beardAlpha(){ return memoTex('beard',()=>_beardAlpha()); }
 /* =====================================================================
    FARM ANIMALS — chickens, cows, sheep and a pony (rideable)
@@ -6658,7 +6694,7 @@ $('s-test').onclick=()=>{Sound.init(); const d=$('voice-diag'); d.hidden=false;
   if(!ok){d.textContent=[...head(),'ההקראה כבויה או לא נתמכת'].join('\n');for(let i=0;i<8;i++)setTimeout(()=>Sound.blip(1.2),i*70);}
   setTimeout(()=>{if(d.textContent.endsWith('בודק…'))d.textContent=[...head(),'אין תגובה מהמנוע',...Voice.log.slice(-4)].join('\n');},7000);
 };
-document.querySelectorAll('#s-q button').forEach(b=>b.onclick=()=>{settings.quality=b.dataset.q;saveSettings();document.querySelectorAll('#s-q button').forEach(x=>x.setAttribute('aria-pressed',x===b));setupPost();});
+document.querySelectorAll('#s-q button').forEach(b=>b.onclick=()=>{settings.quality=b.dataset.q;saveSettings();document.querySelectorAll('#s-q button').forEach(x=>x.setAttribute('aria-pressed',x===b));resScale=1;settings.resScale=1;saveSettings();if(setupPost())warmShaders(4000);});
 const bindSwitch=(id,key,after)=>{$(id).onclick=(e)=>{settings[key]=!settings[key];e.currentTarget.setAttribute('aria-checked',settings[key]);saveSettings();after&&after();};};
 bindSwitch('s-voice','voice'); bindSwitch('s-niqqud','niqqud'); bindSwitch('s-invert','invert'); bindSwitch('s-big','bigControls',()=>document.documentElement.classList.toggle('big-controls',settings.bigControls));
 document.documentElement.classList.toggle('big-controls',settings.bigControls);
@@ -6895,24 +6931,40 @@ function updateSky(dt=0){
    MAIN LOOP
    ===================================================================== */
 let last=performance.now(), fpsEMA=60, slowT=0, netT=0, saveT=0, grassT=0, frameN=0;
-/* performance governor: in "auto" quality it steps down a tier when a device struggles; never flickers the resolution */
-const gov={t:0,frames:0,time:0,warned:false,cool:0};
-function govern(dt){
-  if(mode!=='playing'||document.hidden){gov.t=0;gov.frames=0;gov.time=0;return;}
-  gov.cool-=dt; gov.frames++; gov.time+=dt; gov.t+=dt;
-  if(gov.t<5)return;
+/* performance governor. Order of remedies, gentlest first:
+   1) render resolution slides smoothly between 100% and 70% (invisible at a glance, instant, no stalls)
+   2) only if that is not enough for a while, one quality tier down (never below "medium" unless the device is really struggling)
+   it never recompiles the world's shaders mid-game and never flickers: it waits between steps and only climbs back slowly */
+const gov={t:0,frames:0,time:0,warned:false,cool:3,bad:0,saveT:0,upWait:5,lastUp:-99,good:0};
+const RES_MIN=.7;
+function setResScale(k){ k=clamp(k,RES_MIN,1); if(Math.abs(k-resScale)<.001)return; resScale=k; settings.resScale=+k.toFixed(3); onResize(); }
+function govern(dt){ // dt here is the real, unclamped frame time
+  if(mode!=='playing'||document.hidden||gfxBusy||dt>.5){gov.t=0;gov.frames=0;gov.time=0;return;}
+  gov.cool-=dt; gov.saveT-=dt; gov.frames++; gov.time+=dt; gov.t+=dt;
+  if(gov.t<2)return;
   const fps=gov.frames/gov.time; gov.t=0;gov.frames=0;gov.time=0;
   if(gov.cool>0)return;
+  if(gov.saveT<=0){gov.saveT=20;saveSettings();}
+  if(fps<45&&resScale>RES_MIN+.001){ if(clock-gov.lastUp<12)gov.upWait=Math.min(60,gov.upWait*2); // it just climbed and fell again: climb more rarely
+    setResScale(resScale*(fps<30?.84:.92)); gov.cool=1.5; gov.bad=0; return; }
+  if(fps>55&&resScale<1){ setResScale(resScale*1.05); gov.lastUp=clock; gov.cool=gov.upWait; return; }
   if(settings.quality==='auto'){
-    const i=TIERS.indexOf(QL());
-    if(fps<30&&i>0){settings.autoTier=TIERS[i-1];saveSettings();setupPost();gov.cool=12;toast('התאמתי את איכות הגרפיקה כדי שהמשחק ירוץ חלק');}
-  } else if(fps<22&&!gov.warned){gov.warned=true;toast('המשחק כבד מדי למכשיר הזה. כדאי לבחור בהגדרות איכות "אוטומטית"');}
+    const i=TIERS.indexOf(QL()), floor=IS_MOBILE?0:1;
+    if(fps<40&&resScale<=RES_MIN+.001&&(i>floor||(i>0&&fps<22))){ if(++gov.bad>=3){ gov.bad=0; if(gov.climbed)gov.noClimb=true; settings.autoTier=TIERS[i-1]; resScale=.9; settings.resScale=.9; saveSettings(); gov.cool=20;
+        if(setupPost())warmShaders(4000); toast('התאמתי את איכות הגרפיקה כדי שהמשחק ירוץ חלק'); } }
+    else gov.bad=0;
+    // a long, steady stretch of full-speed play at full resolution: try one tier back up (once per session if it fails)
+    const home=TIERS.indexOf(IS_MOBILE?'medium':'high');
+    if(fps>57&&resScale>=.999&&i<home&&!gov.noClimb){ if(++gov.good>=30){ gov.good=0; gov.climbed=true; settings.autoTier=TIERS[i+1]; saveSettings(); gov.cool=10; if(setupPost())warmShaders(4000); } }
+    else gov.good=0;
+  } else if(fps<22&&resScale<=RES_MIN+.001&&!gov.warned){gov.warned=true;toast('המשחק כבד מדי למכשיר הזה. כדאי לבחור בהגדרות איכות "אוטומטית"');}
 }
 function frame(now){
   requestAnimationFrame(frame);
-  const dt=Math.min((now-last)/1000,.05); last=now; clock+=dt; frameN++;
+  const rawDt=(now-last)/1000, dt=Math.min(rawDt,.05); last=now; clock+=dt; frameN++;
   fpsEMA=lerp(fpsEMA,1/Math.max(dt,1e-3),.05);
   pollGamepad();
+  if(gfxBusy)return;
   if(mode==='blocks'){ BlockWorld.update(dt); renderer.render(BlockWorld.scene,BlockWorld.cam); input.jumpPressed=false; input.interact=false; input.lookDX=0; input.lookDY=0; return; }
   const DAY_LEN=settings.dayLen*60;
   if(mode==='playing'||mode==='dialog'){
@@ -6958,7 +7010,7 @@ function frame(now){
   updateSky(dt); updateBursts(dt);
   Sound.update(Math.max(biomeNow,0),nightF,dt);
   stepGrass(IS_MOBILE?160:420);
-  govern(dt);
+  govern(rawDt);
   if(mode==='arcade')return;
   const menu=['pause','sub','map','chapter'].includes(mode)&&!(mode==='sub'&&subStack[0]==='title');
   if(menu&&(frameN%3))return; // menus: the world just idles behind glass, spare the battery
@@ -6973,7 +7025,7 @@ function progress(p,msg){$('load-fill').style.width=Math.round(p*100)+'%'; if(ms
 let hotData={};
 async function boot(){
   setMode('loading'); $('load-tip').textContent=TIPS[Math.floor(Math.random()*TIPS.length)];
-  progress(.02,'מכין את העמק…'); setupPost(); await nextFrame();
+  progress(.02,'מכין את העמק…'); resScale=clamp(+settings.resScale||1,RES_MIN,1); setupPost(); await nextFrame();
   progress(.04,'מצייר טקסטורות: דשא, סלעים, חול ושלג…'); await buildTextures(p=>progress(p));
   await buildTerrain(p=>progress(p,'מפסל גבעות, דיונות ופסגות…')); buildWater();
   progress(.58,'שותל עצים, פרחים ופטריות זוהרות…'); await nextFrame();
@@ -6992,7 +7044,9 @@ async function boot(){
   Voice.init(); updateVoiceNote(); setTimeout(()=>VoicePack.load(),1500);
   progress(.95,'מדליק את השמיים…'); await nextFrame();
   updateSky(.016); updateEnv(); updateGrass(LM.tree.x,LM.tree.z+10);
-  try{renderer.compile(scene,camera);}catch(e){}
+  progress(.96,'מעלה טקסטורות…'); await nextFrame(); warmTextures();
+  progress(.97,'מכין את האפקטים…'); await warmShaders(15000);
+  try{ if(composer)composer.render(.016); else renderer.render(scene,camera); }catch(e){}
   progress(1,'מוכן!'); await nextFrame();
   setMode('title'); refreshTitle();
   requestAnimationFrame((t)=>{last=t;frame(t);});
