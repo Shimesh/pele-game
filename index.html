@@ -4095,8 +4095,11 @@ const Voice = {
   voiceFor(sp){ // casting: a chosen voice per character, else a different speaker per character (matching gender when names reveal it)
     const c=(settings.cast||{})[sp.id]; if(c&&c.voice){const v=this.list.find(v=>v.name===c.voice); if(v)return v;}
     if(settings.voiceName||!this.speakers||this.speakers.length<2) return this.he;
+    // sticky: once a character has a voice it keeps it, even when the device reloads its voice list mid-game
+    this.assigned=this.assigned||{}; const had=this.assigned[sp.id]&&this.list.find(v=>v.name===this.assigned[sp.id]); if(had)return had;
     const want=sp.g==='m'?'m':'f'; let pool=this.speakers.filter(s=>s.g===want||s.g==='?'); if(!pool.length)pool=this.speakers;
-    return pool[(sp.vi||0)%pool.length].v; },
+    pool=[...pool].sort((a,b)=>(a.v.name||'').localeCompare(b.v.name||''));
+    const v=pool[(sp.vi||0)%pool.length].v; this.assigned[sp.id]=v.name; return v; },
   make(say,sp,strategy){
     const u=new SpeechSynthesisUtterance(say);
     const cast=(settings.cast||{})[sp.id]||{};
@@ -4124,7 +4127,7 @@ const Voice = {
       u.onerror=(e)=>{const c=e?.error||'error'; if(/interrupted|canceled/.test(c))return; if(!started)next('שגיאה '+c); else this.note(`${st}: שגיאה ${c}`);};
       this.keep.push(u); if(this.keep.length>6)this.keep.shift();
       try{ ss.speak(u); try{if(ss.paused)ss.resume();}catch(_){} }catch(e){ next('חריגה '+e.message); return; }
-      setTimeout(()=>{ if(tok!==this.token||done||started)return; if(ss.speaking){started=true;this.strategy=st;this.note(`${st}: מדבר (בלי אירוע התחלה)`);onResult&&onResult(true,st);return;} next('לא התחיל תוך 2 שניות'); },2000);
+      setTimeout(()=>{ if(tok!==this.token||done||started)return; if(ss.speaking||ss.pending){started=true;this.strategy=st;this.note(`${st}: מדבר (בלי אירוע התחלה)`);onResult&&onResult(true,st);return;} next('לא התחיל תוך 3 שניות'); },this.strategy===st?3200:2000);
     };
     attempt(0);
     return true;
@@ -5584,6 +5587,7 @@ function dismount(){
     for(let r=1.2;r<4;r+=.6){ for(let a=0;a<6.28;a+=.5){ const tx=P.pos.x+Math.cos(a)*r, tz=P.pos.z+Math.sin(a)*r; if(groundAt(tx,tz,2)>WATER-.2){x=tx;z=tz;r=9;break;} } } }
   P.pos.set(x,Math.max(groundAt(x,z,P.pos.y+1),waterLevel(x,z)-1),z); P.vel.set(0,0,0); P.onGround=true;
   const M=P.model; M.root.rotation.set(0,P.yaw,0); M.spin.rotation.set(0,0,0); M.root.position.copy(P.pos); M.root.visible=true;
+  M.legs.forEach(l=>{l.thigh.rotation.set(0,0,0);l.knee.rotation.set(0,0,0);}); M.arms.forEach(a=>{a.sh.rotation.set(0,0,0);a.el.rotation.set(0,0,0);}); M.spine.rotation.set(0,0,0); M.body.position.y=M.bodyY??-.8;
   Sound.ui(); Sound.setEngine(0,0);
 }
 function summonVehicle(kind){
