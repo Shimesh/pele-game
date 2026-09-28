@@ -111,6 +111,7 @@ kbd{font-family:var(--ui);font-weight:700;background:var(--cream);color:var(--in
 .tb{width:72px;height:72px;border-radius:50%;border:2px solid rgba(255,246,226,.35);background:rgba(16,21,43,.55);font-size:15px;font-weight:700;touch-action:none;display:grid;place-items:center;backdrop-filter:blur(6px)}
 .tb.big{width:94px;height:94px;background:radial-gradient(circle at 40% 30%,#ffe2a8,var(--gold));color:var(--ink);border-color:transparent;box-shadow:0 8px 20px rgba(0,0,0,.35)}
 .tb.act{background:radial-gradient(circle at 40% 30%,#b8fff4,var(--teal));color:var(--ink);border-color:transparent}
+.tb.act.off{visibility:hidden;pointer-events:none} /* keeps its place: the run and jump buttons never move */
 .tb.on{background:rgba(95,224,208,.85);color:var(--ink)}
 .big-controls .tb{transform:scale(1.18)} .big-controls #joy{transform:scale(1.15)}
 
@@ -406,9 +407,9 @@ input[type=range]{touch-action:pan-x}
       <div id="joy-zone"></div><div id="look-zone"></div>
       <div id="joy"><div id="knob"></div></div>
       <div id="tb">
-        <button class="tb act" id="t-act" hidden>דבר</button><span></span>
-        <button class="tb" id="t-run">ריצה</button>
+        <button class="tb act off" id="t-act">דבר</button><span></span>
         <button class="tb big" id="t-jump">קפיצה</button>
+        <button class="tb" id="t-run">ריצה</button>
       </div>
     </div>
   </div>
@@ -1990,15 +1991,14 @@ function buildingShell({x,z,ry,w,d,h,wallM,trimM,floorM,door=2.6,glassM,sill=.8,
 const LAMP_M=new THREE.MeshBasicMaterial({color:'#fff1d0',toneMapped:false});
 const INTERIOR={light:null,f:0,stamp:-9,B:null};
 function interiorLight(B,dt){
-  if(!INTERIOR.light){ const L=new THREE.PointLight('#ffe6c0',0,30,1); L.castShadow=false; scene.add(L); INTERIOR.light=L;
-    INTERIOR.fill=new THREE.PointLight('#ffe6c0',0,30,1); scene.add(INTERIOR.fill); }
+  // one shared warm light (each extra light costs every pixel on a phone): inside a building it hangs over Pele; the campfire borrows it outdoors
+  if(!INTERIOR.light){ const L=new THREE.PointLight('#ffe6c0',0,30,1); L.castShadow=false; scene.add(L); INTERIOR.light=L; }
   INTERIOR.stamp=clock; if(B)INTERIOR.B=B;
-  INTERIOR.f=damp(INTERIOR.f,B?1:0,4,dt||.016); const I=INTERIOR.B, L=INTERIOR.light, F=INTERIOR.fill;
-  if(!I||INTERIOR.f<.01){ L.intensity=0; F.intensity=0; return; }
+  INTERIOR.f=damp(INTERIOR.f,B?1:0,4,dt||.016); const I=INTERIOR.B, L=INTERIOR.light;
+  if(!I||INTERIOR.f<.01){ INTERIOR.free=true; return; }
+  INTERIOR.free=false; L.color.set('#ffe6c0');
   const big=Math.max(I.w,I.d), P=player.pos, k=INTERIOR.f*(1.2+nightF*2.2)*(big>20?1.6:1);
-  // key light near Pele (keeps him and nearby shelves lit), fill at the room center
-  L.position.set(P.x,I.y0+I.h-.5,P.z); L.distance=big>20?22:14; L.intensity=k*9;
-  F.position.set(I.x,I.y0+I.h-.4,I.z); F.distance=big*1.1; F.intensity=k*(big>20?16:7);
+  L.position.set(P.x,I.y0+I.h-.4,P.z); L.distance=big>20?26:16; L.decay=1; L.intensity=k*(big>20?14:10);
 }
 function finishBuilding(B){ for(const W of B.walls) mergeStatic(W.g); mergeStatic(B.g,new Set(B.roofs)); }
 let _bdt=.016;
@@ -2981,7 +2981,7 @@ function buildCamp(){
     const flames=[]; for(let i=0;i<5;i++){ const f=put(g,G.cone(.28-i*.03,.9-i*.08,8),glowMat(i%2?'#ffb040':'#ff6a20',2.2),fx+Math.cos(i*1.3)*.15,fy+.55,fz+Math.sin(i*1.3)*.15,{shadow:false}); flames.push(f); }
     REG.fire={x:fx,y:fy,z:fz,flames}; addCollider({x:fx,z:fz,r:1.1,top:fy+.3});
     for(let i=0;i<3;i++){ const a=i/3*6.28+.9, lx=fx+Math.cos(a)*3.2, lz=fz+Math.sin(a)*3.2, ly=terrainAt(lx,lz); const log=put(g,G.cyl(.3,.3,2.2,12),pbr('#7a5232',{roughness:.9}),lx,ly+.3,lz); log.rotation.set(0,-a,Math.PI/2); addCollider({x:lx,z:lz,r:.9,top:ly+.6}); }
-    const L=new THREE.PointLight('#ff9a4a',0,24,1.4); L.position.set(fx,fy+1.6,fz); scene.add(L); REG.fireLight=L; }
+    if(!INTERIOR.light){ const L=new THREE.PointLight('#ffe6c0',0,30,1); L.castShadow=false; scene.add(L); INTERIOR.light=L; } INTERIOR.free=true; }
   // lookout with a telescope on the plateau edge facing the valley
   { const tx=-222, tz=-178, ty=terrainAt(tx,tz); put(g,G.box(3,.2,3),new THREE.MeshStandardMaterial({map:plankTex('#a8845a'),roughness:.8}),tx,ty+.1,tz); boxCollider(tx,tz,1.5,1.5,ty-1,ty+.2);
     put(g,G.cyl(.04,.06,1.2,8),pbr('#2e3238',{metalness:.6}),tx,ty+.8,tz); const tb=put(g,G.cyl(.08,.12,.9,12),pbr('#c8a040',{metalness:.8,roughness:.3}),tx+.2,ty+1.45,tz+.2); tb.rotation.set(.3,.8,Math.PI/2.4); }
@@ -3127,7 +3127,7 @@ function updateRegions(dt){
   for(const D of REG.ducks){ D.a+=dt*.25; D.d.position.set(D.c.x+Math.cos(D.a)*D.r,D.c.y+Math.sin(clock*2+D.r)*.02,D.c.z+Math.sin(D.a)*D.r); D.d.rotation.y=-D.a; }
   // campfire flicker
   if(REG.fire){ const F=REG.fire, near=Math.hypot(P.x-F.x,P.z-F.z)<60; F.flames.forEach((f,i)=>{ f.scale.set(1+Math.sin(clock*9+i)*.12,1+Math.sin(clock*11+i*2)*.25,1+Math.cos(clock*8+i)*.12); f.rotation.y=clock*(1+i*.3); });
-    REG.fireLight.intensity=near?(6+nightF*14)*(1+Math.sin(clock*13)*.08+Math.sin(clock*7.3)*.06):0;
+    if(INTERIOR.free!==false){ const L=INTERIOR.light; if(near){ L.color.set('#ff9a4a'); L.position.set(F.x,F.y+1.6,F.z); L.distance=24; L.decay=1.4; L.intensity=(6+nightF*14)*(1+Math.sin(clock*13)*.08+Math.sin(clock*7.3)*.06); } else L.intensity=0; }
     if(near&&Math.random()<dt*5) emit(F.x+R(-.3,.3),F.y+1,F.z+R(-.3,.3),1,{color:'#ffb040',speed:.4,up:1.6,life:1,size:7,grav:-.5}); }
   // lighthouse beam + bobbing things
   if(REG.beam){ REG.beam.rotation.y+=dt*.6; REG.beam.visible=!!S.flags?.lighthouse&&nightF>.25; if(REG.lamp) REG.lamp.material.emissiveIntensity=S.flags?.lighthouse?(1.2+nightF*2.5):.15; }
@@ -3138,7 +3138,7 @@ function updateRegions(dt){
   // eggs sparkle; gate swings open once the villa is Pele's
   for(const e of REG.eggs){ if(e.m.visible){ e.m.rotation.y+=dt; e.glint.material.color.setScalar(1.4+Math.sin(clock*4+e.i)*1.2); } }
   if(REG.gate&&S.villa?.owned&&REG.gate.open<1){ REG.gate.open=Math.min(1,REG.gate.open+dt*.6); REG.gate.g.position.z=-190-REG.gate.open*6.2; }
-  if(REG.tv&&REG.villa&&Math.hypot(P.x-183,P.z+214)<20&&(frameN&7)===0) drawTV(clock);
+  if(REG.tv&&REG.villa&&Math.hypot(P.x-183,P.z+214)<14&&(frameN&31)===0) drawTV(clock);
   updateQuests2(dt);
   // pool shimmer
   if(REG.pool){ const m=REG.pool.water.material; if(m.normalMap){ m.normalMap.offset.set(clock*.02,clock*.013); } }
@@ -6322,8 +6322,8 @@ function updateHUD(dt){
     else if(nearAnimal){const k=nearAnimal.A.kind; label=k==='cow'?'ללטף את הפרה':k==='sheep'?'ללטף את הכבשה':'ללטף את התרנגולת'; verb='ללטף';}
     else if(nearCat){label=`לשחק עם ${cat()}`;verb=cat();}
   }
-  if(label){pr.innerHTML=IS_TOUCH?label:`<kbd>E</kbd> ${label}`;pr.classList.add('show');act.hidden=false;act.textContent=verb;}
-  else{pr.classList.remove('show');act.hidden=true;}
+  if(label){pr.innerHTML=IS_TOUCH?label:`<kbd>E</kbd> ${label}`;pr.classList.add('show');act.classList.remove('off');act.textContent=verb;}
+  else{pr.classList.remove('show');act.classList.add('off');}
 }
 
 /* =====================================================================
@@ -6906,7 +6906,7 @@ function govern(dt){
 }
 function frame(now){
   requestAnimationFrame(frame);
-  const dt=Math.min((now-last)/1000,.05); last=now; clock+=dt;
+  const dt=Math.min((now-last)/1000,.05); last=now; clock+=dt; frameN++;
   fpsEMA=lerp(fpsEMA,1/Math.max(dt,1e-3),.05);
   pollGamepad();
   if(mode==='blocks'){ BlockWorld.update(dt); renderer.render(BlockWorld.scene,BlockWorld.cam); input.jumpPressed=false; input.interact=false; input.lookDX=0; input.lookDY=0; return; }
@@ -6957,7 +6957,7 @@ function frame(now){
   govern(dt);
   if(mode==='arcade')return;
   const menu=['pause','sub','map','chapter'].includes(mode)&&!(mode==='sub'&&subStack[0]==='title');
-  if(menu&&(frameN++%3))return; // menus: the world just idles behind glass, spare the battery
+  if(menu&&(frameN%3))return; // menus: the world just idles behind glass, spare the battery
   if(composer)composer.render(dt); else renderer.render(scene,camera);
 }
 
