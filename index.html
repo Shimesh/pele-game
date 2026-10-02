@@ -362,6 +362,84 @@ input[type=range]{touch-action:pan-x}
 #bag-body .btn{padding:7px 14px;font-size:15px}
 
 @media (max-width:1100px){ .ib span:not(#b-ray-face),.ib .k{display:none} .ib{padding:0 11px} }
+
+/* ---- multiplayer ---- */
+.ib{position:relative}
+.badge{position:absolute;top:-6px;left:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:#3ad86a;color:#0b1a10;font-size:12px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+#mc-badge{background:#ff5a6e;color:#fff}
+#mp-dock{position:absolute;right:calc(12px + env(safe-area-inset-right,0px));top:46%;display:flex;flex-direction:column;gap:8px;pointer-events:auto;z-index:6}
+#mp-dock .ib{height:48px;width:48px;padding:0;justify-content:center;font-size:22px}
+#b-mic.on{background:#d83a4a!important;color:#fff;box-shadow:0 0 0 3px rgba(255,90,110,.35)}
+#mp-emo{position:absolute;right:calc(70px + env(safe-area-inset-right,0px));top:calc(46% + 50px);display:grid;grid-template-columns:repeat(3,64px);gap:6px;padding:8px;pointer-events:auto;z-index:7}
+#mp-emo[hidden]{display:none}
+.emo{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.emo span{font-size:26px;line-height:1}.emo small{font-size:11px;color:var(--cream-dim)}
+#mp-chat{background:rgba(16,21,43,.93)!important;position:absolute;right:calc(70px + env(safe-area-inset-right,0px));top:max(90px,18%);width:min(360px,calc(100vw - 96px));max-height:min(520px,62%);display:flex;flex-direction:column;gap:8px;padding:10px;pointer-events:auto;z-index:8}
+#mp-chat[hidden]{display:none}
+.mc-head{display:flex;align-items:center;justify-content:space-between;gap:6px}
+#mc-who,.fr-players{display:flex;flex-wrap:wrap;gap:6px}
+.pl{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:3px 8px 3px 4px;border-radius:99px;background:rgba(255,255,255,.07)}
+.pl i{width:22px;height:22px;border-radius:50%;background-size:cover;background-position:center}
+#mc-list{flex:1;min-height:80px;overflow:auto;display:flex;flex-direction:column;gap:6px;padding:4px}
+.mc-msg{align-self:flex-start;max-width:88%;padding:6px 10px;border-radius:14px 14px 14px 4px;background:rgba(255,255,255,.08);font-size:15px;display:flex;flex-direction:column;gap:2px}
+.mc-msg.me{align-self:flex-end;background:rgba(255,195,92,.18);border-radius:14px 14px 4px 14px}
+.mc-msg b{font-size:12px}
+#mc-quick{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+#mc-quick .q{white-space:nowrap;font-size:14px;color:var(--cream);background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18);padding:7px 12px}
+.mc-row{display:flex;gap:6px}
+.mc-row input{flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--cream);font:inherit;font-size:16px}
+.mc-row .btn{min-height:44px;padding:8px 12px;font-size:15px;flex:1;justify-content:center}
+#mc-send{flex:none}
+#mc-rec.on,#mc-mic.on{background:#d83a4a;color:#fff;border-color:transparent}
+#coop{position:absolute;top:calc(36% - 12px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:15px;font-weight:600;white-space:nowrap;z-index:5}
+#coop[hidden]{display:none}
+#coop .arrow{display:inline-block;color:#ffd24a;font-size:18px}
+#coop .arrow[hidden]{display:none}
+.fr-me{display:flex;align-items:center;gap:12px;margin-top:6px}
+.fr-me .f,.fr-row .f{width:52px;height:52px;border-radius:50%;background-size:cover;background-position:center;flex:none;box-shadow:0 0 0 2px var(--gold)}
+.fr-me .n,.fr-row .n{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.fr-me b{font-size:20px}
+.fr-st{font-size:13px;color:var(--muted)}.fr-st.online{color:#6ae08a}.fr-st.error{color:#ff8a8a}
+.mini-b{min-height:40px!important;padding:6px 12px!important;font-size:14px!important;border-radius:12px!important}
+.fr-inv{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fr-inv .btn{justify-content:center;font-size:16px}
+.fr-code{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;font-size:15px}
+.fr-code b{font-family:monospace;font-size:20px;letter-spacing:2px;color:var(--gold-2)}
+.fr-add{display:flex;gap:6px}
+.fr-add input{width:130px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--cream);font:inherit;font-size:16px;text-transform:uppercase;letter-spacing:1px}
+.fr-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.fr-row .f{width:44px;height:44px;box-shadow:0 0 0 2px rgba(255,255,255,.15);filter:grayscale(.7);opacity:.7}
+.fr-row.on .f{box-shadow:0 0 0 3px #3ad86a;filter:none;opacity:1}
+.fr-row small{font-size:13px;color:var(--muted)}.fr-row.on small{color:#6ae08a}
+.fr-row .acts{display:flex;gap:6px}
+.fr-row .x{min-width:40px;justify-content:center}
+.fr-coop{display:grid;gap:8px}
+.coop-b{min-height:60px}.coop-b .ic{font-size:26px}.coop-b small{display:block;font-size:13px;color:var(--cream-dim);font-weight:400}
+#fr-leave{margin-top:12px;justify-content:center}
+#cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin:8px 0}
+.cs-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:16px;border:2px solid var(--line);background:rgba(255,255,255,.04);font-size:15px;font-weight:600}
+.cs-card i{width:76px;height:76px;border-radius:50%;background-size:cover;background-position:center}
+.cs-card.on{border-color:var(--gold);background:rgba(255,195,92,.14)}
+#cs-maker{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:start;margin:6px 0 10px}
+#cs-maker[hidden]{display:none}
+#cs-prev{width:110px;height:110px;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 3px var(--gold)}
+.cs-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px}
+.cs-row .l{width:68px;font-size:13px;color:var(--cream-dim)}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.25)}
+.sw.on{border:3px solid #fff;box-shadow:0 0 0 2px var(--gold)}
+.cs-row .mini.on{background:var(--gold);color:var(--ink)}
+.cs-name{display:flex;align-items:center;gap:10px;margin:8px 0 12px;font-size:16px}
+.cs-name input{flex:1;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--cream);font:inherit;font-size:17px}
+#mp-ask{z-index:40}
+@media (max-width:720px){
+  #mp-dock{top:40%}
+  #mp-dock .ib{height:44px;width:44px}
+  #mp-emo{top:calc(40% + 48px)}
+  #mp-chat{right:64px;top:84px;width:calc(100vw - 80px);max-height:52%}
+  #cs-maker{grid-template-columns:1fr;justify-items:center}
+  .cs-row .l{width:100%;text-align:center}
+  .cs-row{justify-content:center}
+}
 </style>
 
 <div id="app" dir="rtl" lang="he">
@@ -390,11 +468,26 @@ input[type=range]{touch-action:pan-x}
     <div id="bar" class="top">
       <button class="ib" id="b-map" aria-label="מפה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg><span>מפה</span><span class="k">M</span></button>
       <button class="ib" id="b-ray" aria-label="ריי"><span id="b-ray-face"></span><span>ריי</span><span class="k">R</span></button>
+      <button class="ib" id="b-friends" aria-label="חברים"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.2c2.8.2 5 2.5 5 5.3"/></svg><span>חברים</span><b class="badge" id="fr-badge" hidden></b></button>
       <button class="ib" id="b-jet" aria-label="ג'טפאק" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="6" y="4" width="5" height="12" rx="2.5"/><rect x="13" y="4" width="5" height="12" rx="2.5"/><path d="M8 17l.5 3M16 17l-.5 3" stroke-linecap="round"/></svg><span>ג'טפאק</span><span class="k">G</span></button>
       <button class="ib" id="b-bag" aria-label="תיק"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span>תיק</span><span class="k">B</span></button>
       <button class="ib" id="b-journal" aria-label="יומן"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/></svg><span>יומן</span><span class="k">J</span></button>
       <button class="ib" id="b-pause" aria-label="תפריט"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>
     </div>
+    <div id="mp-dock" hidden>
+      <button class="ib" id="b-chat" aria-label="צ'אט"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg><b class="badge" id="mc-badge" hidden></b></button>
+      <button class="ib" id="b-emo" aria-label="תנועות">😀</button>
+      <button class="ib" id="b-mic" aria-label="מיקרופון"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    </div>
+    <div id="mp-emo" class="glass" hidden></div>
+    <div id="mp-chat" class="glass" hidden>
+      <div class="mc-head"><div id="mc-who"></div><button class="x" id="mc-close" aria-label="סגור">✕</button></div>
+      <div id="mc-list"></div>
+      <div id="mc-quick"></div>
+      <div class="mc-row"><input id="mc-in" maxlength="140" placeholder="לכתוב הודעה…" autocomplete="off"><button class="btn primary" id="mc-send">שליחה</button></div>
+      <div class="mc-row"><button class="btn" id="mc-rec">🎤 הקלטה</button><button class="btn" id="mc-mic">🎙️ לדבר בקול</button></div>
+    </div>
+    <div id="coop" class="glass" hidden><span id="coop-a" class="arrow">➤</span><span id="coop-t"></span></div>
     <div id="banner"><div class="n"></div><div class="s"></div><div class="rule"></div></div>
     <div id="chip" hidden><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="10" fill="#fff" stroke="#141a33" stroke-width="1.5"/><path d="M12 7l3.8 2.8-1.4 4.4H9.6L8.2 9.8z" fill="#141a33"/></svg><span id="chip-t"></span><span id="chip-dots"></span></div>
     <div id="toasts" aria-live="polite"></div>
@@ -587,6 +680,9 @@ input[type=range]{touch-action:pan-x}
       <div class="sec">בעיר החוף</div>
       <dl class="help-grid">
         <dt>☕ קפה חתולים</dt><dd>ליטוף לכל אחד מארבעת החתולים, ושוקו חם אצל מיקה שממלא לבבות</dd>
+        <dt>👥 חברים</dt><dd>כפתור "חברים" שולח לחבר קישור הזמנה. כשהוא לוחץ עליו ואתם מאשרים, רואים מי מחובר, מזמינים למשחק או מצטרפים למשחק של חבר (עד 4 שחקנים)</dd>
+        <dt>💬 ביחד</dt><dd>צ'אט עם משפטים מוכנים, הודעות קוליות ושיחה בקול. ניגשים לחבר כדי לתת לו כיף ✋, או עולים איתו כשהוא נוסע על רכב או על הפוני</dd>
+        <dt>⭐ משימות צוות</dt><dd>כשיש לפחות שני שחקנים: ציד כוכבי צוות, כפתורי התאומים ומרוץ חברים. כולם מקבלים מטבעות</dd>
         <dt>🕹️ ארקייד</dt><dd>עומדים מול מכונה ולוחצים <kbd>E</kbd>: דגים לריי, פלא רץ, זיכרון חברים</dd>
         <dt>🛝 גינת שעשועים</dt><dd>מגלשה, נדנדות (קפיצה כדי לעוף מהנדנדה), טרמפולינה וקרוסלה</dd>
         <dt>🏖️ החוף</dt><dd>עשרה צדפים נוצצים ליד המים, כדור ים ומזח ארוך</dd>
@@ -636,16 +732,46 @@ input[type=range]{touch-action:pan-x}
     </div>
   </div>
 
+  <div id="friends" class="overlay" hidden>
+    <div class="sheet glass">
+      <div class="head"><h2>לשחק עם חברים</h2><button class="x" id="fr-close" aria-label="סגור">✕</button></div>
+      <div class="fr-me"><span class="f" id="fr-face"></span><span class="n"><b id="fr-name"></b><small id="fr-status" class="fr-st"></small></span><button class="btn mini-b" id="fr-char">החלפת דמות</button></div>
+      <div class="sec">להזמין חבר</div>
+      <div class="fr-inv"><button class="btn primary" id="fr-share">📨 שליחת הזמנה</button><button class="btn" id="fr-copy">🔗 העתקת קישור</button></div>
+      <div class="fr-code"><span>הקוד שלי: <b id="fr-mycode"></b></span><span class="fr-add"><input id="fr-addcode" maxlength="6" placeholder="קוד של חבר" autocomplete="off" autocapitalize="characters"><button class="btn mini-b" id="fr-addbtn">הוספה</button></span></div>
+      <div class="sec">החברים שלי</div>
+      <div id="fr-list"></div>
+      <div id="fr-room"></div>
+      <p class="note">רק חברים שקיבלו את הקישור או הקוד שלך, ושאישרת, יכולים לראות שאתה מחובר, לכתוב או לדבר איתך. מומלץ לשחק עם חברים שמכירים, ולספר להורים.</p>
+    </div>
+  </div>
+  <div id="charsel" class="overlay" hidden>
+    <div class="sheet glass">
+      <div class="head"><h2>בחירת דמות</h2><button class="x" id="cs-close" aria-label="סגור">✕</button></div>
+      <div id="cs-grid"></div>
+      <div id="cs-maker" hidden><div id="cs-prev"></div><div id="cs-sw"></div></div>
+      <label class="cs-name">השם שלי במשחק <input id="cs-name" maxlength="12" autocomplete="off"></label>
+      <button class="btn primary" id="cs-ok">זה אני! ✓</button>
+    </div>
+  </div>
+  <div id="mp-ask" class="overlay" hidden>
+    <div class="sheet glass" style="max-width:420px;text-align:center">
+      <h2 id="ma-h"></h2><p id="ma-t" class="note" style="font-size:16px"></p>
+      <div class="grid2"><button class="btn primary" id="ma-yes">כן</button><button class="btn" id="ma-no">לא</button></div>
+    </div>
+  </div>
+
   <div id="title" class="overlay">
     <div id="logo"><div class="l1">פלא</div><div class="l2">וארץ האור האבוד</div><div class="rule"></div></div>
     <div class="list">
       <button class="btn primary" id="t-continue" hidden><i class="ico"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></i><span class="lbl">המשך משחק<small id="t-cont-note"></small></span></button>
       <button class="btn" id="t-new"><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></i><span class="lbl">משחק חדש</span></button>
       <div class="grid2"><button class="btn" id="t-load"><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg></i><span class="lbl">משבצות</span></button><button class="btn" id="t-settings"><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M21.5 12h-3M5.5 12h-3M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1M18.7 18.7l-2.1-2.1M7.4 7.4 5.3 5.3" stroke-linecap="round"/></svg></i><span class="lbl">הגדרות</span></button></div>
+      <button class="btn" id="t-friends"><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.2c2.8.2 5 2.5 5 5.3"/></svg></i><span class="lbl">לשחק עם חברים<small>מזמינים חבר ומשחקים ביחד מרחוק</small></span></button>
       <button class="btn" id="t-install" hidden><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></i><span class="lbl">התקן כאפליקציה<small>אייקון במסך הבית, בלי דפדפן</small></span></button>
       <button class="btn" id="t-help"><i class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.8.4-1.1.9-1.1 1.8M12 17h.01"/></svg></i><span class="lbl">איך משחקים</span></button>
     </div>
-    <div id="title-foot"><b style="color:#ffc35c">חדש:</b> וילה עם בריכת אינפיניטי וקונסולה, חוות חיות, מחנה בהרים, אי עם מגדלור, קורקינט, פוני, רכב שטח, אופנוע ים וג'טפאק</div>
+    <div id="title-foot"><b style="color:#ffc35c">חדש:</b> משחק עם חברים מרחוק! מזמינים חבר, בוחרים דמות, מדברים בצ'אט ובקול, נוסעים ביחד ועושים משימות צוות</div>
   </div>
 
   <div id="loading" class="overlay">
@@ -4697,6 +4823,7 @@ const keys=new Set();
 function updatePlayer(dt){
   const P=player, M=P.model;
   if(townPlayerPhysics(dt)){ P.speed=0; return; }
+  if(MP.pass){ mpPassengerUpdate(dt); return; }
   if(VEH.ride){ rideUpdate(dt); playerInteractions(dt,true); return; }
   // ---- intent
   let ix=input.x, iy=input.y;
@@ -5501,7 +5628,7 @@ function openBag(){
 /* ---------- accessories on Pele: cap, sunglasses, flashlight ---------- */
 let ACC=null;
 function buildAccessories(){
-  const K=player.model, HR=.128; ACC={};
+  const K=player.model, HR=.128, prevLight=ACC&&ACC.light; ACC={};
   const cap=new THREE.Group(); K.head.add(cap);
   const capM=new THREE.MeshStandardMaterial({color:'#2a6ad8',roughness:.7});
   const dome=new THREE.Mesh(new THREE.SphereGeometry(HR*1.13,24,12,0,Math.PI*2,0,Math.PI*.5),capM); dome.position.y=HR*.28; dome.scale.set(1,.8,1.05); cap.add(dome);
@@ -5513,7 +5640,7 @@ function buildAccessories(){
   const br=new THREE.Mesh(G.box(HR*.3,HR*.04,HR*.04),lensM); br.position.set(0,HR*.16,HR*1.0); sh.add(br);
   for(const s of [-1,1]){ const t=new THREE.Mesh(G.box(HR*.03,HR*.03,HR*.9),lensM); t.position.set(s*HR*.58,HR*.14,HR*.55); sh.add(t); }
   ACC.shades=sh;
-  const light=new THREE.SpotLight('#fff1c8',0,32,.55,.5,1.2); light.position.set(0,1.3,.2); const tg=new THREE.Object3D(); tg.position.set(0,.2,6); K.root.add(light); K.root.add(tg); light.target=tg; ACC.light=light;
+  const light=prevLight||new THREE.SpotLight('#fff1c8',0,32,.55,.5,1.2); light.position.set(0,1.3,.2); const tg=prevLight?light.target:new THREE.Object3D(); tg.position.set(0,.2,6); K.root.add(light); K.root.add(tg); light.target=tg; ACC.light=light;
   const torch=new THREE.Mesh(G.cyl(.03,.035,.18,10),new THREE.MeshStandardMaterial({color:'#333',metalness:.6,roughness:.3})); torch.rotation.x=Math.PI/2; torch.position.set(0,-.25,.06);
   K.arms[1].el.add(torch); ACC.torch=torch;
   applyAccessories();
@@ -5606,8 +5733,9 @@ function toggleJet(){ if(!S.gear?.jetpack)return; if(VEH.ride){toast('קודם �
 
 function vehAvailable(V){ return !V.need||V.need(); }
 function nearestVehicle(){ let best=null, bd=2.4; const P=player.pos;
-  for(const V of VEH.list){ if(V===VEH.ride)continue; const d=Math.hypot(P.x-V.pos.x,P.z-V.pos.z); if(d<bd+V.K.r*.6&&Math.abs(P.y-V.pos.y)<2.2){bd=d;best=V;} } return best; }
+  for(const V of VEH.list){ if(V===VEH.ride||V.remote)continue; const d=Math.hypot(P.x-V.pos.x,P.z-V.pos.z); if(d<bd+V.K.r*.6&&Math.abs(P.y-V.pos.y)<2.2){bd=d;best=V;} } return best; }
 function mountVehicle(V){
+  if(V.remote){ toast(`${friendName(V.remote)} נוסע על ${V.K.the}`); return; }
   if(!vehAvailable(V)){ toast(V.lock||'עוד אי אפשר לעלות'); Sound.bad(); return; }
   if(VEH.jet) setJet(false);
   const P=player; VEH.ride=V; P.pos.copy(V.pos); P.vel.set(0,0,0); V.speed=0; V.vy=0; VEH.prevDist=cam.tdist; cam.tdist=Math.max(cam.tdist,V.K.cam);
@@ -5624,14 +5752,14 @@ function dismount(){
   P.pos.set(x,Math.max(groundAt(x,z,P.pos.y+1),waterLevel(x,z)-1),z); P.vel.set(0,0,0); P.onGround=true;
   const M=P.model; M.root.rotation.set(0,P.yaw,0); M.spin.rotation.set(0,0,0); M.root.position.copy(P.pos); M.root.visible=true;
   M.legs.forEach(l=>{l.thigh.rotation.set(0,0,0);l.knee.rotation.set(0,0,0);}); M.arms.forEach(a=>{a.sh.rotation.set(0,0,0);a.el.rotation.set(0,0,0);}); M.spine.rotation.set(0,0,0); M.body.position.y=M.bodyY??-.8;
-  Sound.ui(); Sound.setEngine(0,0);
+  Sound.ui(); Sound.setEngine(0,0); mpParked(V);
 }
 function summonVehicle(kind){
-  const V=VEH.list.filter(v=>v.kind===kind&&vehAvailable(v)).sort((a,b)=>a.pos.distanceTo(player.pos)-b.pos.distanceTo(player.pos))[0]; if(!V)return false;
+  const V=VEH.list.filter(v=>v.kind===kind&&vehAvailable(v)&&!v.remote).sort((a,b)=>a.pos.distanceTo(player.pos)-b.pos.distanceTo(player.pos))[0]; if(!V)return false;
   const P=player.pos, x=P.x+Math.sin(player.yaw)*2.2, z=P.z+Math.cos(player.yaw)*2.2;
   if(kind==='jetski'){ if(terrainAt(x,z)>WATER-.4){toast('אופנוע הים מגיע רק למים עמוקים. גשו לחוף ונסו שוב');return false;} V.pos.set(x,WATER,z); }
   else { if(terrainAt(x,z)<waterLevel(x,z)-.4){toast(`${V.K.the} לא נוסע במים`);return false;} V.pos.set(x,groundAt(x,z,P.y+1),z); }
-  V.yaw=player.yaw; V.model.root.position.copy(V.pos); V.model.root.rotation.set(0,V.yaw,0,'YXZ'); emit(V.pos.x,V.pos.y+.6,V.pos.z,24,{color:'#bff0ff',speed:3,up:2,life:.7,size:10}); Sound.warp(); return true;
+  V.yaw=player.yaw; V.model.root.position.copy(V.pos); V.model.root.rotation.set(0,V.yaw,0,'YXZ'); emit(V.pos.x,V.pos.y+.6,V.pos.z,24,{color:'#bff0ff',speed:3,up:2,life:.7,size:10}); Sound.warp(); mpParked(V); return true;
 }
 
 /* driving */
@@ -5685,12 +5813,7 @@ function rideUpdate(dt){
   if(V.kind==='pony'){ animateAnimal(V.model,dt,{speed:V.speed,t:clock}); if(V.onGround&&V.speed>1&&Math.floor(V.model.phase/Math.PI)!==V._ph){V._ph=Math.floor(V.model.phase/Math.PI);Sound.noise({d:.05,vol:.07,freq:260+Math.random()*120,q:3});} }
   Sound.setEngine(V.kind,Math.abs(V.speed)/K.max);
   // rider pose
-  M.root.visible=true; M.root.position.copy(P.pos); M.root.rotation.set(V.tilt,V.yaw,V.lean*(V.kind==='buggy'?.3:1),'YXZ');
-  M.root.translateY(K.seatY-(K.seat==='stand'?0:.66)); if(V.kind==='buggy')M.root.translateZ(-.12); if(V.kind==='jetski')M.root.translateZ(-.2); if(V.kind==='pony')M.root.translateZ(-.14);
-  animateKid(M,dt,{speed:0,onGround:true,t:clock});
-  if(K.seat==='stand'){ M.legs.forEach((l,i)=>{l.thigh.rotation.x=-.12-(i?.15:0);l.thigh.rotation.z=0;l.knee.rotation.x=.25;}); M.arms.forEach((a,i)=>{a.sh.rotation.x=-1.05;a.sh.rotation.z=(i?-1:1)*-.18;a.el.rotation.x=-.35;}); M.spine.rotation.x=.14+Math.min(.12,V.speed*.01); }
-  else if(K.seat==='sit'){ M.legs.forEach(l=>{l.thigh.rotation.x=-1.45;l.thigh.rotation.z=0;l.knee.rotation.x=1.35;}); M.arms.forEach((a,i)=>{a.sh.rotation.x=-1.1;a.sh.rotation.z=(i?-1:1)*-.1;a.el.rotation.x=-.45;}); M.spine.rotation.x=.08; }
-  else { M.legs.forEach((l,i)=>{l.thigh.rotation.x=-.55;l.thigh.rotation.z=(i?-1:1)*.72;l.knee.rotation.x=.95;}); M.arms.forEach((a,i)=>{a.sh.rotation.x=-.9;a.sh.rotation.z=(i?-1:1)*-.15;a.el.rotation.x=-.6;}); M.body.position.y=(M.bodyY??-.8)+(V.speed>5?Math.abs(Math.sin(V.model.phase))*.06:0); M.spine.rotation.x=.12; }
+  riderPose(M,V,P.pos,V.tilt,V.yaw,V.lean,V.speed,dt,false);
   // odometer for achievements
   S.driven=(S.driven||0)+Math.abs(V.speed)*dt; if(S.driven>2000)unlock('roadtrip');
 }
@@ -5712,7 +5835,7 @@ function resetVehicles(){ if(VEH.ride){ VEH.ride=null; cam.tdist=VEH.prevDist||4
   for(const V of VEH.list){ V.pos.set(V.home.x,V.kind==='jetski'?WATER:groundAt(V.home.x,V.home.z,99),V.home.z); V.yaw=V.home.yaw; V.speed=0; V.model.root.position.copy(V.pos); V.model.root.rotation.set(0,V.yaw,0); } }
 function updateParkedVehicles(dt){
   const P=player.pos;
-  for(const V of VEH.list){ if(V===VEH.ride)continue; const R=V.model.root; const far=Math.hypot(P.x-V.pos.x,P.z-V.pos.z); R.visible=far<160;
+  for(const V of VEH.list){ if(V===VEH.ride||V.remote)continue; const R=V.model.root; const far=Math.hypot(P.x-V.pos.x,P.z-V.pos.z); R.visible=far<160;
     if(V.kind==='jetski'){ R.position.y=WATER+Math.sin(clock*1.6+V.pos.x)*.06; R.rotation.z=Math.sin(clock*1.2+V.pos.z)*.04; }
     if(V.kind==='pony'&&far<60) animateAnimal(V.model,dt,{speed:0,t:clock,graze:(Math.sin(clock*.3+1)>.6?.8:0)}); }
 }
@@ -6252,6 +6375,716 @@ const BlockWorld={X:40,Y:24,Z:40,data:null,scene:null,cam:null,mesh:null,atlas:n
 };
 
 /* =====================================================================
+   MULTIPLAYER — play together with friends from far away.
+   Peer-to-peer WebRTC through PeerJS (open source, free public signalling
+   and relay servers). Safety: there is no public lobby. Only friends that
+   were added with a personal invite link or code, and approved on the
+   other device, can see you online, chat or talk with you.
+   Topology: the player who opened the game is the host; guests send to
+   the host, the host passes messages on (up to 4 players).
+   ===================================================================== */
+const MP_PREFIX='pele-game-v1-', MP_MAX=4, MP_LIB='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';
+const MP_SITE='https://shimesh.github.io/pele-game/';
+const MP={peer:null,status:'off',err:'',links:new Map(),room:{host:null,members:new Map()},remotes:new Map(),chat:[],unread:0,
+  pass:null,emote:null,mic:null,calls:new Map(),audios:new Map(),coop:null,beacons:[],sendT:0,worldT:0,asks:[],retry:0,dup:0,joining:null,autoJoin:null,chatOpen:false};
+ACH.push({id:'friend1',name:'ביחד זה כיף',desc:'שיחקת עם חבר מרחוק'},{id:'teamwork',name:'צוות מנצח',desc:'השלמת משימת צוות עם חברים'},{id:'hi5',name:'כיף!',desc:'נתת כיף לחבר בתוך המשחק'});
+
+const cleanName=s=>String(s??'').replace(/[<>&"'`\u0000-\u001f]/g,'').replace(/\s+/g,' ').trim().slice(0,14);
+const cleanChat=s=>String(s??'').replace(/[\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim().slice(0,140);
+const escH=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const r1=v=>Math.round(v*10)/10, r2=v=>Math.round(v*100)/100, r3=v=>Math.round(v*1000)/1000;
+
+/* ---------- characters: the four kids, or a new one made in the character maker ---------- */
+const CHAR_BASES={pele:{name:'פלא',col:'#7cb9e8',make:()=>makeKid({seed:7})},adam:{name:'אדם',col:'#e85a4a',make:makeAdam},eitan:{name:'איתן',col:'#5fd07a',make:makeEitan},oram:{name:'אורם',col:'#ffa04a',make:makeOram}};
+const CC={skin:['#f6d4bc','#ecbc98','#e0a882','#c98c62','#a46a44','#7a4a2e'],
+  hair:[['#9c4a24','#c8703c','#5a2412'],['#2a1a12','#5a3a22','#120a06'],['#5a3420','#8a5a3a','#2a1a10'],['#d8a850','#f0d488','#9a7228'],['#141414','#3a3a3a','#000000'],['#c86a9a','#f0a0c8','#7a3a5a']],
+  shirt:['#e85a4a','#3a7ae8','#3aa65a','#ff8a3a','#9a5ae8','#ff8fb0','#ffd23a','#20b8b8'],
+  shorts:['#1e2a44','#2a4a7a','#3a3a3a','#f2f2f2','#6a4a2a','#2a6a4a'],
+  eyes:[['#4a3020','#6a4a2a','#2a1a10'],['#4a6a8a','#6a8aaa','#2a3a5a'],['#5f6e3a','#8a6a34','#3c4a2a']]};
+const CC_KEYS={k:'skin',h:'hair',s:'shirt',p:'shorts',e:'eyes'};
+function charValid(ch){
+  if(!ch||typeof ch!=='object')return {base:'pele'};
+  if(CHAR_BASES[ch.base])return {base:ch.base};
+  if(ch.base!=='custom')return {base:'pele'};
+  const c=ch.c||{}, o={};
+  for(const [k,arr] of Object.entries(CC_KEYS)) o[k]=clamp(Math.floor(+c[k]||0),0,CC[arr].length-1);
+  o.l=c.l?1:0; o.f=c.f?1:0; o.t=clamp(Math.floor(+c.t||0),0,2);
+  return {base:'custom',c:o};
+}
+function charOpts(ch){ const c=charValid(ch).c, hair=CC.hair[c.h], sh=CC.shirt[c.s];
+  return {skin:CC.skin[c.k],hair,freckles:!!c.f,brow:hair[2],eyes:CC.eyes[c.e],shirt:sh,shorts:CC.shorts[c.p],shoes:'#f4f4f4',shoeAccent:sh,bag:false,long:!!c.l,seed:21+c.k*7+c.h,height:1.34+c.t*.05}; }
+function makeCharModel(ch){ ch=charValid(ch); return ch.base==='custom'?makeKid(charOpts(ch)):CHAR_BASES[ch.base].make(); }
+function charName(ch){ ch=charValid(ch); return ch.base==='custom'?'':CHAR_BASES[ch.base].name; }
+function charColor(ch){ ch=charValid(ch); return ch.base==='custom'?CC.shirt[ch.c.s]:CHAR_BASES[ch.base].col; }
+function charKey(ch){ return JSON.stringify(charValid(ch)); }
+
+/* ---------- identity ---------- */
+function mpNewCode(){ const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s=''; const r=crypto.getRandomValues(new Uint8Array(6)); for(const b of r)s+=A[b%A.length]; return s; }
+function mpMe(){ let m=settings.mp;
+  if(!m||typeof m!=='object'||!/^[A-Z2-9]{6}$/.test(m.code||'')){ m=settings.mp={code:mpNewCode(),name:'',char:{base:'pele'},friends:[]}; saveSettings(); }
+  if(!Array.isArray(m.friends))m.friends=[]; m.char=charValid(m.char); return m; }
+const mpMyCode=()=>mpMe().code;
+function mpName(){ const m=mpMe(); return cleanName(m.name)||charName(m.char)||'שחקן'; }
+function mpFriend(code){ return mpMe().friends.find(f=>f.code===code); }
+function mpAddFriend(code,name,ch){ if(!/^[A-Z2-9]{6}$/.test(code)||code===mpMyCode())return; const m=mpMe(); let f=mpFriend(code);
+  if(!f){ f={code,name:cleanName(name)||'חבר',char:charValid(ch)}; m.friends.push(f); } else { if(name)f.name=cleanName(name)||f.name; if(ch)f.char=charValid(ch); }
+  saveSettings(); }
+function mpFriendUpdate(code,h){ const f=mpFriend(code); if(!f)return; const n=cleanName(h.name); if(n)f.name=n; if(h.char)f.char=charValid(h.char); saveSettings(); }
+function mpRemoveFriend(code){ const m=mpMe(); m.friends=m.friends.filter(f=>f.code!==code); saveSettings();
+  if(MP.room.members.has(code)){ if(mpIsHost()){ mpSendCode(code,{t:'end'}); mpMemberLeft(code,'left'); } else mpLeaveRoom(); }
+  const L=MP.links.get(code); MP.links.delete(code); try{L&&L.conn.close();}catch(e){} mpUI(); }
+function friendName(code){ return MP.room.members.get(code)?.name||MP.links.get(code)?.info?.name||mpFriend(code)?.name||'חבר'; }
+
+/* ---------- room state helpers ---------- */
+const mpInRoom=()=>MP.room.members.size>0;
+const mpIsHost=()=>!MP.room.host||MP.room.host===mpMyCode();
+function mpRoomInfo(){ return {h:MP.room.host||mpMyCode(),n:MP.room.members.size+1}; }
+function mpHello(){ return {t:'hi',v:1,code:mpMyCode(),name:mpName(),char:mpMe().char,room:mpRoomInfo()}; }
+function mpSendTo(L,m){ try{ if(L&&L.open)L.conn.send(m); }catch(e){} }
+function mpSendCode(code,m){ mpSendTo(MP.links.get(code),m); }
+function mpHelloAll(){ const h=mpHello(); for(const L of MP.links.values())mpSendTo(L,h); }
+function mpRoomSend(m){ if(!mpInRoom())return; if(mpIsHost()){ for(const c of MP.room.members.keys())mpSendCode(c,m); } else mpSendCode(MP.room.host,m); }
+function mpRosterList(){ const me={code:mpMyCode(),name:mpName(),char:mpMe().char}; return [me,...[...MP.room.members].map(([code,m])=>({code,name:m.name,char:m.char}))]; }
+
+/* ---------- connection to the signalling server ---------- */
+function mpLoadLib(){ if(window.Peer)return Promise.resolve(); if(MP._libP)return MP._libP;
+  MP._libP=new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=MP_LIB; s.async=true; s.onload=()=>window.Peer?res():rej(new Error('lib')); s.onerror=()=>{MP._libP=null;rej(new Error('lib'));}; document.head.appendChild(s); });
+  return MP._libP; }
+async function mpStart(){
+  if(MP.peer&&!MP.peer.destroyed)return; const me=mpMe(); MP.status='connecting'; MP.err=''; mpUI();
+  try{ await mpLoadLib(); }catch(e){ MP.status='error'; MP.err='lib'; mpUI(); mpRetryLater(); return; }
+  let peer; try{ peer=new window.Peer(MP_PREFIX+me.code,Object.assign({debug:0},window.PELE_PEER||{})); }catch(e){ MP.status='error'; MP.err='browser'; mpUI(); return; }
+  MP.peer=peer;
+  peer.on('open',()=>{ if(MP.peer!==peer)return; MP.status='online'; MP.retry=0; MP.dup=0; MP.err=''; mpUI(); mpPollFriends(); if(MP.autoJoin)mpConnect(MP.autoJoin); });
+  peer.on('connection',c=>mpIncoming(c));
+  peer.on('call',call=>mpIncomingCall(call));
+  peer.on('disconnected',()=>{ if(MP.peer!==peer||peer.destroyed)return; MP.status='connecting'; mpUI(); setTimeout(()=>{ try{ if(MP.peer===peer&&!peer.destroyed&&peer.disconnected)peer.reconnect(); }catch(e){} },1500); });
+  peer.on('error',e=>mpPeerError(peer,e));
+  if(!MP._poll) MP._poll=setInterval(()=>{ if(MP.status==='online')mpPollFriends(); },20000);
+}
+function mpPeerError(peer,e){ const t=e&&e.type;
+  if(t==='peer-unavailable'){ const m=/peer (\S+)/.exec(e.message||''); const code=m?m[1].replace(MP_PREFIX,''):null;
+    if(code){ const L=MP.links.get(code); if(L&&!L.open){ MP.links.delete(code); try{L.conn.close();}catch(_){} }
+      if(MP.autoJoin===code||MP.joining===code){ MP.autoJoin=null; MP.joining=null; toast(`${friendName(code)} לא מחובר כרגע. כשיפתח את המשחק הוא יופיע אצלך ברשימת החברים`); } mpUI(); }
+    return; }
+  if(MP.peer!==peer)return;
+  if(t==='unavailable-id'){ // still registered from a moment ago (refresh) or open in another tab
+    MP.dup++; MP.status='error'; MP.err=MP.dup>3?'dup':'wait'; mpUI(); mpRetryLater(); return; }
+  if(t==='browser-incompatible'){ MP.status='error'; MP.err='browser'; mpUI(); return; }
+  if(['network','server-error','socket-error','socket-closed','ssl-unavailable'].includes(t)){ MP.status='error'; MP.err='net'; mpUI(); mpRetryLater(); return; }
+  console.warn('mp',t,e&&e.message);
+}
+function mpRetryLater(){ clearTimeout(MP._rt); MP.retry++; MP._rt=setTimeout(()=>{ const p=MP.peer; MP.peer=null; try{p&&p.destroy();}catch(e){} mpStart(); },Math.min(60000,3000*MP.retry)); }
+function mpPollFriends(){ for(const f of mpMe().friends){ if(!MP.links.has(f.code))mpConnect(f.code); } }
+
+/* ---------- links between friends (one data channel per pair) ---------- */
+function mpConnect(code){
+  if(!MP.peer||MP.status!=='online'||code===mpMyCode())return; const ex=MP.links.get(code); if(ex&&(ex.open||ex.pending))return;
+  let conn; try{ conn=MP.peer.connect(MP_PREFIX+code,{reliable:true,metadata:{code:mpMyCode(),name:mpName(),char:mpMe().char}}); }catch(e){ return; }
+  if(!conn)return; const L={code,conn,open:false,pending:true,by:mpMyCode()}; MP.links.set(code,L); mpWire(L);
+  setTimeout(()=>{ if(MP.links.get(code)===L&&!L.open){ MP.links.delete(code); try{conn.close();}catch(e){} mpUI(); } },15000);
+}
+function mpIncoming(conn){
+  const h=conn.metadata||{}, code=String(h.code||''); if(!/^[A-Z2-9]{6}$/.test(code)||code===mpMyCode()){ try{conn.close();}catch(e){} return; }
+  conn._buf=[]; conn._early=d=>{ if(conn._buf.length<50)conn._buf.push(d); }; conn.on('data',conn._early); // keep what arrives while we ask
+  const accept=()=>{ const ex=MP.links.get(code);
+    if(ex&&(ex.open||ex.pending)){ // both sides dialled at once: keep the link opened by the smaller code
+      if(code<mpMyCode()){ MP.links.delete(code); try{ex.conn.close();}catch(e){} } else { try{conn.close();}catch(e){} return; } }
+    const L={code,conn,open:false,pending:true,by:code}; MP.links.set(code,L); mpWire(L); };
+  if(mpFriend(code)){ mpFriendUpdate(code,h); accept(); return; }
+  const n=cleanName(h.name)||'חבר חדש';
+  mpAsk(`${n} רוצה להיות חבר שלך`,`${n} קיבל את קישור ההזמנה שלך ורוצה לשחק איתך. מאשרים רק חברים שמכירים!`,ok=>{
+    if(ok){ mpAddFriend(code,n,h.char); accept(); Sound.ui(); } else { try{conn.close();}catch(e){} } },{yes:'לאשר ✓',no:'לא מכיר'});
+}
+function mpWire(L){ const c=L.conn;
+  const onOpen=()=>{ if(L.open)return; L.open=true; L.pending=false; mpSendTo(L,mpHello()); mpUI(); };
+  if(c.open)onOpen(); else c.on('open',onOpen);
+  const onData=d=>{ try{ mpOnData(L,d); }catch(e){ console.warn('mp data',e); } };
+  if(c._early){ c.off('data',c._early); const b=c._buf; c._early=null; c._buf=null; c.on('data',onData); b.forEach(onData); } else c.on('data',onData);
+  c.on('close',()=>{ if(MP.links.get(L.code)===L)MP.links.delete(L.code); if(L.open)mpLinkLost(L.code); mpUI(); });
+  c.on('error',()=>{});
+}
+function mpLinkLost(code){
+  if(!MP.room.members.has(code))return;
+  if(mpIsHost())mpMemberLeft(code,'lost');
+  else if(code===MP.room.host){ mpResetRoom(); toast(`החיבור ל${friendName(code)} נקטע. המשחק המשותף הסתיים`); }
+}
+
+/* ---------- messages ---------- */
+function mpOnData(L,m){
+  if(!m||typeof m!=='object'||typeof m.t!=='string')return; const from=L.code;
+  switch(m.t){
+    case 'hi': mpFriendUpdate(from,m); L.info={name:cleanName(m.name)||friendName(from),char:charValid(m.char),room:m.room&&typeof m.room==='object'?{h:String(m.room.h||from),n:clamp(+m.room.n||1,1,MP_MAX)}:{h:from,n:1}}; mpUI();
+      if(MP.autoJoin===from){ MP.autoJoin=null; mpRequestJoin(from); } // they approved us: now ask to join
+      return;
+    case 'invite': return mpGotInvite(from,m);
+    case 'join': return mpGotJoin(from,m);
+    case 'welcome': return mpGotWelcome(from,m);
+    case 'deny': { MP.joining=null; const why={full:'המשחק מלא (עד 4 שחקנים)',busy:`${friendName(from)} משחק עכשיו אצל חבר אחר`,no:`${friendName(from)} לא יכול עכשיו`}[m.why]||'לא הצלחנו להצטרף'; toast(why); mpUI(); return; }
+    case 'roster': if(from===MP.room.host||MP.joining===from)mpApplyRoster(m); return;
+    case 'leave': if(mpIsHost())mpMemberLeft(from,'left'); return;
+    case 'end': if(from===MP.room.host&&!mpIsHost()){ mpResetRoom(); toast(`${friendName(from)} סיים את המשחק המשותף`); } return;
+  }
+  // everything else is traffic inside a shared game
+  const host=mpIsHost();
+  if(host?!MP.room.members.has(from):from!==MP.room.host)return;
+  const src=host?from:(typeof m.f==='string'?m.f:from);
+  if(host){ const fw=Object.assign({},m,{f:from}); for(const c of MP.room.members.keys()) if(c!==from)mpSendCode(c,fw); }
+  if(src===mpMyCode())return;
+  mpRoomMsg(src,m);
+}
+function mpRoomMsg(src,m){
+  const A=()=>mpAvatar(src);
+  switch(m.t){
+    case 'st': { const a=A(); if(a)mpGotState(a,m); return; }
+    case 'w': if(src===MP.room.host&&typeof m.d==='number'){ let d=m.d-dayTime; d=((d+.5)%1+1)%1-.5; dayTime=Math.abs(d)>.01?m.d:(dayTime+d*.5+1)%1; } return;
+    case 'me': { const mem=MP.room.members.get(src); if(!mem)return; mem.name=cleanName(m.name)||mem.name; mem.char=charValid(m.char); mpRefreshAvatar(src); mpUI(); return; }
+    case 'chat': { const x=cleanChat(m.x); if(!x)return; mpChatAdd(src,{x}); mpBubble(src,x); return; }
+    case 'vm': return mpGotVoiceMsg(src,m);
+    case 'emo': { const a=A(); if(a&&EMOTES[m.k]){ a.emo={k:m.k,t:EMOTES[m.k].d,ph:0}; mpBubble(src,EMOTES[m.k].e,1.8); } return; }
+    case 'hi5': if(m.to===mpMyCode()){ MP.emote={k:'hi5',t:1.4,ph:0}; const a=A(); if(a)a.emo={k:'hi5',t:1.4,ph:0}; mpHi5Fx(a); toast(`${friendName(src)} נתן לך כיף! ✋`,'gold'); S.hi5=(S.hi5||0)+1; unlock('hi5'); } else { const a=A(); if(a)a.emo={k:'hi5',t:1.4,ph:0}; } return;
+    case 'ping': if(Array.isArray(m.p)){ mpBeacon(+m.p[0],+m.p[1],+m.p[2],'#5fe0ff',20,src); toast(`${friendName(src)} קורא לך! 📍 חפשו את קרן האור`); Sound.tone(880,{to:1320,d:.25,vol:.08,type:'triangle',slide:.2}); } return;
+    case 'board': if(m.v&&VEH.ride&&VEH.ride.id===m.v)toast(`${friendName(src)} עלה איתך על ${VEH.ride.K.the}! 🎉`); return;
+    case 'mic': if(!m.on)mpStopStream(src); { const a=A(); if(a){a.mic=!!m.on; mpLabel(a);} } return;
+    case 'vpark': { const V=mpVeh(m.v); if(V&&!V.remote&&V!==VEH.ride&&Array.isArray(m.p)){ V.pos.set(+m.p[0],+m.p[1],+m.p[2]); V.yaw=+m.y||0; V.model.root.position.copy(V.pos); V.model.root.rotation.set(0,V.yaw,0,'YXZ'); } return; }
+    case 'cq': if(src===MP.room.host)mpCoopApply(m.s); return;
+    case 'cqh': if(mpIsHost())mpCoopHit(src,m); return;
+    case 'cqs': if(mpIsHost()&&COOP_DEF[m.k])mpCoopStart(m.k,src); return;
+  }
+}
+
+/* ---------- invitations and joining ---------- */
+function mpInviteFriend(code){ const L=MP.links.get(code);
+  if(!L||!L.open){ toast('החבר לא מחובר כרגע'); return; }
+  if(!mpIsHost()){ toast(`רק ${friendName(MP.room.host)} יכול להזמין למשחק הזה`); return; }
+  if(MP.room.members.size+1>=MP_MAX){ toast('המשחק מלא (עד 4 שחקנים)'); return; }
+  mpSendTo(L,{t:'invite',name:mpName()}); Sound.ui(); toast(`ההזמנה נשלחה ל${friendName(code)} ✉️`); }
+function mpGotInvite(from,m){
+  if(MP.room.members.has(from))return; const n=cleanName(m.name)||friendName(from);
+  mpAsk(`${n} מזמין אותך לשחק!`,`להצטרף למשחק של ${n}? תופיעו באותו עולם ותוכלו לשחק, לדבר ולעשות משימות צוות.`,ok=>{
+    if(ok)mpRequestJoin(from); else mpSendCode(from,{t:'deny',why:'no'}); },{yes:'להצטרף ✓',no:'לא עכשיו'});
+}
+function mpRequestJoin(code){
+  if(MP.room.host===code&&mpInRoom()){ toast('אתם כבר באותו משחק'); return; }
+  if(mpInRoom()&&mpIsHost()){ toast('יש חברים במשחק שלך. כדי להצטרף למשחק אחר, קודם מסיימים את המשחק המשותף'); return; }
+  if(mpInRoom())mpLeaveRoom(true);
+  const L=MP.links.get(code); if(!L||!L.open){ MP.autoJoin=code; mpStart(); mpConnect(code); toast(`מתחבר ל${friendName(code)}…`); return; }
+  MP.joining=code; mpSendTo(L,{t:'join',name:mpName(),char:mpMe().char}); toast(`מצטרף למשחק של ${friendName(code)}…`); mpUI();
+}
+function mpGotJoin(from,m){
+  if(MP.joining===from){ if(mpMyCode()>from)return; MP.joining=null; } // both asked at once: the smaller code hosts
+  if(!mpIsHost()&&mpInRoom()){ mpSendCode(from,{t:'deny',why:'busy'}); return; }
+  if(!MP.room.members.has(from)&&MP.room.members.size+1>=MP_MAX){ mpSendCode(from,{t:'deny',why:'full'}); return; }
+  mpEnterWorld(); MP.room.host=mpMyCode(); const name=cleanName(m.name)||friendName(from);
+  MP.room.members.set(from,{name,char:charValid(m.char)});
+  mpSendCode(from,{t:'welcome',host:mpMyCode(),members:mpRosterList(),world:mpWorldSnap()});
+  mpBroadcastRoster(); mpHelloAll();
+  toast(`${name} הצטרף למשחק! 🎉`,'gold'); Sound.star(); unlock('friend1');
+  if(MP.mic)mpCall(from); mpUI();
+}
+function mpBroadcastRoster(){ const r={t:'roster',host:mpMyCode(),members:mpRosterList()}; for(const c of MP.room.members.keys())mpSendCode(c,r); mpSyncThings(); }
+function mpApplyRoster(m){
+  if(!Array.isArray(m.members))return; MP.room.host=String(m.host||MP.room.host);
+  const seen=new Set();
+  for(const e of m.members.slice(0,MP_MAX)){ const code=String(e.code||''); if(!/^[A-Z2-9]{6}$/.test(code)||code===mpMyCode())continue; seen.add(code);
+    const prev=MP.room.members.get(code), mem={name:cleanName(e.name)||'חבר',char:charValid(e.char)};
+    MP.room.members.set(code,mem); if(prev&&charKey(prev.char)!==charKey(mem.char))mpRefreshAvatar(code); else if(prev&&prev.name!==mem.name)mpRefreshAvatar(code);
+    if(!prev&&MP.mic)mpCall(code); }
+  for(const code of [...MP.room.members.keys()]) if(!seen.has(code)){ MP.room.members.delete(code); mpDropRemote(code); }
+  mpSyncThings(); mpUI();
+}
+function mpWorldSnap(){
+  return {d:dayTime,hp:[r2(player.pos.x),r2(player.pos.y),r2(player.pos.z)],hy:r3(player.yaw),
+    v:VEH.list.filter(V=>V!==VEH.ride&&!V.remote).map(V=>[V.id,r2(V.pos.x),r2(V.pos.y),r2(V.pos.z),r3(V.yaw)]),cq:MP.coop?mpCoopWire():null};
+}
+function mpEnterWorld(){ // step into the game if we are still on the title screen
+  if(['title','loading'].includes(mode)||(mode==='sub'&&subStack[0]==='title')){ for(const id of ['friends','charsel'])$(id).hidden=true; if(readSlot(slot)||memorySave)continueGame(); else startNewGame(slot||1); } }
+function mpGotWelcome(from,m){
+  if(MP.joining!==from)return; MP.joining=null;
+  mpResetRoom(true); MP.room.host=from; mpApplyRoster(m);
+  const w=m.world||{};
+  mpEnterWorld();
+  if(typeof w.d==='number')dayTime=((w.d%1)+1)%1;
+  if(Array.isArray(w.v))for(const e of w.v){ const V=mpVeh(e[0]); if(V&&V!==VEH.ride){ V.pos.set(+e[1],+e[2],+e[3]); V.yaw=+e[4]||0; V.model.root.position.copy(V.pos); V.model.root.rotation.set(0,V.yaw,0,'YXZ'); } }
+  if(Array.isArray(w.hp)){ if(VEH.ride)dismount(); if(MP.pass)mpHopOff(true); const a=(+w.hy||0)+Math.PI*.5, x=+w.hp[0]+Math.sin(a)*2.2, z=+w.hp[2]+Math.cos(a)*2.2;
+    player.pos.set(x,Math.max(groundAt(x,z,+w.hp[1]+2),+w.hp[1]-.5),z); player.vel.set(0,0,0); player.safe.copy(player.pos);
+    catState.pos.copy(player.pos).add(_v.set(1.2,0,1.2)); updateCamera(.016,true); emit(player.pos.x,player.pos.y+1,player.pos.z,30,{color:'#9fe8ff',speed:3,up:2,life:.9,size:10}); }
+  if(w.cq)mpCoopApply(w.cq);
+  mpHelloAll(); Sound.warp(); toast(`הצטרפת למשחק של ${friendName(from)}! 🎉`,'gold'); unlock('friend1'); mpUI();
+}
+function mpLeaveRoom(silent){
+  if(!mpInRoom())return;
+  if(mpIsHost()){ for(const c of MP.room.members.keys())mpSendCode(c,{t:'end'}); } else mpSendCode(MP.room.host,{t:'leave'});
+  mpResetRoom(); if(!silent)toast('יצאת מהמשחק המשותף');
+}
+function mpResetRoom(quiet){
+  MP.room.host=mpMyCode(); MP.room.members.clear(); for(const c of [...MP.remotes.keys()])mpDropRemote(c);
+  if(MP.pass)mpHopOff(true); mpCoopClear(); mpStopVoice(true); if(!quiet)mpHelloAll(); mpChatOpen(false); mpUI();
+}
+function mpMemberLeft(code,why){
+  const mem=MP.room.members.get(code); if(!mem)return; MP.room.members.delete(code); mpDropRemote(code); mpStopStream(code);
+  const c=MP.calls.get(code); if(c){ try{c.close();}catch(e){} MP.calls.delete(code); }
+  mpBroadcastRoster(); if(!mpInRoom()){ mpCoopClear(); MP.room.host=mpMyCode(); }
+  mpHelloAll(); toast(why==='lost'?`החיבור ל${mem.name} נקטע`:`${mem.name} יצא מהמשחק`); mpUI();
+}
+
+/* ---------- remote players ---------- */
+const MPW={}; // shared co-op materials, made once (and compiled during loading)
+{ MPW.star=new THREE.MeshStandardMaterial({color:'#ffd84a',emissive:'#ffb020',emissiveIntensity:1.6,roughness:.3,metalness:.4});
+  MPW.beam=new THREE.MeshBasicMaterial({color:'#ffe08a',transparent:true,opacity:.28,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false,side:THREE.DoubleSide});
+  MPW.padOff=new THREE.MeshStandardMaterial({color:'#4a5a9a',emissive:'#3a5aff',emissiveIntensity:.5,roughness:.5});
+  MPW.padOn=new THREE.MeshStandardMaterial({color:'#3ad86a',emissive:'#3aff7a',emissiveIntensity:1.2,roughness:.5});
+  MPW.wood=new THREE.MeshStandardMaterial({color:'#8a5a2a',roughness:.8}); MPW.gold=new THREE.MeshStandardMaterial({color:'#ffc24a',roughness:.3,metalness:.8});
+  const g=new THREE.Group(); g.visible=false; scene.add(g);
+  for(const m of Object.values(MPW)){ const x=new THREE.Mesh(G.box(.1,.1,.1),m); g.add(x); }
+  MPW.warm=g; }
+function mpVeh(id){ return id?VEH.list.find(v=>v.id===id):null; }
+function mpAvatar(code){
+  let A=MP.remotes.get(code); if(A)return A; const mem=MP.room.members.get(code); if(!mem)return null;
+  A={code,name:mem.name,char:charKey(mem.char),model:makeCharModel(mem.char),pos:new THREE.Vector3(),tgt:new THREE.Vector3(),yaw:0,tyaw:0,speed:0,a:'g',vy:0,has:false,vid:null,pa:null,V:null,emo:null,mic:false,jet:0,jetM:null,bubble:null,riding:false};
+  A.model.root.visible=false; scene.add(A.model.root); mpLabel(A);
+  A.thing={x:0,z:0,r:2.4,y:null,label:()=>mpThingLabel(A),verb:()=>A.vid?'לעלות':'כיף',act:()=>mpThingAct(A),cond:()=>A.has&&!MP.pass&&!VEH.ride&&(A.vid?mpSeatFree(A.V):!A.pa)};
+  TOWN.things.push(A.thing); MP.remotes.set(code,A); return A;
+}
+function mpLabel(A){ if(A.label){ scene.remove(A.label); A.label.material.map.dispose(); A.label.material.dispose(); }
+  A.label=textSprite((A.mic?'🎙️ ':'')+A.name,{font:'600 34px Fredoka, sans-serif',size:34,bg:'rgba(20,26,51,.8)',color:charColor(MP.room.members.get(A.code)?.char)}); A.label.visible=false; scene.add(A.label); }
+function mpRefreshAvatar(code){ const A=MP.remotes.get(code), mem=MP.room.members.get(code); if(!A||!mem)return;
+  A.name=mem.name; if(charKey(mem.char)!==A.char){ const old=A.model; A.char=charKey(mem.char); A.model=makeCharModel(mem.char); scene.add(A.model.root); A.model.root.visible=old.root.visible; scene.remove(old.root); if(A.jetM){ A.model.chest.add(A.jetM.g); } }
+  mpLabel(A); }
+function mpDropRemote(code){ const A=MP.remotes.get(code); if(!A)return;
+  scene.remove(A.model.root); if(A.label)scene.remove(A.label); if(A.bubble){scene.remove(A.bubble.sp);} if(A.V&&A.V.remote===code)A.V.remote=null;
+  const i=TOWN.things.indexOf(A.thing); if(i>=0)TOWN.things.splice(i,1);
+  if(MP.pass&&MP.pass.code===code)mpHopOff(true); MP.remotes.delete(code); }
+function mpSyncThings(){ for(const c of [...MP.remotes.keys()]) if(!MP.room.members.has(c))mpDropRemote(c); }
+function mpGotState(A,m){
+  if(!Array.isArray(m.p))return; const x=+m.p[0],y=+m.p[1],z=+m.p[2]; if(!isFinite(x+y+z))return;
+  A.tgt.set(x,y,z); A.tyaw=+m.y||0; A.speed=clamp(+m.s||0,0,40); A.a=String(m.a||'g'); A.vy=+m.vy||0; A.jet=m.j?1:0;
+  A.vid=typeof m.v==='string'?m.v:null; A.pa=typeof m.pa==='string'?m.pa:null; A.vt=Array.isArray(m.vt)?m.vt:[0,0];
+  if(m.e&&EMOTES[m.e]&&!(A.emo&&A.emo.k===m.e))A.emo={k:m.e,t:EMOTES[m.e].d,ph:0};
+  const mic=!!m.m; if(mic!==A.mic){ A.mic=mic; mpLabel(A); }
+  if(!A.has){ A.has=true; A.pos.copy(A.tgt); A.yaw=A.tyaw; A.model.root.visible=true; }
+}
+function resetPose(M){ M.root.rotation.set(0,M.root.rotation.y,0); M.spin.rotation.set(0,0,0);
+  M.legs.forEach(l=>{l.thigh.rotation.set(0,0,0);l.knee.rotation.set(0,0,0);}); M.arms.forEach(a=>{a.sh.rotation.set(0,0,0);a.el.rotation.set(0,0,0);}); M.spine.rotation.set(0,0,0); M.body.position.y=M.bodyY??-.8; }
+const PASS_SEAT={scooter:{z:-.42,y:0,seat:'stand'},buggy:{z:-.86,y:-.26,seat:'sit'},pony:{z:-.6,y:0,seat:'ride'},jetski:{z:-.68,y:0,seat:'sit'}};
+function mpSeatFree(V){ if(!V||!PASS_SEAT[V.kind])return false; if(MP.pass&&MP.pass.V===V)return false; for(const A of MP.remotes.values()) if(A.pa===V.id)return false; return true; }
+function mpAnimRemote(A,dt){
+  if(!A.has)return; const M=A.model;
+  if(A.pos.distanceToSquared(A.tgt)>100)A.pos.copy(A.tgt); else A.pos.lerp(A.tgt,1-Math.exp(-12*dt));
+  A.yaw=angDamp(A.yaw,A.tyaw,12,dt);
+  // driving one of the world's vehicles
+  const V=mpVeh(A.vid);
+  if(A.V&&A.V!==V){ if(A.V.remote===A.code){ A.V.remote=null; A.V.speed=0; } A.V=null; }
+  if(V){ if(VEH.ride===V&&A.code<mpMyCode()){ dismount(); toast(`${A.name} כבר נוסע על ${V.K.the}`); }
+    A.V=V; V.remote=A.code; V.pos.copy(A.pos); V.yaw=A.yaw; V.speed=A.speed; const tilt=+A.vt[0]||0, lean=+A.vt[1]||0;
+    const R=V.model.root; R.visible=true; R.position.copy(A.pos); R.rotation.set(tilt,A.yaw,lean*(V.kind==='buggy'?.3:1),'YXZ');
+    for(const w of V.model.wheels||[]) w.wg.rotation.x+=A.speed*dt/w.r;
+    if(V.kind==='pony')animateAnimal(V.model,dt,{speed:A.speed,t:clock});
+    riderPose(M,V,A.pos,tilt,A.yaw,lean,A.speed,dt,false); A.riding=true;
+  } else if(A.pa){ const PV=mpVeh(A.pa);
+    if(PV){ riderPose(M,PV,VEH.ride===PV?player.pos:PV.pos,0,PV.yaw,0,PV.speed||0,dt,true);
+      A.pos.copy(M.root.position); A.riding=true; }
+  } else {
+    if(A.riding){ resetPose(M); A.riding=false; }
+    M.root.position.copy(A.pos); M.root.rotation.set(0,A.yaw,0,'YXZ');
+    animateKid(M,dt,{speed:A.speed,onGround:A.a==='g',gliding:A.a==='l',swim:A.a==='w',vy:A.vy,t:clock,run:A.speed>7});
+    if(A.emo){ A.emo.t-=dt; A.emo.ph+=dt; if(A.emo.t<=0)A.emo=null; else emotePose(M,A.emo.k,A.emo.ph,A.speed); }
+  }
+  // jetpack on their back
+  if(A.jet&&!A.jetM){ A.jetM=makeJetpack(); M.chest.add(A.jetM.g); A.jetM.g.position.set(0,-.12,-.2); }
+  if(A.jetM){ A.jetM.g.visible=!!A.jet; if(M.bag)M.bag.visible=!A.jet; const on=A.jet&&A.a!=='g'&&A.vy>-2; A.jetM.flames.forEach((f,i)=>{f.visible=on;f.scale.set(1,1+Math.sin(clock*40+i)*.3,1);}); }
+  const dCam=camera.position.distanceTo(A.pos), far=Math.hypot(A.pos.x-player.pos.x,A.pos.z-player.pos.z)>170;
+  M.root.visible=!far; A.label.visible=!far&&dCam<60; const top=A.pos.y+(A.riding?2.35:2.0);
+  A.label.position.set(A.pos.x,top,A.pos.z); const ls=clamp(dCam/14,1,2.4); A.label.scale.set(A.label.userData.w||(A.label.userData.w=A.label.scale.x),A.label.userData.h||(A.label.userData.h=A.label.scale.y),1).multiplyScalar(ls);
+  if(A.bubble){ A.bubble.t-=dt; A.bubble.sp.position.set(A.pos.x,top+.45*ls,A.pos.z); A.bubble.sp.material.opacity=clamp(A.bubble.t*2,0,1); if(A.bubble.t<=0){ scene.remove(A.bubble.sp); A.bubble.sp.material.map.dispose(); A.bubble=null; } }
+  A.thing.x=A.pos.x; A.thing.z=A.pos.z; A.thing.y=A.pos.y;
+}
+function mpThingLabel(A){ return A.vid?`לעלות עם ${A.name} על ${A.V?A.V.K.the:'הרכב'}`:`לתת כיף ל${A.name} ✋`; }
+function mpThingAct(A){ if(A.vid)mpBoard(A); else mpHi5(A); }
+
+/* rider pose shared by the driver, remote drivers and passengers */
+function riderPose(M,V,pos,tilt,yaw,lean,speed,dt,passenger){
+  const K=V.K, ps=passenger?PASS_SEAT[V.kind]:null, seat=ps?ps.seat:K.seat;
+  M.root.visible=true; M.root.position.copy(pos); M.root.rotation.set(tilt,yaw,lean*(V.kind==='buggy'?.3:1),'YXZ');
+  M.root.translateY(K.seatY-(seat==='stand'?0:.66)+(ps?ps.y:0));
+  if(ps)M.root.translateZ(ps.z); else { if(V.kind==='buggy')M.root.translateZ(-.12); if(V.kind==='jetski')M.root.translateZ(-.2); if(V.kind==='pony')M.root.translateZ(-.14); }
+  animateKid(M,dt,{speed:0,onGround:true,t:clock});
+  if(seat==='stand'){ M.legs.forEach((l,i)=>{l.thigh.rotation.x=-.12-(i?.15:0);l.thigh.rotation.z=0;l.knee.rotation.x=.25;}); M.arms.forEach((a,i)=>{a.sh.rotation.x=-1.05;a.sh.rotation.z=(i?-1:1)*-.18;a.el.rotation.x=-.35;}); M.spine.rotation.x=.14+Math.min(.12,speed*.01); }
+  else if(seat==='sit'){ M.legs.forEach(l=>{l.thigh.rotation.x=-1.45;l.thigh.rotation.z=0;l.knee.rotation.x=1.35;}); M.arms.forEach((a,i)=>{a.sh.rotation.x=-1.1;a.sh.rotation.z=(i?-1:1)*-.1;a.el.rotation.x=-.45;}); M.spine.rotation.x=.08; }
+  else { M.legs.forEach((l,i)=>{l.thigh.rotation.x=-.55;l.thigh.rotation.z=(i?-1:1)*.72;l.knee.rotation.x=.95;}); M.arms.forEach((a,i)=>{a.sh.rotation.x=-.9;a.sh.rotation.z=(i?-1:1)*-.15;a.el.rotation.x=-.6;}); M.body.position.y=(M.bodyY??-.8)+(speed>5&&V.model.phase!=null?Math.abs(Math.sin(V.model.phase))*.06:0); M.spine.rotation.x=.12; }
+  if(passenger&&seat!=='stand'){ M.arms.forEach((a,i)=>{a.sh.rotation.x=-.7;a.sh.rotation.z=(i?-1:1)*-.25;a.el.rotation.x=-.9;}); }
+}
+
+/* ---------- riding along with a friend ---------- */
+function mpBoard(A){ const V=A.V; if(!V||!mpSeatFree(V)){ toast('אין מקום פנוי'); return; }
+  if(VEH.jet)setJet(false); MP.pass={V,code:A.code,prevDist:cam.tdist}; cam.tdist=Math.max(cam.tdist,V.K.cam);
+  player.swim=false; player.gliding=false; Sound.whoosh(); mpRoomSend({t:'board',v:V.id});
+  toast(`עלית עם ${A.name} על ${V.K.the}! ${IS_TOUCH?'הכפתור הירוק':'E'} כדי לרדת`,'gold'); }
+function mpHopOff(quiet){ const pa=MP.pass; if(!pa)return; MP.pass=null; const P=player, V=pa.V;
+  const sx=Math.cos(V.yaw)*-1.3, sz=Math.sin(V.yaw)*1.3; let x=P.pos.x+sx, z=P.pos.z+sz;
+  if(terrainAt(x,z)<waterLevel(x,z)-.4){ for(let r=1.2;r<5;r+=.6){ let ok=false; for(let a=0;a<6.28;a+=.5){ const tx=P.pos.x+Math.cos(a)*r, tz=P.pos.z+Math.sin(a)*r; if(groundAt(tx,tz,2)>WATER-.2){x=tx;z=tz;ok=true;break;} } if(ok)break; } }
+  P.pos.set(x,Math.max(groundAt(x,z,P.pos.y+1),waterLevel(x,z)-1),z); P.vel.set(0,0,0); P.onGround=true; cam.tdist=pa.prevDist||4.8;
+  resetPose(P.model); P.model.root.rotation.set(0,P.yaw,0); P.model.root.position.copy(P.pos); if(!quiet)Sound.ui(); }
+function mpPassengerUpdate(dt){ // called from updatePlayer; the exact seat is placed again in mpFrame once friends moved
+  if(input.interact){ input.interact=false; mpHopOff(); return; }
+  mpPassengerPlace(dt); playerInteractions(dt,true);
+}
+function mpPassengerPlace(dt){ const pa=MP.pass; if(!pa)return; const V=pa.V, A=MP.remotes.get(pa.code), P=player;
+  if(!A||!A.has||A.vid!==V.id){ const n=A?A.name:'החבר'; mpHopOff(); toast(`${n} ירד מ${V.K.the}`); return; }
+  riderPose(P.model,V,V.pos,0,V.yaw,0,V.speed||0,dt,true);
+  P.pos.copy(P.model.root.position); P.pos.y=V.pos.y; P.yaw=V.yaw; P.vel.set(Math.sin(V.yaw)*(V.speed||0),0,Math.cos(V.yaw)*(V.speed||0)); P.speed=V.speed||0; P.onGround=true; P.swim=false; P.gliding=false; }
+
+/* ---------- emotes and high fives ---------- */
+const EMOTES={wave:{e:'👋',n:'שלום',d:2.2},cheer:{e:'🎉',n:'הידד',d:2.2},dance:{e:'🕺',n:'ריקוד',d:4},laugh:{e:'😂',n:'צחוק',d:2.2},hi5:{e:'✋',n:'כיף',d:1.4},come:{e:'📍',n:'בוא אליי',d:1.6}};
+function emotePose(M,k,ph,speed=0){ const A=M.arms;
+  if(k==='wave'){ A[0].sh.rotation.x=-2.75; A[0].sh.rotation.z=.2+Math.sin(ph*12)*.35; A[0].el.rotation.x=-.35; }
+  else if(k==='hi5'){ A[0].sh.rotation.x=-2.55+Math.min(1,ph*4)*.2; A[0].sh.rotation.z=.1; A[0].el.rotation.x=-.15; }
+  else if(k==='cheer'){ A.forEach((a,i)=>{a.sh.rotation.x=-2.95;a.sh.rotation.z=(i?-1:1)*-.38+Math.sin(ph*10+i)*.1;a.el.rotation.x=-.2;}); if(speed<1)M.body.position.y+=Math.abs(Math.sin(ph*7))*.14; }
+  else if(k==='dance'){ A.forEach((a,i)=>{a.sh.rotation.x=-1.3+Math.sin(ph*8+i*Math.PI)*.9;a.sh.rotation.z=(i?-1:1)*-.6;a.el.rotation.x=-1.2;}); M.spine.rotation.y=Math.sin(ph*4)*.4;
+    if(speed<.5){ M.body.position.y+=Math.abs(Math.sin(ph*8))*.06; M.legs.forEach((l,i)=>{const s=Math.max(0,Math.sin(ph*8+i*Math.PI));l.thigh.rotation.x=-.6*s;l.knee.rotation.x=.9*s;}); } }
+  else if(k==='laugh'){ M.spine.rotation.x=.22+Math.sin(ph*18)*.08; A.forEach(a=>{a.sh.rotation.x=-.5;a.el.rotation.x=-1.7;}); }
+  else if(k==='come'){ A[1].sh.rotation.x=-1.6; A[1].sh.rotation.z=0; A[1].el.rotation.x=-.2-Math.abs(Math.sin(ph*8))*1.2; }
+}
+function mpDoEmote(k){ if(!EMOTES[k])return; MP.emote={k,t:EMOTES[k].d,ph:0}; mpRoomSend({t:'emo',k}); mpBubble(mpMyCode(),EMOTES[k].e,1.8); Sound.ui();
+  if(k==='come'){ const p=player.pos; mpRoomSend({t:'ping',p:[r2(p.x),r2(p.y),r2(p.z)]}); toast('קראת לחברים לבוא אליך 📍'); }
+  $('mp-emo').hidden=true; }
+function mpHi5(A){ MP.emote={k:'hi5',t:1.4,ph:0}; player.yaw=Math.atan2(A.pos.x-player.pos.x,A.pos.z-player.pos.z); mpRoomSend({t:'hi5',to:A.code}); mpHi5Fx(A); S.hi5=(S.hi5||0)+1; unlock('hi5'); }
+function mpHi5Fx(A){ const p=A?_v.copy(A.pos).add(player.pos).multiplyScalar(.5):player.pos; emit(p.x,p.y+1.6,p.z,26,{color:'#ffe27a',speed:3.2,up:1.6,life:.7,size:10}); Sound.tone(1200,{to:1800,d:.12,vol:.1,type:'square'}); setTimeout(()=>Sound.tone(1500,{to:2100,d:.12,vol:.08,type:'square'}),90); }
+function mpEmoteLocal(dt){ const E=MP.emote; if(!E)return; E.t-=dt; E.ph+=dt; if(E.t<=0||VEH.ride||MP.pass){ MP.emote=null; return; } emotePose(player.model,E.k,E.ph,player.speed); }
+
+/* ---------- speech bubbles, beacons ---------- */
+const MP_ME_BUBBLE={bubble:null};
+function mpBubble(code,text,time=5){
+  const holder=code===mpMyCode()?MP_ME_BUBBLE:MP.remotes.get(code); if(!holder)return;
+  if(holder.bubble){ scene.remove(holder.bubble.sp); holder.bubble.sp.material.map.dispose(); }
+  const t=text.length>34?text.slice(0,33)+'…':text;
+  const sp=textSprite(t,{font:'600 30px Fredoka, sans-serif',size:30,bg:'rgba(255,246,226,.95)',color:'#141a33'}); scene.add(sp); holder.bubble={sp,t:time}; }
+function mpMyBubble(dt){ const b=MP_ME_BUBBLE.bubble; if(!b)return; b.t-=dt; b.sp.position.set(player.pos.x,player.pos.y+(VEH.ride||MP.pass?2.75:2.4),player.pos.z); b.sp.material.opacity=clamp(b.t*2,0,1);
+  if(b.t<=0){ scene.remove(b.sp); b.sp.material.map.dispose(); MP_ME_BUBBLE.bubble=null; } }
+function mpBeacon(x,y,z,col,life,code){
+  const g=new THREE.Group(); const m=MPW.beam.clone(); m.color.set(col); const b=new THREE.Mesh(new THREE.CylinderGeometry(.6,.9,70,16,1,true),m); b.position.y=35; b.renderOrder=3; g.add(b);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(1.4,.12,8,32),m); ring.rotation.x=Math.PI/2; ring.position.y=.3; g.add(ring);
+  g.position.set(x,y,z); scene.add(g); MP.beacons.push({g,m,t:life,life,code,x,z,col}); return MP.beacons[MP.beacons.length-1]; }
+function mpBeacons(dt){ for(let i=MP.beacons.length-1;i>=0;i--){ const B=MP.beacons[i]; if(B.keep){ B.g.children[1].rotation.z+=dt; continue; } B.t-=dt; B.m.opacity=.3*clamp(B.t/3,0,1); B.g.children[1].rotation.z+=dt;
+  if(B.t<=0||Math.hypot(player.pos.x-B.x,player.pos.z-B.z)<4&&B.code){ scene.remove(B.g); B.g.traverse(o=>o.geometry&&o.geometry.dispose()); MP.beacons.splice(i,1); } } }
+function mpDropBeacon(B){ const i=MP.beacons.indexOf(B); if(i>=0){ scene.remove(B.g); B.g.traverse(o=>o.geometry&&o.geometry.dispose()); MP.beacons.splice(i,1); } }
+
+/* ---------- per-frame work ---------- */
+function mpSnapshot(){ const P=player, V=VEH.ride;
+  return {t:'st',p:[r2(P.pos.x),r2(P.pos.y),r2(P.pos.z)],y:r3(P.yaw),s:r1(P.speed),a:P.gliding?'l':P.swim?'w':P.onGround?'g':'j',vy:r1(P.vel.y),
+    v:V?V.id:null,vt:V?[r3(V.tilt),r3(V.lean)]:0,pa:MP.pass?MP.pass.V.id:null,j:VEH.jet?1:0,e:MP.emote?MP.emote.k:0,m:MP.mic?1:0}; }
+function mpTick(dt){
+  if(!mpInRoom())return;
+  MP.sendT-=dt; if(MP.sendT<=0){ MP.sendT=.1; mpRoomSend(mpSnapshot()); }
+  if(mpIsHost()){ MP.worldT-=dt; if(MP.worldT<=0){ MP.worldT=2; mpRoomSend({t:'w',d:r3(dayTime)}); } }
+}
+function mpFrame(dt){
+  if(!MP.remotes.size&&!MP.emote&&!MP.beacons.length&&!MP.coop&&!MP_ME_BUBBLE.bubble&&!MP.pass)return;
+  for(const A of MP.remotes.values())mpAnimRemote(A,dt);
+  if(MP.pass)mpPassengerPlace(dt);
+  mpEmoteLocal(dt); mpMyBubble(dt); mpBeacons(dt); mpCoopFrame(dt);
+}
+/* the local player's vehicle leaves a parked vehicle where it was dropped, for everyone */
+function mpParked(V){ if(mpInRoom()&&V)mpRoomSend({t:'vpark',v:V.id,p:[r2(V.pos.x),r2(V.pos.y),r2(V.pos.z)],y:r3(V.yaw)}); }
+
+/* minimap dots for friends */
+function mpMiniDots(x,toS,cx,rad){
+  if(!MP.remotes.size&&!MP.beacons.length)return;
+  for(const B of MP.beacons){ let [X,Y]=toS(B.x,B.z); const dx=X-cx,dy=Y-cx,d=Math.hypot(dx,dy); if(d>rad-10){X=cx+dx/d*(rad-10);Y=cx+dy/d*(rad-10);}
+    x.beginPath(); x.arc(X,Y,8,0,7); x.fillStyle=B.col; x.fill(); x.lineWidth=2; x.strokeStyle='#10152b'; x.stroke(); }
+  for(const A of MP.remotes.values()){ if(!A.has)continue; let [X,Y]=toS(A.pos.x,A.pos.z); const dx=X-cx,dy=Y-cx,d=Math.hypot(dx,dy); if(d>rad-10){X=cx+dx/d*(rad-10);Y=cx+dy/d*(rad-10);}
+    x.beginPath(); x.arc(X,Y,10,0,7); x.fillStyle=charColor(MP.room.members.get(A.code)?.char); x.fill(); x.lineWidth=3; x.strokeStyle='#fff6e2'; x.stroke();
+    x.fillStyle='#10152b'; x.font='700 12px Fredoka, sans-serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(A.name.slice(0,1),X,Y+1); }
+}
+
+/* =====================================================================
+   CHAT — text, quick phrases, voice messages and live voice
+   ===================================================================== */
+const QUICK=['בוא אליי!','איפה אתה?','חכה לי!','כל הכבוד! 👏','יאללה מרוץ!','בוא נעלה על רכב','חחחח 😂','תודה! ❤️'];
+function mpChatAdd(code,e){ const mine=code===mpMyCode(); const name=mine?mpName():friendName(code);
+  MP.chat.push(Object.assign({code,name,mine,time:Date.now()},e)); if(MP.chat.length>60){ const old=MP.chat.shift(); if(old.url)URL.revokeObjectURL(old.url); }
+  if(!mine){ if(!MP.chatOpen){ MP.unread++; if(e.x)toast(`${name}: ${e.x}`); } Sound.tone(980,{to:1240,d:.09,vol:.06,type:'sine'}); }
+  mpChatRender(); mpUI(); }
+function mpChatSend(text){ const x=cleanChat(text); if(!x||!mpInRoom())return; mpRoomSend({t:'chat',x}); mpChatAdd(mpMyCode(),{x}); mpBubble(mpMyCode(),x); }
+function mpChatRender(){ const L=$('mc-list'); if(!L||!MP.chatOpen)return; L.innerHTML='';
+  if(!MP.chat.length){ L.innerHTML='<p class="note">עוד אין הודעות. אפשר לבחור משפט מוכן, לכתוב, או להקליט הודעה קולית.</p>'; return; }
+  for(const e of MP.chat){ const d=document.createElement('div'); d.className='mc-msg'+(e.mine?' me':''); const n=document.createElement('b'); n.textContent=e.name; n.style.color=e.mine?'#ffc35c':charColor(MP.room.members.get(e.code)?.char); d.appendChild(n);
+    if(e.url){ const b=document.createElement('button'); b.className='mini mc-play'; b.textContent=`▶ הודעה קולית · ${Math.max(1,Math.round(e.d||1))} שנ׳`; b.onclick=()=>{ Sound.init(); const a=new Audio(e.url); a.play().catch(()=>{}); }; d.appendChild(b); }
+    else { const s=document.createElement('span'); s.textContent=e.x; d.appendChild(s); }
+    L.appendChild(d); }
+  L.scrollTop=L.scrollHeight; }
+function mpChatOpen(on){ MP.chatOpen=on; const p=$('mp-chat'); if(!p)return; p.hidden=!on; if(on){ MP.unread=0; exitLock(); mpChatRender(); } else { $('mc-in')?.blur(); } mpUI(); }
+/* voice messages */
+function mpPickMime(){ if(!window.MediaRecorder)return null; for(const t of ['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus']) try{ if(MediaRecorder.isTypeSupported(t))return t; }catch(e){} return ''; }
+async function mpRecToggle(){
+  if(MP.rec){ try{MP.rec.stop();}catch(e){} return; }
+  const mt=mpPickMime(); if(mt===null||!navigator.mediaDevices?.getUserMedia){ toast('המכשיר הזה לא מאפשר להקליט כאן'); return; }
+  let st=MP.mic; const own=!st;
+  if(!st){ try{ st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}); }catch(e){ toast('צריך לאשר גישה למיקרופון כדי להקליט'); return; } }
+  let rec; try{ rec=new MediaRecorder(st,mt?{mimeType:mt,audioBitsPerSecond:32000}:{}); }catch(e){ try{rec=new MediaRecorder(st);}catch(_){ toast('ההקלטה לא נתמכת במכשיר הזה'); return; } }
+  const chunks=[], t0=performance.now();
+  rec.ondataavailable=e=>{ if(e.data&&e.data.size)chunks.push(e.data); };
+  rec.onstop=async()=>{ clearTimeout(MP.recTO); clearInterval(MP.recIv); MP.rec=null; if(own)st.getTracks().forEach(t=>t.stop()); mpRecUI();
+    const d=(performance.now()-t0)/1000; if(d<.7||!chunks.length){ toast('ההקלטה קצרה מדי'); return; }
+    const blob=new Blob(chunks,{type:(rec.mimeType||mt||'audio/webm').split(';')[0]}); if(blob.size>700000){ toast('ההקלטה ארוכה מדי'); return; }
+    const buf=await blob.arrayBuffer(); mpRoomSend({t:'vm',b:buf,m:blob.type,d:r1(d)}); mpChatAdd(mpMyCode(),{url:URL.createObjectURL(blob),d}); mpBubble(mpMyCode(),'🎤 הודעה קולית',3); Sound.ui(); };
+  rec.start(); MP.rec=rec; MP.recT0=t0; MP.recTO=setTimeout(()=>{ if(MP.rec===rec)try{rec.stop();}catch(e){} },20000); MP.recIv=setInterval(mpRecUI,250); mpRecUI(); Sound.ui();
+}
+function mpRecUI(){ const b=$('mc-rec'); if(!b)return; if(MP.rec){ const s=Math.floor((performance.now()-MP.recT0)/1000); b.classList.add('on'); b.textContent=`⏹ שליחה (${s}/20)`; } else { b.classList.remove('on'); b.textContent='🎤 הקלטה'; } }
+function mpGotVoiceMsg(src,m){
+  let b=m.b; if(b&&b.buffer&&!(b instanceof ArrayBuffer))b=b.buffer; if(!(b instanceof ArrayBuffer)||b.byteLength<100||b.byteLength>800000)return;
+  const type=/^audio\/[a-z0-9.+-]+$/i.test(String(m.m||''))?String(m.m):'audio/webm'; const url=URL.createObjectURL(new Blob([b],{type}));
+  mpChatAdd(src,{url,d:clamp(+m.d||1,0,25)}); mpBubble(src,'🎤 הודעה קולית',4);
+  toast(`🎤 הודעה קולית מ${friendName(src)}`); const a=new Audio(url); a.volume=1; a.play().catch(()=>{}); }
+/* live voice (each player calls every other player while their microphone is open) */
+async function mpMicToggle(){
+  if(MP.mic){ mpStopVoice(); toast('המיקרופון סגור'); return; }
+  if(!navigator.mediaDevices?.getUserMedia){ toast('המכשיר הזה לא מאפשר שיחה קולית כאן'); return; }
+  try{ MP.mic=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}}); }catch(e){ toast('צריך לאשר גישה למיקרופון כדי לדבר'); return; }
+  for(const c of MP.room.members.keys())mpCall(c); mpRoomSend({t:'mic',on:1}); toast('המיקרופון פתוח. החברים שומעים אותך 🎙️','gold'); mpUI();
+  for(const a of MP.audios.values())a.play().catch(()=>{}); }
+function mpCall(code){ if(!MP.mic||!MP.peer||MP.calls.has(code))return; let call; try{ call=MP.peer.call(MP_PREFIX+code,MP.mic,{metadata:{code:mpMyCode()}}); }catch(e){ return; } if(!call)return;
+  MP.calls.set(code,call); const drop=()=>{ if(MP.calls.get(code)===call)MP.calls.delete(code); }; call.on('close',drop); call.on('error',drop); }
+function mpIncomingCall(call){ const code=String(call.metadata?.code||''); if(!MP.room.members.has(code)){ try{call.close();}catch(e){} return; }
+  try{ call.answer(); }catch(e){ return; } call.on('stream',s=>mpPlayStream(code,s)); call.on('close',()=>mpStopStream(code)); }
+function mpPlayStream(code,s){ let a=MP.audios.get(code); if(!a){ a=document.createElement('audio'); a.autoplay=true; a.setAttribute('playsinline',''); a.style.display='none'; document.body.appendChild(a); MP.audios.set(code,a); }
+  a.srcObject=s; a.play().catch(()=>{ toast('נגעו במסך כדי לשמוע את החברים 🔊'); const go=()=>{ a.play().catch(()=>{}); removeEventListener('pointerdown',go); }; addEventListener('pointerdown',go); }); }
+function mpStopStream(code){ const a=MP.audios.get(code); if(a){ try{a.srcObject=null;}catch(e){} a.remove(); MP.audios.delete(code); } }
+function mpStopVoice(quiet){ const had=!!MP.mic; for(const c of MP.calls.values()){ try{c.close();}catch(e){} } MP.calls.clear();
+  if(MP.mic){ MP.mic.getTracks().forEach(t=>t.stop()); MP.mic=null; } if(had&&!quiet)mpRoomSend({t:'mic',on:0});
+  if(!mpInRoom())for(const c of [...MP.audios.keys()])mpStopStream(c); mpUI(); }
+
+/* =====================================================================
+   CO-OP QUESTS — only when two or more players share a world.
+   The host runs them; everybody sees the same stars, pads and finish line.
+   ===================================================================== */
+const COOP_DEF={
+  stars:{name:'ציד כוכבי צוות',icon:'⭐',desc:'מוצאים ביחד 10 כוכבי זהב לפני שהזמן נגמר',time:180,reward:40},
+  pads:{name:'כפתורי התאומים',icon:'🔘',desc:'כל אחד עומד על כפתור אחר באותו רגע, ונפתחת תיבת אוצר',time:240,reward:50},
+  race:{name:'מרוץ חברים',icon:'🏁',desc:'מי מגיע ראשון לקרן האור? מותר לנסוע ברכב!',time:150,reward:25},
+};
+function mpGroupCenter(){ const pts=[player.pos,...[...MP.remotes.values()].filter(A=>A.has).map(A=>A.pos)]; const c=new THREE.Vector3(); pts.forEach(p=>c.add(p)); return c.multiplyScalar(1/pts.length); }
+function mpLandPoint(cx,cz,rMin,rMax,rnd){ for(let k=0;k<40;k++){ const a=rnd()*6.283, r=rMin+rnd()*(rMax-rMin), x=cx+Math.sin(a)*r, z=cz+Math.cos(a)*r;
+  if(Math.hypot(x,z)>520)continue; const g=terrainAt(x,z); if(g<waterLevel(x,z)+.2||!isFinite(g))continue; const y=groundAt(x,z,g+40); if(y-g>6)continue; return [r2(x),r2(y),r2(z)]; } return [r2(cx),r2(groundAt(cx,cz,99)),r2(cz)]; }
+function mpCoopStart(k,by){
+  if(!mpInRoom()){ toast('משימות צוות נפתחות כשיש לפחות שני שחקנים'); return; }
+  if(!mpIsHost()){ mpSendCode(MP.room.host,{t:'cqs',k}); toast('ביקשת להתחיל משימת צוות'); return; }
+  if(MP.coop&&!MP.coop.end){ toast('כבר יש משימת צוות פעילה'); return; }
+  const D=COOP_DEF[k], c=mpGroupCenter(), rnd=mulberry32((Date.now()&0xffff)+7), s={k,id:Math.random().toString(36).slice(2,8),left:D.time,by:by||mpMyCode()};
+  if(k==='stars'){ s.stars=[]; for(let i=0;i<10;i++){ const p=mpLandPoint(c.x,c.z,14,58,rnd); p[1]=r2(p[1]+1.1); s.stars.push(p); } s.got=Array(10).fill(''); }
+  else if(k==='pads'){ const a=rnd()*6.283; const mid=mpLandPoint(c.x,c.z,6,16,rnd); s.pads=[0,1].map(i=>{ const x=mid[0]+Math.sin(a+i*Math.PI)*9, z=mid[2]+Math.cos(a+i*Math.PI)*9; return [r2(x),r2(groundAt(x,z,mid[1]+20)),r2(z)]; }); s.chest=null; }
+  else if(k==='race'){ const cands=[LM.tree,LM.pitch,LM.cafe,LM.spawn,REG.fire,REG.villa,REG.cave].filter(p=>p&&typeof p.x==='number').map(p=>[p.x,p.z]);
+    cands.sort((a,b)=>Math.abs(Math.hypot(a[0]-c.x,a[1]-c.z)-170)-Math.abs(Math.hypot(b[0]-c.x,b[1]-c.z)-170));
+    let [x,z]=cands[0]||[c.x+120,c.z]; if(Math.hypot(x-c.x,z-c.z)<60){ const p=mpLandPoint(c.x,c.z,110,180,rnd); x=p[0]; z=p[2]; }
+    s.goal=[r2(x),r2(groundAt(x,z,99)),r2(z)]; s.cd=3.5; s.left=D.time+3.5; }
+  mpCoopApply(s,true); mpCoopBroadcast(); toast(`${D.icon} משימת צוות: ${D.name}!`,'gold');
+}
+function mpCoopWire(){ const C=MP.coop; if(!C)return null; const o={}; for(const k of ['k','id','by','stars','got','pads','chest','goal','cd','end','win','reward']) if(C[k]!==undefined)o[k]=C[k]; o.left=Math.max(0,C.left-(performance.now()-C.t0)/1000); return o; }
+function mpCoopBroadcast(){ const w=mpCoopWire(); if(w)mpRoomSend({t:'cq',s:w}); }
+function mpCoopApply(s,local){
+  if(!s||!COOP_DEF[s.k])return;
+  const same=MP.coop&&MP.coop.id===s.id; if(!same){ mpCoopClear(); MP.coop={vis:{}}; }
+  const C=MP.coop; Object.assign(C,s); C.t0=performance.now();
+  if(!same&&!local&&!s.end){ toast(`${COOP_DEF[s.k].icon} משימת צוות: ${COOP_DEF[s.k].name}! ${COOP_DEF[s.k].desc}`,'gold'); Sound.star(); }
+  if(!same&&s.k==='race'&&s.cd>0)mpCountdown(s.cd);
+  mpCoopVisuals();
+  if(s.end&&!C.paid){ C.paid=true; mpCoopFinish(s); }
+}
+function mpCountdown(cd){ const steps=[3,2,1]; steps.forEach((n,i)=>setTimeout(()=>{ toast(`${n}…`); Sound.tone(660,{d:.15,vol:.1,type:'square'}); },(cd-3+i)*1000));
+  setTimeout(()=>{ toast('צאו לדרך! 🏁','gold'); Sound.tone(990,{d:.35,vol:.12,type:'square'}); },cd*1000); }
+function mpCoopVisuals(){ const C=MP.coop; if(!C)return; const V=C.vis;
+  if(C.k==='stars'){ if(!V.stars){ V.stars=C.stars.map(p=>{ const g=new THREE.Group(); const s=new THREE.Mesh(new THREE.OctahedronGeometry(.45,0),MPW.star); s.scale.y=1.3; g.add(s); const b=new THREE.Mesh(new THREE.CylinderGeometry(.18,.3,28,8,1,true),MPW.beam); b.position.y=14; g.add(b); g.position.set(p[0],p[1],p[2]); scene.add(g); return g; }); }
+    V.stars.forEach((g,i)=>{ const was=g.visible; g.visible=!C.got[i]; if(was&&!g.visible){ emit(g.position.x,g.position.y,g.position.z,24,{color:'#ffe08a',speed:3,up:2,life:.8,size:10}); Sound.star(); } }); }
+  if(C.k==='pads'){ if(!V.pads){ V.pads=C.pads.map(p=>{ const m=new THREE.Mesh(new THREE.CylinderGeometry(1.5,1.6,.22,28),MPW.padOff); m.position.set(p[0],p[1]+.08,p[2]); m.receiveShadow=true; scene.add(m); return m; });
+      V.padBeams=C.pads.map(p=>mpBeacon(p[0],p[1],p[2],'#7a9aff',9999,null)); V.padBeams.forEach(b=>b.keep=true); }
+    if(C.chest&&!V.chest){ const g=new THREE.Group(); const box=new THREE.Mesh(G.box(1.1,.7,.75),MPW.wood); box.position.y=.35; g.add(box); const lid=new THREE.Mesh(G.box(1.14,.22,.79),MPW.gold); lid.position.y=.8; g.add(lid);
+      g.position.set(C.chest[0],C.chest[1],C.chest[2]); g.traverse(o=>{if(o.isMesh)o.castShadow=true;}); scene.add(g); V.chest=g; V.chestBeam=mpBeacon(C.chest[0],C.chest[1],C.chest[2],'#ffd84a',9999,null); V.chestBeam.keep=true;
+      emit(C.chest[0],C.chest[1]+1,C.chest[2],40,{color:'#ffe08a',speed:4,up:3,life:1,size:11}); Sound.star(); toast('תיבת האוצר הופיעה! רוצו לפתוח אותה 💎','gold'); } }
+  if(C.k==='race'&&!V.goal&&C.goal){ V.goal=mpBeacon(C.goal[0],C.goal[1],C.goal[2],'#ffd84a',9999,null); V.goal.keep=true; }
+}
+function mpCoopClear(){ const C=MP.coop; if(!C)return; const V=C.vis||{};
+  (V.stars||[]).forEach(g=>{ scene.remove(g); g.traverse(o=>o.geometry&&o.geometry.dispose()); }); (V.pads||[]).forEach(m=>{ scene.remove(m); m.geometry.dispose(); });
+  if(V.chest){ scene.remove(V.chest); } for(const b of [...(V.padBeams||[]),V.chestBeam,V.goal].filter(Boolean))mpDropBeacon(b);
+  MP.coop=null; $('coop').hidden=true; }
+function mpCoopFrame(dt){ const C=MP.coop; if(!C){ return; } const D=COOP_DEF[C.k], V=C.vis, P=player.pos;
+  const left=Math.max(0,C.left-(performance.now()-C.t0)/1000);
+  if(V.stars)V.stars.forEach((g,i)=>{ if(g.visible){ g.children[0].rotation.y+=dt*2.2; g.children[0].position.y=Math.sin(clock*2.4+i)*.15; } });
+  if(V.chest)V.chest.rotation.y+=dt*.6;
+  // local detection → host decides
+  if(!C.end){
+    if(C.k==='stars')C.stars.forEach((p,i)=>{ if(!C.got[i]&&!C['asked'+i]&&Math.hypot(P.x-p[0],P.z-p[2])<1.9&&Math.abs(P.y+.9-p[1])<2.4){ C['asked'+i]=true; mpCoopHitLocal({i}); } });
+    if(C.k==='pads'&&C.chest&&!C.askedChest&&Math.hypot(P.x-C.chest[0],P.z-C.chest[2])<2.2){ C.askedChest=true; mpCoopHitLocal({i:'chest'}); }
+    if(C.k==='race'&&left<D.time&&!C.askedGoal&&Math.hypot(P.x-C.goal[0],P.z-C.goal[2])<6){ C.askedGoal=true; mpCoopHitLocal({i:'goal'}); }
+    if(C.k==='pads'&&V.pads){ const occ=C.pads.map(p=>mpWhoOn(p)); V.pads.forEach((m,i)=>m.material=occ[i]?MPW.padOn:MPW.padOff);
+      if(mpIsHost()&&!C.chest){ const ok=occ[0]&&occ[1]&&occ[0]!==occ[1]; C.hold=ok?(C.hold||0)+dt:0;
+        if(C.hold>1.2){ const a=C.pads[0],b=C.pads[1], x=(a[0]+b[0])/2, z=(a[2]+b[2])/2; C.chest=[r2(x),r2(groundAt(x,z,Math.max(a[1],b[1])+10)),r2(z)]; mpCoopVisuals(); mpCoopBroadcast(); } } }
+    if(mpIsHost()&&left<=0){ C.end='lose'; mpCoopBroadcast(); mpCoopApply(mpCoopWire(),true); }
+  }
+  // HUD chip
+  const el=$('coop'); el.hidden=false; const mm=Math.floor(left/60), ss=String(Math.floor(left%60)).padStart(2,'0');
+  let txt=`${D.icon} ${D.name}`;
+  if(C.end)txt+=C.end==='win'?' · הצלחתם! 🎉':' · נגמר הזמן';
+  else if(C.k==='stars')txt+=` · ${C.got.filter(Boolean).length}/10 · ${mm}:${ss}`;
+  else if(C.k==='pads')txt+=C.chest?` · פתחו את התיבה! · ${mm}:${ss}`:` · ${C.pads.map(p=>mpWhoOn(p)?'🟢':'⚪').join(' ')} · ${mm}:${ss}`;
+  else if(C.k==='race'){ const cdl=left-D.time; txt+=cdl>0?` · מתחילים בעוד ${Math.ceil(cdl)}`:` · ${Math.round(Math.hypot(P.x-C.goal[0],P.z-C.goal[2]))} מ׳ · ${mm}:${ss}`; }
+  $('coop-t').textContent=txt;
+  const tgt=C.k==='race'?C.goal:C.k==='pads'?(C.chest||C.pads.find(p=>!mpWhoOn(p))):C.k==='stars'?mpNearestStar(C):null;
+  const ar=$('coop-a'); if(tgt&&!C.end){ ar.hidden=false; const ang=Math.atan2(tgt[0]-P.x,tgt[2]-P.z); ar.style.transform=`rotate(${(cam.yaw+Math.PI-ang)}rad)`; } else ar.hidden=true;
+  if(C.end&&!C.doneT)C.doneT=clock; if(C.doneT&&clock-C.doneT>6)mpCoopClear();
+}
+function mpNearestStar(C){ let best=null,bd=1e9; C.stars.forEach((p,i)=>{ if(C.got[i])return; const d=Math.hypot(p[0]-player.pos.x,p[2]-player.pos.z); if(d<bd){bd=d;best=p;} }); return best; }
+function mpWhoOn(p){ if(Math.hypot(player.pos.x-p[0],player.pos.z-p[2])<1.6&&Math.abs(player.pos.y-p[1])<1.5)return mpMyCode();
+  for(const A of MP.remotes.values()) if(A.has&&Math.hypot(A.pos.x-p[0],A.pos.z-p[2])<1.6&&Math.abs(A.pos.y-p[1])<1.5)return A.code; return null; }
+function mpCoopHitLocal(h){ const C=MP.coop; if(!C)return; if(mpIsHost())mpCoopHit(mpMyCode(),Object.assign({id:C.id},h)); else mpSendCode(MP.room.host,{t:'cqh',id:C.id,i:h.i}); }
+function mpCoopHit(src,m){ const C=MP.coop; if(!C||C.end||m.id!==C.id)return;
+  if(C.k==='stars'&&Number.isInteger(m.i)&&m.i>=0&&m.i<10&&!C.got[m.i]){ C.got[m.i]=src; mpCoopVisuals(); if(C.got.every(Boolean)){ C.end='win'; } }
+  else if(C.k==='pads'&&m.i==='chest'&&C.chest){ C.end='win'; C.win=src; }
+  else if(C.k==='race'&&m.i==='goal'){ C.end='win'; C.win=src; }
+  else return;
+  if(C.end)C.reward=COOP_DEF[C.k].reward; mpCoopBroadcast(); if(C.end&&!C.paid){ C.paid=true; mpCoopFinish(mpCoopWire()); } }
+function mpCoopFinish(s){ const D=COOP_DEF[s.k];
+  if(s.end==='win'){ let n=D.reward; let msg=`${D.icon} הצלחתם ביחד! כל אחד מקבל ${n} מטבעות`;
+    if(s.k==='race'){ const w=s.win===mpMyCode(); if(w){ n+=25; msg=`🏆 ניצחת במרוץ! קיבלת ${n} מטבעות`; } else msg=`🏁 ${friendName(s.win)} הגיע ראשון! כולם מקבלים ${n} מטבעות`; }
+    if(s.k==='pads'&&s.win)msg=`💎 ${s.win===mpMyCode()?'פתחת':friendName(s.win)+' פתח'} את התיבה! כל אחד מקבל ${n} מטבעות`;
+    addCoins(n); toast(msg,'gold'); unlock('teamwork'); S.coopWins=(S.coopWins||0)+1; emit(player.pos.x,player.pos.y+2,player.pos.z,50,{color:'#ffe08a',speed:5,up:4,life:1.2,size:12}); autosave(true); }
+  else { toast(`${D.icon} נגמר הזמן! נסו שוב מתפריט החברים`); }
+  if(MP.coop&&MP.coop.vis){ const V=MP.coop.vis; for(const b of [...(V.padBeams||[]),V.chestBeam,V.goal].filter(Boolean)){b.keep=false;b.t=3;} }
+}
+
+/* =====================================================================
+   UI — friends screen, character picker, chat dock, small questions
+   ===================================================================== */
+function mpAsk(h,t,cb,{yes='כן',no='לא'}={}){ MP.asks.push({h,t,cb,yes,no}); if(MP.asks.length===1)mpAskShow(); }
+function mpAskShow(){ const q=MP.asks[0], el=$('mp-ask'); if(!q){ el.hidden=true; return; } exitLock();
+  $('ma-h').textContent=q.h; $('ma-t').textContent=q.t; $('ma-yes').textContent=q.yes; $('ma-no').textContent=q.no; el.hidden=false; Sound.tone(740,{to:990,d:.18,vol:.07,type:'triangle',slide:.2}); }
+function mpAskDone(ok){ const q=MP.asks.shift(); $('mp-ask').hidden=true; try{ q&&q.cb(ok); }catch(e){ console.warn(e); } setTimeout(mpAskShow,150); }
+function mpInviteURL(){ return `${MP_SITE}?f=${mpMyCode()}&n=${encodeURIComponent(mpName())}`; }
+async function mpShare(){ const url=mpInviteURL(), text=`${mpName()} מזמין אותך לשחק איתו ב"פלא וארץ האור האבוד"! לוחצים על הקישור, בוחרים דמות ומשחקים ביחד:`;
+  mpStart(); Sound.ui();
+  if(navigator.share){ try{ await navigator.share({title:'פלא וארץ האור האבוד',text,url}); return; }catch(e){ if(e&&e.name==='AbortError')return; } }
+  window.open('https://wa.me/?text='+encodeURIComponent(text+'\n'+url),'_blank'); }
+async function mpCopy(){ const url=mpInviteURL(); mpStart(); try{ await navigator.clipboard.writeText(url); toast('הקישור הועתק. אפשר להדביק אותו בהודעה לחבר 📋'); }
+  catch(e){ const i=document.createElement('input'); i.value=url; document.body.appendChild(i); i.select(); try{document.execCommand('copy');toast('הקישור הועתק 📋');}catch(_){ toast(url); } i.remove(); } }
+function openFriends(){ if(mode==='playing')exitLock(); mpMe(); mpStart(); if(mode!=='sub'||$('friends').hidden){ if(mode==='sub'){ for(const s of SUBS)$(s).hidden=s!=='friends'; } else openSub('friends'); } mpUI(); mpPollFriends(); Sound.ui(); }
+function mpStatusText(){ return MP.status==='online'?'מחובר · החברים יכולים לראות שאתה כאן':MP.status==='connecting'?'מתחבר לשרת החברים…':MP.err==='dup'?'המשחק פתוח בחלון אחר. סוגרים אותו ומנסים שוב':MP.err==='wait'?'עוד רגע מתחבר…':MP.err==='browser'?'הדפדפן הזה לא תומך במשחק עם חברים. נסו Chrome או Safari מעודכנים':MP.err==='lib'||MP.err==='net'?'אין חיבור לאינטרנט כרגע. ננסה שוב בעוד רגע':'לא מחובר'; }
+function mpOnlineFriends(){ return mpMe().friends.filter(f=>MP.links.get(f.code)?.open); }
+function mpUI(){
+  // HUD: friends badge, dock buttons
+  const on=mpOnlineFriends().length, bd=$('fr-badge'); if(bd){ bd.hidden=!on; bd.textContent=on; }
+  const dock=$('mp-dock'); if(dock){ dock.hidden=!mpInRoom(); $('mc-badge').hidden=!MP.unread; $('mc-badge').textContent=MP.unread; $('b-mic').classList.toggle('on',!!MP.mic); $('mc-mic')&&($('mc-mic').textContent=MP.mic?'🔇 לסגור מיקרופון':'🎙️ לדבר בקול'); $('mc-mic')?.classList.toggle('on',!!MP.mic); }
+  if(!mpInRoom()&&MP.chatOpen){ MP.chatOpen=false; $('mp-chat').hidden=true; }
+  if(MP.chatOpen)mpChatHead();
+  if($('friends').hidden)return;
+  const me=mpMe();
+  $('fr-face').style.backgroundImage=`url(${mpPortrait(me.char)})`; $('fr-name').textContent=mpName(); $('fr-mycode').textContent=me.code;
+  $('fr-status').textContent=mpStatusText(); $('fr-status').className='fr-st '+MP.status;
+  const L=$('fr-list'); L.innerHTML='';
+  if(!me.friends.length) L.innerHTML='<p class="note">עוד אין חברים. שולחים לחבר את קישור ההזמנה, הוא לוחץ עליו, ואתם מאשרים אחד את השני.</p>';
+  for(const f of me.friends){ const ln=MP.links.get(f.code), online=!!ln?.open, info=ln?.info, inMine=MP.room.members.has(f.code);
+    let st=online?'מחובר עכשיו':'לא מחובר'; if(online&&info?.room){ if(info.room.h!==f.code&&info.room.h)st=info.room.h===mpMyCode()?'במשחק איתך':`משחק אצל ${MP.links.get(info.room.h)?.info?.name||mpFriend(info.room.h)?.name||'חבר'}`; else if(info.room.n>1)st=`מארח משחק · ${info.room.n} שחקנים`; }
+    if(inMine)st='במשחק איתך 🎮';
+    const row=document.createElement('div'); row.className='fr-row'+(online?' on':'');
+    row.innerHTML=`<span class="f" style="background-image:url(${mpPortrait(f.char)})"></span><span class="n"><b></b><small></small></span><span class="acts"></span>`;
+    row.querySelector('b').textContent=f.name; row.querySelector('small').textContent=st;
+    const acts=row.querySelector('.acts'); const btn=(t,cls,fn)=>{ const b=document.createElement('button'); b.className='btn mini-b '+cls; b.textContent=t; b.onclick=fn; acts.appendChild(b); };
+    if(online&&!inMine){ if(mpIsHost())btn('הזמנה','primary',()=>mpInviteFriend(f.code)); const guestElsewhere=info?.room&&info.room.h&&info.room.h!==f.code, full=info?.room&&info.room.n>=MP_MAX;
+      if(!(mpInRoom()&&mpIsHost())&&!guestElsewhere&&!full)btn('להצטרף','',()=>mpRequestJoin(f.code)); }
+    btn('✕','x',()=>mpAsk(`להסיר את ${f.name}?`,'הוא לא יוכל לראות אותך או להתחבר אליך, עד שתזמינו אותו שוב.',ok=>{ if(ok)mpRemoveFriend(f.code); },{yes:'להסיר',no:'ביטול'}));
+    L.appendChild(row); }
+  // the shared game
+  const R=$('fr-room'); R.innerHTML='';
+  if(mpInRoom()){ const list=mpRosterList(); const hostName=mpIsHost()?'שלך':`של ${friendName(MP.room.host)}`;
+    R.innerHTML=`<div class="sec">במשחק ${escH(hostName)} עכשיו (${list.length}/${MP_MAX})</div><div class="fr-players">${list.map(p=>`<span class="pl"><i style="background-image:url(${mpPortrait(p.char)})"></i>${escH(p.code===mpMyCode()?p.name+' (אני)':p.name)}</span>`).join('')}</div>
+      <div class="sec">משימות צוות</div><div class="fr-coop">${Object.entries(COOP_DEF).map(([k,d])=>`<button class="btn coop-b" data-k="${k}"><span class="ic">${d.icon}</span><span class="lbl">${d.name}<small>${d.desc}</small></span></button>`).join('')}</div>
+      <button class="btn" id="fr-leave">${mpIsHost()?'לסיים את המשחק המשותף':'לצאת מהמשחק המשותף'}</button>`;
+    R.querySelectorAll('.coop-b').forEach(b=>b.onclick=()=>{ closeSub(); mpCoopStart(b.dataset.k); });
+    $('fr-leave').onclick=()=>mpAsk(mpIsHost()?'לסיים את המשחק המשותף?':'לצאת מהמשחק המשותף?','אפשר תמיד להזמין שוב.',ok=>{ if(ok)mpLeaveRoom(); },{yes:'כן',no:'ביטול'}); }
+}
+const _portraitCache=new Map();
+function mpPortrait(ch){ ch=charValid(ch); if(ch.base!=='custom')return PORTRAITS[ch.base]||PORTRAITS.pele||''; const k=charKey(ch); if(_portraitCache.has(k))return _portraitCache.get(k);
+  const url=renderKidPortrait(charOpts(ch)); if(url)_portraitCache.set(k,url); return url||PORTRAITS.pele||''; }
+let _pr=null, _prT=0;
+function renderKidPortrait(opts){
+  try{ if(!_pr){ const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true}); r.setSize(160,160,false); r.toneMapping=THREE.ACESFilmicToneMapping; r.toneMappingExposure=1.1;
+      const ps=new THREE.Scene(), pc=new THREE.PerspectiveCamera(24,1,.05,50); ps.add(new THREE.HemisphereLight('#fff4e6','#6a5a7a',1.6));
+      const key=new THREE.DirectionalLight('#fff0dc',3.2); key.position.set(-1.2,1.6,2); ps.add(key); const rim=new THREE.DirectionalLight('#9fd8ff',2.4); rim.position.set(1.5,1,-1.5); ps.add(rim); _pr={r,ps,pc}; }
+    const {r,ps,pc}=_pr, k=makeKid(opts); ps.add(k.root); k.root.updateMatrixWorld(true); const hp=new THREE.Vector3(); k.head.getWorldPosition(hp); const dist=.95*k.opts.height/1.4;
+    pc.position.set(hp.x+.18*dist,hp.y+.05*dist,hp.z+dist); pc.lookAt(hp); r.render(ps,pc);
+    const c=document.createElement('canvas'); c.width=c.height=160; const x=c.getContext('2d'); const gr=x.createRadialGradient(80,62,6,80,80,120); gr.addColorStop(0,'#ffe8c0'); gr.addColorStop(1,opts.shirt||'#888'); x.fillStyle=gr; x.fillRect(0,0,160,160); x.drawImage(r.domElement,0,0);
+    ps.remove(k.root); clearTimeout(_prT); _prT=setTimeout(mpPortraitDone,4000); return c.toDataURL('image/png'); }catch(e){ console.warn('portrait',e); return null; } }
+function mpPortraitDone(){ if(_pr){ _pr.r.dispose(); _pr.r.forceContextLoss?.(); _pr=null; } }
+
+/* character picker */
+const CS={pick:null,custom:null,then:null};
+function openCharSel(then){ const me=mpMe(); CS.pick=charValid(me.char); CS.custom=CS.pick.base==='custom'?JSON.parse(JSON.stringify(CS.pick)):(settings.mpCustom?charValid(settings.mpCustom):{base:'custom',c:{k:1,h:1,s:1,p:0,e:0,l:0,f:0,t:1}});
+  CS.then=then||null; $('cs-name').value=cleanName(me.name)||''; $('cs-name').placeholder=charName(CS.pick)||'השם שלי';
+  if(mode==='sub'){ for(const s of SUBS)$(s).hidden=s!=='charsel'; } else openSub('charsel'); csRender(); }
+function csRender(){ const G2=$('cs-grid'); G2.innerHTML='';
+  const card=(ch,label)=>{ const b=document.createElement('button'); const sel=charKey(ch)===charKey(CS.pick)||(ch.base==='custom'&&CS.pick.base==='custom'); b.className='cs-card'+(sel?' on':'');
+    b.innerHTML=`<i style="background-image:url(${mpPortrait(ch)})"></i><span></span>`; b.querySelector('span').textContent=label; b.onclick=()=>{ CS.pick=ch.base==='custom'?CS.custom:ch; $('cs-name').placeholder=charName(CS.pick)||'השם שלי'; Sound.ui(); csRender(); }; G2.appendChild(b); };
+  for(const k of Object.keys(CHAR_BASES))card({base:k},CHAR_BASES[k].name);
+  card(CS.custom,'✨ דמות חדשה');
+  const mk=$('cs-maker'); mk.hidden=CS.pick.base!=='custom'; if(!mk.hidden)csMaker(); }
+function csMaker(){ const c=CS.custom.c; const rows=[['k','צבע עור',CC.skin],['h','שיער',CC.hair.map(h=>h[0])],['s','חולצה',CC.shirt],['p','מכנסיים',CC.shorts],['e','עיניים',CC.eyes.map(e=>e[0])]];
+  const box=$('cs-sw'); box.innerHTML='';
+  for(const [k,label,cols] of rows){ const r=document.createElement('div'); r.className='cs-row'; r.innerHTML=`<span class="l">${label}</span>`;
+    cols.forEach((col,i)=>{ const s=document.createElement('button'); s.className='sw'+(c[k]===i?' on':''); s.style.background=col; s.setAttribute('aria-label',label+' '+(i+1)); s.onclick=()=>{ c[k]=i; csChanged(); }; r.appendChild(s); }); box.appendChild(r); }
+  const tog=document.createElement('div'); tog.className='cs-row';
+  tog.innerHTML=`<span class="l">עוד</span><button class="mini ${c.l?'on':''}" data-t="l">שיער ארוך</button><button class="mini ${c.f?'on':''}" data-t="f">נמשים</button><button class="mini" data-t="t">גובה: ${['נמוך','בינוני','גבוה'][c.t]}</button>`;
+  tog.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const t=b.dataset.t; if(t==='t')c.t=(c.t+1)%3; else c[t]=c[t]?0:1; csChanged(); }); box.appendChild(tog);
+  $('cs-prev').style.backgroundImage=`url(${mpPortrait(CS.custom)})`; }
+function csChanged(){ Sound.ui(); CS.pick=CS.custom; clearTimeout(CS._t); CS._t=setTimeout(()=>{ csRender(); },60); }
+function csConfirm(){ const me=mpMe(); me.char=charValid(CS.pick); me.name=cleanName($('cs-name').value); if(CS.pick.base==='custom')settings.mpCustom=me.char; saveSettings(); mpPortraitDone();
+  applyMyCharacter(); mpHelloAll(); if(mpInRoom()){ mpRoomSend({t:'me',name:mpName(),char:me.char}); if(mpIsHost())mpBroadcastRoster(); }
+  toast(`נבחרה דמות: ${mpName()} ✓`); Sound.star(); const then=CS.then; CS.then=null; closeSub(); if(then)then(); }
+/* swap the local player's body for the chosen character (keeps hats, torch light and jetpack) */
+let _myCharKey=null;
+function applyMyCharacter(){ if(!player.model)return; const ch=mpMe().char, k=charKey(ch); if(k===_myCharKey)return;
+  if(_myCharKey===null&&ch.base==='pele'){ _myCharKey=k; return; }
+  const old=player.model, M=makeCharModel(ch); M.root.position.copy(old.root.position); M.root.rotation.copy(old.root.rotation);
+  scene.remove(old.root); player.model=M; scene.add(M.root); _myCharKey=k;
+  if(ch.base==='pele')M.setShirt(S.outfit||'argentina');
+  buildAccessories(); applyAccessories(); attachJetpack(); setJet(VEH.jet); updatePortraitGlow();
+  const face=mpPortrait(ch); if(face)$('portrait').style.backgroundImage=`url(${face})`; }
+
+/* chat dock */
+function mpChatHead(){ const H=$('mc-who'); if(!H)return; H.innerHTML=mpRosterList().map(p=>`<span class="pl"><i style="background-image:url(${mpPortrait(p.char)})"></i>${escH(p.code===mpMyCode()?'אני':p.name)}${(p.code===mpMyCode()?MP.mic:MP.remotes.get(p.code)?.mic)?' 🎙️':''}</span>`).join(''); }
+function mpWireUI(){
+  $('b-friends').onclick=()=>openFriends(); $('t-friends').onclick=()=>{ Sound.init(); openFriends(); };
+  $('fr-close').onclick=()=>{ mpPortraitDone(); closeSub(); }; $('fr-share').onclick=()=>mpShare(); $('fr-copy').onclick=()=>mpCopy(); $('fr-char').onclick=()=>openCharSel(()=>openFriends());
+  $('fr-addbtn').onclick=()=>{ const v=$('fr-addcode').value.toUpperCase().replace(/[^A-Z0-9]/g,''); if(!/^[A-Z2-9]{6}$/.test(v)){ toast('הקוד צריך להיות 6 אותיות ומספרים'); return; } if(v===mpMyCode()){ toast('זה הקוד שלך 🙂'); return; }
+    mpAddFriend(v,'',null); $('fr-addcode').value=''; mpStart(); mpConnect(v); toast('החבר נוסף. כשהוא יאשר, תראו אחד את השני'); mpUI(); };
+  $('fr-addcode').addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter')$('fr-addbtn').click(); });
+  $('cs-close').onclick=()=>{ mpPortraitDone(); const then=CS.then; CS.then=null; closeSub(); if(then&&then.onCancel)then.onCancel(); }; $('cs-ok').onclick=()=>csConfirm();
+  $('cs-name').addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter')csConfirm(); });
+  $('ma-yes').onclick=()=>mpAskDone(true); $('ma-no').onclick=()=>mpAskDone(false);
+  $('b-chat').onclick=()=>mpChatOpen(!MP.chatOpen); $('mc-close').onclick=()=>mpChatOpen(false);
+  $('b-emo').onclick=()=>{ $('mp-emo').hidden=!$('mp-emo').hidden; };
+  $('b-mic').onclick=()=>mpMicToggle(); $('mc-mic').onclick=()=>mpMicToggle(); $('mc-rec').onclick=()=>mpRecToggle();
+  $('mp-emo').innerHTML=Object.entries(EMOTES).filter(([k])=>k!=='hi5').map(([k,e])=>`<button class="emo" data-k="${k}"><span>${e.e}</span><small>${e.n}</small></button>`).join('');
+  $('mp-emo').querySelectorAll('.emo').forEach(b=>b.onclick=()=>mpDoEmote(b.dataset.k));
+  $('mc-quick').innerHTML=QUICK.map(q=>`<button class="mini q">${escH(q)}</button>`).join('');
+  $('mc-quick').querySelectorAll('.q').forEach(b=>b.onclick=()=>{ mpChatSend(b.textContent); Sound.ui(); });
+  const send=()=>{ const i=$('mc-in'); mpChatSend(i.value); i.value=''; };
+  $('mc-send').onclick=send; $('mc-in').addEventListener('keydown',e=>{ e.stopPropagation(); if(e.key==='Enter')send(); if(e.key==='Escape')mpChatOpen(false); });
+}
+/* invite links (?f=CODE&n=NAME) and automatic reconnecting to friends */
+function mpBoot(){
+  mpWireUI(); applyMyCharacter();
+  let q=null; try{ q=new URLSearchParams(location.search); }catch(e){}
+  const f=(q&&q.get('f')||'').toUpperCase(), n=cleanName(q&&q.get('n'));
+  if(/^[A-Z2-9]{6}$/.test(f)&&f!==mpMe().code){
+    try{ history.replaceState(null,'',location.pathname); }catch(e){}
+    const already=!!mpFriend(f);
+    setTimeout(()=>mpAsk(`${n||'חבר'} מזמין אותך לשחק!`,already?`להצטרף למשחק של ${n||'החבר'}?`:`רוצים לשחק עם ${n||'החבר'}? קודם בוחרים דמות ושם, ואז מתחברים.`,ok=>{
+      if(!ok)return; mpAddFriend(f,n,null); const go=()=>{ MP.autoJoin=f; mpStart(); if(MP.status==='online')mpConnect(f); toast(`מתחבר ל${n||'חבר'}…`); };
+      if(already)go(); else openCharSel(go); },{yes:'יאללה! ✓',no:'לא עכשיו'}),700);
+  }
+  if(mpMe().friends.length)mpStart();
+  addEventListener('pagehide',()=>{ try{ mpLeaveRoom(true); MP.peer&&MP.peer.destroy(); }catch(e){} });
+}
+
+/* =====================================================================
    PORTRAITS — each character photographed once by a tiny studio renderer
    ===================================================================== */
 const PORTRAITS={};
@@ -6356,6 +7189,7 @@ function updateHUD(dt){
   if(mode==='playing'){
     if(nearNPC){label=`דבר עם ${SPEAKERS[nearNPC.id].name}`;verb='דבר';}
     else if(nearThing){label=typeof nearThing.label==='function'?nearThing.label():nearThing.label;verb=typeof nearThing.verb==='function'?nearThing.verb():nearThing.verb;}
+    else if(MP.pass){label=`לרדת מ${MP.pass.V.K.the}`;verb='לרדת';}
     else if(VEH.ride){label=`לרדת מ${VEH.ride.K.the}`;verb='לרדת';}
     else if(VEH.near){const V=VEH.near; label=vehAvailable(V)?`לעלות על ${V.K.the}`:V.lock; verb=vehAvailable(V)?'לעלות':'נעול';}
     else if(nearBall){label=BALL.owner?'בעט לשער!':'בעט בכדור';verb='בעט';}
@@ -6475,6 +7309,7 @@ function drawMinimap(dt){
     if(edge){if(!(m.kind==='shard'||m.kind==='wp'||(m.kind==='npc'&&m.news)))continue; X=cx+dx/d*(rad-12);Y=cx+dy/d*(rad-12);}
     drawMarker(x,m,X,Y,1.15,edge);
   }
+  mpMiniDots(x,toS,cx,rad);
   if(S.gear?.binoculars&&typeof COINS!=='undefined'){ x.fillStyle='#ffd24a'; for(const c of COINS.list){ if(Math.abs(c.x-px)>span/2||Math.abs(c.z-pz)>span/2||coinTaken(c))continue; const [X,Y]=toS(c.x,c.z); if(Math.hypot(X-cx,Y-cx)>rad-4)continue; x.beginPath(); x.arc(X,Y,c.v>1?3.4:2.2,0,7); x.fill(); } }
   drawArrow(x,cx,cx,15,rot+Math.PI-player.yaw);
   // compass ring
@@ -6572,7 +7407,7 @@ function applyState(d){
   player.hp=clamp(S.hp??S.maxHp,1,S.maxHp); cam.yaw=S.cam?.yaw??player.yaw+Math.PI; cam.pitch=S.cam?.pitch??.28;
   dayTime=S.time??.3;
   treeGlow=treeTarget=S.stage>=3?1:S.collected.length/5*.35;
-  player.model.setShirt(S.outfit||'argentina');
+  if(charValid(mpMe().char).base==='pele'||S.outfitAny)player.model.setShirt(S.outfit||'argentina');
   WAYSTONES.forEach(w=>lightWaystone(w.id,S.waystones.includes(w.id)));
   if(!Array.isArray(S.shells))S.shells=[]; if(!Array.isArray(S.cafePets))S.cafePets=[]; S.hi=S.hi||{}; S.coins=S.coins||0; S.coinT=S.coinT||{}; S.hunger=S.hunger??100; S.inv=S.inv||{}; S.acc=S.acc||{}; S.gear=S.gear||{}; refreshCoins(); renderCoins(); renderHunger(); applyAccessories(); refreshShells(); setGoldBall(!!S.goldBall);
   refreshShards(); refreshStars(); refreshMarkers(); renderHearts(); refreshHUDAbilities(); updatePortraitGlow(); updateWaypoint();
@@ -6588,7 +7423,7 @@ function slotSummary(d){ if(!d)return null; const n=d.stage>=3?'פרק 1 הוש�
    MODES & MENUS
    ===================================================================== */
 let mode='loading', subStack=[];
-const SUBS=['settings','help','slots','confirm','naming','journal','install','checkout','bag','console'];
+const SUBS=['settings','help','slots','confirm','naming','journal','install','checkout','bag','console','friends','charsel'];
 function setMode(m){
   mode=m; $('app').dataset.mode=m;
   const inGame=!['title','loading'].includes(m)&&!(m==='sub'&&subStack[0]==='title');
@@ -6718,7 +7553,7 @@ function renderJournal(){
   else if(jTab==='outfits'){
     const sw={argentina:'repeating-linear-gradient(90deg,#fff 0 14px,#7cb9e8 14px 28px)',pixel:'repeating-conic-gradient(#f2a6a6 0 25%,#6f9a4a 0 50%) 0 0/28px 28px',explorer:'repeating-linear-gradient(90deg,#c9a86a 0 6px,#b08f55 6px 8px)',stars:'radial-gradient(circle at 30% 30%,#ffd86b 0 3px,transparent 4px) 0 0/22px 22px,linear-gradient(#1d2b6a,#3a2a7a)',navy:'linear-gradient(#24345a,#1a2744)',red:'linear-gradient(#e84a4a,#b82a2a)',sun:'radial-gradient(circle,#ff8a1a 0 8px,#f5c518 9px)',purple:'radial-gradient(circle at 30% 30%,#fff 0 2px,transparent 3px) 0 0/14px 14px,linear-gradient(#6a3ab8,#2a1a6a)',eitan:'repeating-linear-gradient(0deg,#2e9a4e 0 6px,#f4f8f0 6px 12px)',waves:'repeating-radial-gradient(circle at 50% 120%,#fff 0 2px,#2a80c8 3px 9px)'};
     B.innerHTML=`<div class="cols">${OUTFITS.map(o=>{const ok=o.flag?!!S.flags[o.flag]:S.stars.length>=o.need;return `<button class="outfit" data-o="${o.id}" aria-pressed="${S.outfit===o.id}" ${ok?'':'disabled'}><span class="sw8" style="background:${sw[o.id]}"></span>${o.name}<span class="note" style="margin:0">${ok?(S.outfit===o.id?'לבוש עכשיו':'לחץ כדי ללבוש'):(o.flag?o.lock:`נפתח אחרי ${o.need} כוכבים`)}</span></button>`;}).join('')}</div>`;
-    B.querySelectorAll('.outfit').forEach(b=>b.onclick=()=>{S.outfit=b.dataset.o;player.model.setShirt(S.outfit);Sound.star();autosave(true);renderJournal();});}
+    B.querySelectorAll('.outfit').forEach(b=>b.onclick=()=>{S.outfit=b.dataset.o;S.outfitAny=charValid(mpMe().char).base!=='pele';player.model.setShirt(S.outfit);Sound.star();autosave(true);renderJournal();});}
   else if(jTab==='ach'){
     B.innerHTML=`<div class="cols">${ACH.map(a=>{const on=S.achievements.includes(a.id);return `<div class="ach ${on?'on':''}"><div class="i">${on?'★':'☆'}</div><div><div class="t">${a.name}</div><div class="d">${a.desc}</div></div></div>`;}).join('')}</div>`;}
   else {
@@ -6970,11 +7805,11 @@ function frame(now){
   if(mode==='playing'||mode==='dialog'){
     if(mode==='playing'){updatePlayer(dt); S.play+=dt; dayTime=(dayTime+dt/DAY_LEN)%1;}
     else { Dialog.update(dt); animateKid(player.model,dt,{speed:0,onGround:true,t:clock}); { const R=player.model.root; R.rotation.set(0,angDamp(R.rotation.y,player.yaw,8,dt),0,'YXZ'); } }
-    updateCat(dt); updateBall(dt); updateBubbles(dt); updateParkedVehicles(dt);
+    updateCat(dt); updateBall(dt); updateBubbles(dt); updateParkedVehicles(dt); mpFrame(dt);
     if(MINI.cur&&MINI.cur.cam)MINI.cur.cam(dt); else updateCamera(dt); updateBiome(dt); updateHUD(dt); drawMinimap(dt);
     updateCoins(dt); updateHunger(dt); updateAccessories(); if((frameN&15)===0)cartGuard();
     saveT+=dt; if(saveT>40){saveT=0;if(mode==='playing')autosave(true);}
-    netT+=dt; if(netT>.1){netT=0;Net.send('state',Net.snapshot());}
+    mpTick(dt);
   } else if(mode==='title'||mode==='loading'||(mode==='sub'&&subStack[0]==='title')){ titleCamera(dt); dayTime=(dayTime+dt/DAY_LEN*.5)%1; animateKid(player.model,dt,{speed:0,onGround:true,t:clock}); updateCat(dt); }
   input.jumpPressed=false; input.interact=false; input.kick=false; input.lookDX=0; input.lookDY=0;
   // world animation
@@ -7040,7 +7875,7 @@ async function boot(){
   spawnCat(); catMark=textSprite('!',{color:'#141a33',bg:'#5fe0d0',font:'700 44px Fredoka, sans-serif',size:34}); catMark.visible=false; scene.add(catMark);
   progress(.9,'מצלם פורטרטים…'); await nextFrame();
   makePortraits(); if(PORTRAITS.cat)$('b-ray-face').style.backgroundImage=`url(${PORTRAITS.cat})`; if(PORTRAITS.pele)$('portrait').style.backgroundImage=`url(${PORTRAITS.pele})`;
-  buildMapImage(); updateWaypoint(); renderHearts(); refreshMarkers(); refreshHUDAbilities();
+  mpBoot(); buildMapImage(); updateWaypoint(); renderHearts(); refreshMarkers(); refreshHUDAbilities();
   Voice.init(); updateVoiceNote(); setTimeout(()=>VoicePack.load(),1500);
   progress(.95,'מדליק את השמיים…'); await nextFrame();
   updateSky(.016); updateEnv(); updateGrass(LM.tree.x,LM.tree.z+10);
